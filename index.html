@@ -4,6 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ANTITHESIS — SMA & MA Al Muayyad Surakarta</title>
+<!-- Firebase SDK -->
+<script type="module">
+// ╔══════════════════════════════════════════════╗
+// ║  GANTI BAGIAN INI DENGAN CONFIG FIREBASE-MU  ║
+// ╚══════════════════════════════════════════════╝
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, set, remove, get }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain:        "antithesis-al-muayyad.firebaseapp.com",
+  databaseURL:       "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "antithesis-al-muayyad",
+  storageBucket:     "antithesis-al-muayyad.firebasestorage.app",
+  messagingSenderId: "1014116431079",
+  appId:             "1:1014116431079:web:5f490096bf6ecdf7011e42"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+window.__db  = db;
+window.__ref = ref;
+window.__push = push;
+window.__onValue = onValue;
+window.__set  = set;
+window.__remove = remove;
+window.__get = get;
+window.__firebaseReady = true;
+window.dispatchEvent(new Event('firebase-ready'));
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -21,6 +52,83 @@ body{background:var(--black);color:var(--white);font-family:'Cormorant Garamond'
 
 /* NOISE */
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9990;opacity:.5;}
+
+/* ══ LOADING SCREEN ══ */
+#loader{position:fixed;inset:0;background:var(--black);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity .8s ease,visibility .8s ease;}
+#loader.hide{opacity:0;visibility:hidden;}
+.ld-pre{font-family:'Montserrat',sans-serif;font-size:.55rem;letter-spacing:.6em;color:var(--muted);text-transform:uppercase;opacity:0;animation:ld-up .6s ease forwards .2s;}
+.ld-title{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,12vw,9rem);font-weight:900;line-height:.9;overflow:hidden;margin:16px 0 20px;}
+.ld-title .ld-anti{display:block;background:linear-gradient(135deg,var(--gold-pale),var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;transform:translateY(60px);animation:ld-reveal .8s cubic-bezier(.16,1,.3,1) forwards .5s;}
+.ld-title .ld-thesis{display:block;color:var(--white);opacity:0;transform:translateY(60px);animation:ld-reveal .8s cubic-bezier(.16,1,.3,1) forwards .75s;}
+.ld-line{width:0;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);animation:ld-line 1s ease forwards 1.2s;}
+.ld-sub{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);opacity:0;animation:ld-up .6s ease forwards 1.5s;margin-top:18px;}
+.ld-bar-wrap{width:200px;height:1px;background:rgba(201,168,76,.12);margin-top:50px;overflow:hidden;}
+.ld-bar{height:100%;width:0;background:linear-gradient(to right,var(--gold-pale),var(--gold));animation:ld-bar 1.8s ease forwards .3s;}
+@keyframes ld-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ld-reveal{to{opacity:1;transform:translateY(0)}}
+@keyframes ld-line{to{width:120px}}
+@keyframes ld-bar{to{width:100%}}
+
+/* ══ PENGUMUMAN BANNER ══ */
+.pengumuman-bar{display:none;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));border-bottom:1px solid rgba(201,168,76,.25);padding:14px 60px;position:relative;z-index:999;}
+.pengumuman-bar.show{display:flex;align-items:center;gap:16px;padding-top:80px;}
+.pg-icon{font-size:1rem;flex-shrink:0;}
+.pg-label{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;flex-shrink:0;}
+.pg-text{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--cream);flex:1;line-height:1.5;}
+.pg-close{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:none;padding:0;flex-shrink:0;transition:color .2s;}
+.pg-close:hover{color:var(--gold);}
+
+/* Admin pengumuman panel */
+.pg-admin-btn{position:fixed;bottom:80px;right:28px;z-index:800;background:rgba(10,10,10,.92);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:12px 20px;cursor:none;transition:all .3s;backdrop-filter:blur(8px);}
+.pg-admin-btn:hover{border-color:var(--gold);background:rgba(201,168,76,.08);}
+.pg-admin-panel{position:fixed;bottom:130px;right:28px;z-index:800;background:rgba(12,12,12,.97);border:1px solid rgba(201,168,76,.2);padding:28px;width:300px;display:none;backdrop-filter:blur(12px);}
+.pg-admin-panel.open{display:block;}
+.pg-panel-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.pg-panel-close{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:none;transition:color .2s;}
+.pg-panel-close:hover{color:var(--gold);}
+.pg-afl{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:8px;margin-top:14px;}
+.pg-afi{width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,.15);color:var(--white);font-family:'Cormorant Garamond',serif;font-size:1rem;padding:10px 14px;outline:none;transition:border-color .3s;cursor:none;resize:none;}
+.pg-afi:focus{border-color:rgba(201,168,76,.5);}
+.pg-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;}
+.pg-btn-post{background:linear-gradient(135deg,var(--gold),#a8832a);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;font-weight:600;padding:11px;cursor:none;transition:opacity .3s;}
+.pg-btn-post:hover{opacity:.85;}
+.pg-btn-del{background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--muted);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:11px;cursor:none;transition:all .3s;}
+.pg-btn-del:hover{border-color:rgba(201,168,76,.5);color:var(--gold);}
+
+/* ══ BUKU KENANGAN ══ */
+.buku-wrap{background:var(--dark);}
+.buku-layout{display:grid;grid-template-columns:1fr 1.1fr;gap:60px;margin-top:60px;}
+.buku-form-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:28px;}
+.buku-textarea{width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,.14);color:var(--white);font-family:'Cormorant Garamond',serif;font-size:1.1rem;padding:16px 18px;outline:none;resize:none;min-height:130px;transition:border-color .3s;cursor:none;line-height:1.7;}
+.buku-textarea:focus{border-color:rgba(201,168,76,.5);}
+.buku-textarea::placeholder{color:var(--muted2);}
+.buku-options{display:flex;gap:12px;margin:14px 0 6px;flex-wrap:wrap;}
+.buku-mood-btn{background:transparent;border:1px solid rgba(201,168,76,.15);color:var(--muted);font-family:'Montserrat',sans-serif;font-size:.75rem;padding:8px 14px;cursor:none;transition:all .3s;}
+.buku-mood-btn:hover,.buku-mood-btn.active{border-color:var(--gold);background:rgba(201,168,76,.07);}
+.btn-buku{width:100%;padding:15px;margin-top:12px;background:linear-gradient(135deg,var(--gold),#a8832a);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;font-weight:600;cursor:none;position:relative;overflow:hidden;transition:opacity .3s;}
+.btn-buku::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-light),var(--gold));opacity:0;transition:opacity .3s;}
+.btn-buku:hover::before{opacity:1;}
+.btn-buku span{position:relative;z-index:1;}
+
+/* Buku entries */
+.buku-entries-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.buku-entries-title{font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.4em;color:var(--gold);text-transform:uppercase;}
+.buku-count{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.buku-list{max-height:520px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.2) transparent;display:flex;flex-direction:column;gap:12px;}
+.buku-list::-webkit-scrollbar{width:3px;}
+.buku-list::-webkit-scrollbar-thumb{background:rgba(201,168,76,.25);}
+.buku-entry{background:var(--dark3);border:1px solid rgba(201,168,76,.09);padding:22px 24px;position:relative;overflow:hidden;transition:border-color .3s;}
+.buku-entry:hover{border-color:rgba(201,168,76,.2);}
+.buku-entry::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(201,168,76,.3),transparent);}
+.be-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.be-mood{font-size:1.1rem;}
+.be-meta{display:flex;align-items:center;gap:10px;}
+.be-author{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;}
+.be-time{font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.2em;color:var(--muted2);}
+.be-msg{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);line-height:1.75;font-style:italic;}
+.be-msg::before{content:'\201C';color:rgba(201,168,76,.3);font-size:1.3rem;margin-right:2px;}
+.be-msg::after{content:'\201D';color:rgba(201,168,76,.3);font-size:1.3rem;margin-left:2px;}
+.buku-empty{text-align:center;padding:50px 20px;color:var(--muted);font-style:italic;}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:22px 60px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(8,8,8,.97),transparent);border-bottom:1px solid rgba(201,168,76,.07);transition:background .4s,border-color .4s;}
@@ -266,6 +374,26 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
 <div id="cur"></div>
 <div id="cur-r"></div>
 
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <p class="ld-pre">SMA &amp; MA Al Muayyad Surakarta · 2018–2020</p>
+  <div class="ld-title">
+    <span class="ld-anti">ANTI</span>
+    <span class="ld-thesis">THESIS</span>
+  </div>
+  <div class="ld-line"></div>
+  <p class="ld-sub">Berbeda untuk Bersatu. Bersatu untuk Abadi.</p>
+  <div class="ld-bar-wrap"><div class="ld-bar"></div></div>
+</div>
+
+<!-- PENGUMUMAN BANNER -->
+<div class="pengumuman-bar" id="pgBar">
+  <span class="pg-icon">📢</span>
+  <span class="pg-label">Pengumuman</span>
+  <span class="pg-text" id="pgText"></span>
+  <button class="pg-close" id="pgClose">✕</button>
+</div>
+
 <!-- NAV -->
 <nav id="mainNav">
   <div class="nav-brand">
@@ -276,6 +404,7 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
     <li><a href="#tentang">Tentang</a></li>
     <li><a href="#anggota">Anggota</a></li>
     <li><a href="#request">Request Acara</a></li>
+    <li><a href="#buku">Kenangan</a></li>
     <li><a href="#motto">Motto</a></li>
   </ul>
 </nav>
@@ -478,6 +607,55 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
 
 
 
+<!-- BUKU KENANGAN -->
+<section class="sec buku-wrap" id="buku">
+  <div class="sec-label rv">Buku Kenangan</div>
+  <h2 class="sec-h rv">Tuliskan <em>Kesanmu</em></h2>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted);margin-top:12px;font-style:italic;" class="rv d1">
+    Setiap kata yang kamu tulis akan abadi bersama kenangan ANTITHESIS.
+  </p>
+  <div class="buku-layout">
+    <!-- FORM -->
+    <div class="rv d1">
+      <div class="buku-form-title">Tinggalkan Pesanmu</div>
+      <textarea class="buku-textarea" id="bukuMsg" placeholder="Tulis kenangan, pesan, atau kesan kamu tentang ANTITHESIS..."></textarea>
+      <div class="buku-options">
+        <span style="font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;align-self:center;">Mood :</span>
+        <button class="buku-mood-btn active" data-mood="🌟">🌟 Bangga</button>
+        <button class="buku-mood-btn" data-mood="🥹">🥹 Haru</button>
+        <button class="buku-mood-btn" data-mood="😄">😄 Bahagia</button>
+        <button class="buku-mood-btn" data-mood="💛">💛 Rindu</button>
+      </div>
+      <button class="btn-buku" id="btnBuku"><span>Kirim Pesan Anonim →</span></button>
+    </div>
+    <!-- LIST -->
+    <div class="rv d2">
+      <div class="buku-entries-head">
+        <div class="buku-entries-title">Pesan Masuk</div>
+        <div class="buku-count" id="bukuCount">0</div>
+      </div>
+      <div class="buku-list" id="bukuList">
+        <div class="buku-empty">Belum ada pesan. Jadilah yang pertama menulis! ✦</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PENGUMUMAN ADMIN PANEL -->
+<button class="pg-admin-btn" id="pgAdminBtn">📢 Pengumuman</button>
+<div class="pg-admin-panel" id="pgAdminPanel">
+  <div class="pg-panel-title">
+    Post Pengumuman
+    <button class="pg-panel-close" id="pgPanelClose">✕</button>
+  </div>
+  <label class="pg-afl">Isi Pengumuman</label>
+  <textarea class="pg-afi" id="pgInput" rows="4" placeholder="Tulis pengumuman untuk semua anggota..."></textarea>
+  <div class="pg-btns">
+    <button class="pg-btn-post" id="pgBtnPost">Tayangkan</button>
+    <button class="pg-btn-del" id="pgBtnDel">Hapus</button>
+  </div>
+</div>
+
 <!-- MOTTO -->
 <section class="motto-wrap" id="motto">
   <p class="motto-eyebrow rv">Jiwa Angkatan</p>
@@ -579,8 +757,8 @@ function renderReq(){
   const el=document.getElementById('reqEntries');
   document.getElementById('reqCount').textContent=reqData.length;
   if(!reqData.length){el.innerHTML='<div class="req-empty">Belum ada usulan. Jadilah yang pertama! ✦</div>';return;}
-  el.innerHTML=[...reqData].reverse().map((r,ri)=>{
-    const idx=reqData.length-1-ri;
+  el.innerHTML=[...reqData].map(r=>{
+    const liked=sessionStorage.getItem('liked_'+r.id);
     return `<div class="re">
       <div class="re-top">
         <div class="re-type">${icons[r.type]||'📅'} ${r.type}</div>
@@ -592,42 +770,18 @@ function renderReq(){
           <div class="re-loc">📍 ${r.lokasi}</div>
         </div>
         <div class="re-vote-wrap">
-          <button class="re-vbtn${r.liked?' liked':''}" data-i="${idx}">${r.liked?'✦ Setuju':'♡ Setuju'}</button>
-          <span class="re-vnum">${r.votes}</span>
+          <button class="re-vbtn${liked?' liked':''}" data-id="${r.id}" data-votes="${r.votes||0}">${liked?'✦ Setuju':'♡ Setuju'}</button>
+          <span class="re-vnum">${r.votes||0}</span>
         </div>
       </div>
     </div>`;
   }).join('');
   document.querySelectorAll('.re-vbtn').forEach(b=>b.addEventListener('click',function(){
-    const i=+this.dataset.i;
-    reqData[i].liked=!reqData[i].liked;
-    reqData[i].votes+=reqData[i].liked?1:-1;
-    renderReq();
+    if(window.__voteReq) window.__voteReq(this.dataset.id, +this.dataset.votes);
   }));
 }
 renderReq();
 
-document.getElementById('btnReq').addEventListener('click',function(){
-  const tgl=document.getElementById('reqTgl').value;
-  const bulan=document.getElementById('reqBulan').value;
-  const tahun=document.getElementById('reqTahun').value;
-  const catatan=document.getElementById('reqCatatan').value.trim();
-  if(!selType){alert('Pilih jenis acara terlebih dahulu!');return;}
-  if(!tgl||!bulan||!tahun){alert('Lengkapi tanggal acara!');return;}
-  if(!selLokasi){alert('Pilih lokasi terlebih dahulu!');return;}
-  reqData.push({type:selType,tgl,bulan,tahun,lokasi:selLokasi,catatan,votes:0,liked:false});
-  renderReq();
-  document.getElementById('reqTypeConf').textContent=selType;
-  document.getElementById('reqOk').style.display='block';
-  document.getElementById('reqTgl').value='';
-  document.getElementById('reqBulan').value='';
-  document.getElementById('reqTahun').value='';
-  document.getElementById('reqCatatan').value='';
-  document.querySelectorAll('.atb').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.lp').forEach(p=>p.classList.remove('active'));
-  selType=null;selLokasi=null;
-  setTimeout(()=>document.getElementById('reqOk').style.display='none',5000);
-});
 
 // ══ HITUNG MUNDUR ══
 const namaBln=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -677,45 +831,198 @@ function clearCountdown(){
   cdAcara=null;
 }
 
-// Load saved acara on start
-if(cdAcara && new Date(cdAcara.date+'T00:00:00')>new Date(-864e5)){
-  startCountdown(cdAcara);
+// ══ FIREBASE INTEGRATION ══
+// Tunggu Firebase siap, lalu inisialisasi semua fitur real-time
+function initFirebase(){
+  const db=window.__db, ref=window.__ref, push=window.__push,
+        onValue=window.__onValue, set=window.__set,
+        remove=window.__remove, get=window.__get;
+
+  // ── HITUNG MUNDUR (shared) ──
+  const cdRef=ref(db,'antithesis/acara');
+  onValue(cdRef,snap=>{
+    const acara=snap.val();
+    if(acara && new Date(acara.date+'T00:00:00')>new Date(-864e5)){
+      startCountdown(acara);
+      document.getElementById('cdType').value=acara.type||'';
+      document.getElementById('cdDate').value=acara.date||'';
+      document.getElementById('cdLokasi').value=acara.lokasi||'';
+    } else {
+      clearInterval(cdInterval);
+      document.getElementById('countdownWrap').classList.remove('visible');
+    }
+  });
+
+  document.getElementById('cdBtnSet').addEventListener('click',function(){
+    const type=document.getElementById('cdType').value.trim();
+    const date=document.getElementById('cdDate').value;
+    const lokasi=document.getElementById('cdLokasi').value.trim();
+    if(!type||!date){alert('Pilih jenis acara dan tanggal!');return;}
+    set(ref(db,'antithesis/acara'),{type,date,lokasi});
+    adminPanel.classList.remove('open');
+  });
+
+  document.getElementById('cdBtnClear').addEventListener('click',function(){
+    remove(ref(db,'antithesis/acara'));
+    document.getElementById('cdType').value='';
+    document.getElementById('cdDate').value='';
+    document.getElementById('cdLokasi').value='';
+    adminPanel.classList.remove('open');
+  });
+
+  // ── PENGUMUMAN (shared) ──
+  const pgRef=ref(db,'antithesis/pengumuman');
+  onValue(pgRef,snap=>{
+    const txt=snap.val()||'';
+    document.getElementById('pgInput').value=txt;
+    showPg(txt);
+  });
+
+  document.getElementById('pgBtnPost').addEventListener('click',()=>{
+    const v=document.getElementById('pgInput').value.trim();
+    if(!v){alert('Tulis isi pengumuman dulu!');return;}
+    set(ref(db,'antithesis/pengumuman'),v);
+    pgAdminPanel.classList.remove('open');
+  });
+
+  document.getElementById('pgBtnDel').addEventListener('click',()=>{
+    remove(ref(db,'antithesis/pengumuman'));
+    document.getElementById('pgInput').value='';
+    pgAdminPanel.classList.remove('open');
+  });
+
+  // ── REQUEST ACARA (shared, real-time) ──
+  const reqRef=ref(db,'antithesis/requests');
+  onValue(reqRef,snap=>{
+    const raw=snap.val()||{};
+    reqData=Object.entries(raw).map(([id,v])=>({id,...v}));
+    renderReq();
+  });
+
+  // Override submit request
+  document.getElementById('btnReq').addEventListener('click',function(){
+    const tgl=document.getElementById('reqTgl').value;
+    const bulan=document.getElementById('reqBulan').value;
+    const tahun=document.getElementById('reqTahun').value;
+    const catatan=document.getElementById('reqCatatan').value.trim();
+    if(!selType){alert('Pilih jenis acara terlebih dahulu!');return;}
+    if(!tgl||!bulan||!tahun){alert('Lengkapi tanggal acara!');return;}
+    if(!selLokasi){alert('Pilih lokasi terlebih dahulu!');return;}
+    push(reqRef,{type:selType,tgl,bulan,tahun,lokasi:selLokasi,catatan,votes:0});
+    document.getElementById('reqTypeConf').textContent=selType;
+    document.getElementById('reqOk').style.display='block';
+    document.getElementById('reqTgl').value='';
+    document.getElementById('reqBulan').value='';
+    document.getElementById('reqTahun').value='';
+    document.getElementById('reqCatatan').value='';
+    document.querySelectorAll('.atb').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.lp').forEach(p=>p.classList.remove('active'));
+    selType=null;selLokasi=null;
+    setTimeout(()=>document.getElementById('reqOk').style.display='none',5000);
+  });
+
+  // Override vote
+  window.__voteReq=function(id,currentVotes){
+    const likedKey='liked_'+id;
+    const liked=sessionStorage.getItem(likedKey);
+    const newVotes=liked ? Math.max(0,currentVotes-1) : currentVotes+1;
+    set(ref(db,'antithesis/requests/'+id+'/votes'),newVotes);
+    if(liked) sessionStorage.removeItem(likedKey);
+    else sessionStorage.setItem(likedKey,'1');
+  };
+
+  // ── BUKU KENANGAN (shared, real-time) ──
+  const bukuRef=ref(db,'antithesis/buku');
+  onValue(bukuRef,snap=>{
+    const raw=snap.val()||{};
+    bukuData=Object.values(raw).reverse();
+    renderBuku();
+  });
+
+  // Override submit buku
+  document.getElementById('btnBuku').addEventListener('click',function(){
+    const msg=document.getElementById('bukuMsg').value.trim();
+    if(!msg){document.getElementById('bukuMsg').style.borderColor='rgba(201,168,76,.6)';document.getElementById('bukuMsg').focus();return;}
+    const now=new Date();
+    const waktu=now.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+    push(bukuRef,{mood:selMood,msg,waktu});
+    document.getElementById('bukuMsg').value='';
+    document.getElementById('bukuMsg').style.borderColor='';
+  });
 }
 
-// Admin panel
+// Cek apakah Firebase sudah siap atau tunggu event
+if(window.__firebaseReady) initFirebase();
+else window.addEventListener('firebase-ready', initFirebase);
+
+// Fallback: tampilkan notif jika Firebase belum dikonfigurasi
+setTimeout(()=>{
+  if(!window.__firebaseReady){
+    console.warn('⚠️ Firebase belum dikonfigurasi. Data berjalan secara lokal saja.');
+  }
+},3000);
+
+
+
+// Admin panel toggle
 const adminToggle=document.getElementById('cdAdminToggle');
 const adminPanel=document.getElementById('cdAdminPanel');
 document.getElementById('cdAdminClose').addEventListener('click',()=>adminPanel.classList.remove('open'));
 adminToggle.addEventListener('click',()=>adminPanel.classList.toggle('open'));
 
-// Pre-fill form if acara exists
-if(cdAcara){
-  document.getElementById('cdType').value=cdAcara.type||'';
-  document.getElementById('cdDate').value=cdAcara.date||'';
-  document.getElementById('cdLokasi').value=cdAcara.lokasi||'';
-}
-
-document.getElementById('cdBtnSet').addEventListener('click',function(){
-  const type=document.getElementById('cdType').value.trim();
-  const date=document.getElementById('cdDate').value;
-  const lokasi=document.getElementById('cdLokasi').value.trim();
-  if(!type||!date){alert('Pilih jenis acara dan tanggal!');return;}
-  cdAcara={type,date,lokasi};
-  localStorage.setItem('antithesis_acara',JSON.stringify(cdAcara));
-  startCountdown(cdAcara);
-  adminPanel.classList.remove('open');
-});
-
-document.getElementById('cdBtnClear').addEventListener('click',function(){
-  clearCountdown();
-  document.getElementById('cdType').value='';
-  document.getElementById('cdDate').value='';
-  document.getElementById('cdLokasi').value='';
-  adminPanel.classList.remove('open');
-});
-
-// cursor hover for admin buttons
 document.querySelectorAll('.cd-admin-toggle,.cd-btn-set,.cd-btn-clear,.cd-admin-close').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.2)';curR.style.borderColor='rgba(201,168,76,.8)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';curR.style.borderColor='rgba(201,168,76,.45)';});
+});
+
+// ══ LOADING SCREEN ══
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('loader').classList.add('hide');
+    setTimeout(()=>{document.getElementById('loader').style.display='none';},900);
+  },2600);
+});
+
+// ══ PENGUMUMAN UI ══
+const pgBar=document.getElementById('pgBar');
+const pgText=document.getElementById('pgText');
+function showPg(txt){if(!txt){pgBar.classList.remove('show');return;}pgText.textContent=txt;pgBar.classList.add('show');}
+document.getElementById('pgClose').addEventListener('click',()=>pgBar.classList.remove('show'));
+const pgAdminBtn=document.getElementById('pgAdminBtn');
+const pgAdminPanel=document.getElementById('pgAdminPanel');
+pgAdminBtn.addEventListener('click',()=>pgAdminPanel.classList.toggle('open'));
+document.getElementById('pgPanelClose').addEventListener('click',()=>pgAdminPanel.classList.remove('open'));
+// (submit/delete ditangani Firebase di initFirebase())
+
+
+// ══ BUKU KENANGAN UI ══
+let bukuData=[];
+let selMood='🌟';
+document.querySelectorAll('.buku-mood-btn').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.buku-mood-btn').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');selMood=this.dataset.mood;
+}));
+function renderBuku(){
+  const list=document.getElementById('bukuList');
+  document.getElementById('bukuCount').textContent=bukuData.length;
+  if(!bukuData.length){list.innerHTML='<div class="buku-empty">Belum ada pesan. Jadilah yang pertama menulis! ✦</div>';return;}
+  list.innerHTML=bukuData.map(b=>`
+    <div class="buku-entry">
+      <div class="be-top">
+        <span class="be-mood">${b.mood}</span>
+        <div class="be-meta">
+          <span class="be-author">🔒 Anonim</span>
+          <span class="be-time">${b.waktu}</span>
+        </div>
+      </div>
+      <div class="be-msg">${b.msg}</div>
+    </div>`).join('');
+}
+renderBuku();
+// (submit ditangani Firebase di initFirebase())
+
+// cursor hover new buttons
+document.querySelectorAll('.pg-admin-btn,.pg-btn-post,.pg-btn-del,.pg-panel-close,.pg-close,.btn-buku,.buku-mood-btn').forEach(el=>{
   el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.2)';curR.style.borderColor='rgba(201,168,76,.8)';});
   el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';curR.style.borderColor='rgba(201,168,76,.45)';});
 });
