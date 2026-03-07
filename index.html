@@ -323,7 +323,7 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
 .cd-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:.35;}
 .cd-num{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block;}
 .cd-unit{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.35em;color:var(--muted);text-transform:uppercase;margin-top:10px;display:block;}
-.cd-done{font-family:'Playfair Display',serif;font-size:2rem;font-style:italic;color:var(--gold);padding:20px 0;}
+.cd-done{font-family:'Playfair Display',serif;font-size:1.6rem;font-style:italic;color:var(--gold);padding:28px 0 0;text-align:center;animation:fu .7s ease forwards;}
 
 /* ADMIN PANEL COUNTDOWN */
 /* FIX: Tombol ini dipindah ke kiri agar tidak bentrok dengan tombol Pengumuman */
@@ -990,14 +990,18 @@ function startCountdown(acara){
   document.getElementById('cdEventDate').textContent=tglStr;
   wrap.classList.add('visible');
   document.getElementById('cdDone').style.display='none';
-  document.querySelectorAll('.cd-box').forEach(b=>b.style.display='');
+  document.querySelectorAll('.cd-box').forEach(b=>b.style.display='flex');
 
   function tick(){
     const now=new Date();
     const diff=target-now;
     if(diff<=0){
       clearInterval(cdInterval);
-      document.querySelectorAll('.cd-box').forEach(b=>b.style.display='none');
+      // Tetap tampilkan box dengan angka 00
+      document.getElementById('cdHariNum').textContent='00';
+      document.getElementById('cdJamNum').textContent='00';
+      document.getElementById('cdMenitNum').textContent='00';
+      document.getElementById('cdDetikNum').textContent='00';
       document.getElementById('cdDone').style.display='block';
       return;
     }
@@ -1005,7 +1009,6 @@ function startCountdown(acara){
     const h=Math.floor((diff%864e5)/36e5);
     const m=Math.floor((diff%36e5)/6e4);
     const s=Math.floor((diff%6e4)/1e3);
-    // FIX: Menggunakan ID yang sudah diperbaiki
     document.getElementById('cdHariNum').textContent=pad(d);
     document.getElementById('cdJamNum').textContent=pad(h);
     document.getElementById('cdMenitNum').textContent=pad(m);
