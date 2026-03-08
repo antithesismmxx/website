@@ -322,7 +322,31 @@ nav.scrolled{background:rgba(8,8,8,.98);border-bottom-color:rgba(201,168,76,.15)
 .re-vnum{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);min-width:22px;text-align:center;}
 .req-empty{text-align:center;padding:50px 20px;color:var(--muted);font-style:italic;}
 
-/* ══ PERSENTASE REQUEST ══ */
+/* ══ VOTE MODAL ══ */
+.vote-overlay{position:fixed;inset:0;z-index:9100;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);}
+.vote-overlay.show{display:flex;animation:pin-bg-in .35s ease forwards;}
+.vote-box{position:relative;width:380px;background:var(--dark2);border:1px solid rgba(201,168,76,.2);overflow:hidden;animation:pin-box-in .4s cubic-bezier(.25,.46,.45,.94) forwards;}
+.vote-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold-light),var(--gold),transparent);}
+.vote-header{padding:30px 32px 22px;border-bottom:1px solid rgba(201,168,76,.08);}
+.vote-icon{font-size:1.8rem;margin-bottom:12px;display:block;}
+.vote-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--white);margin-bottom:6px;}
+.vote-title em{font-style:italic;color:var(--gold);}
+.vote-sub{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;color:var(--muted);line-height:1.55;}
+.vote-body{padding:24px 32px;}
+.vote-label{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:10px;}
+.vote-input{width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,.15);color:var(--white);font-family:'Cormorant Garamond',serif;font-size:1.1rem;padding:13px 16px;outline:none;transition:border-color .3s;}
+.vote-input:focus{border-color:rgba(201,168,76,.5);}
+.vote-input::placeholder{color:var(--muted2);}
+.vote-err{display:none;font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.2em;color:#c0392b;text-transform:uppercase;margin-top:8px;}
+.vote-privacy{display:flex;align-items:flex-start;gap:8px;margin-top:14px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);padding:10px 13px;}
+.vote-privacy span{font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;color:var(--muted);line-height:1.5;}
+.vote-footer{padding:0 32px 28px;display:grid;grid-template-columns:1fr auto;gap:10px;}
+.vote-btn-confirm{padding:13px;background:linear-gradient(135deg,var(--gold),#a8832a);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.55rem;letter-spacing:.35em;text-transform:uppercase;font-weight:600;transition:opacity .3s;cursor:pointer;}
+.vote-btn-confirm:hover{opacity:.85;}
+.vote-btn-cancel{padding:13px 18px;background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--muted);font-family:'Montserrat',sans-serif;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;transition:all .3s;cursor:pointer;}
+.vote-btn-cancel:hover{border-color:rgba(201,168,76,.4);color:var(--gold);}
+.re-vbtn.voted{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1);cursor:default;}
+.re-voted-name{font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.18em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-top:3px;text-align:right;}
 .req-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
 .req-sum-item{background:var(--dark3);border:1px solid rgba(201,168,76,.09);padding:14px 12px;text-align:center;position:relative;overflow:hidden;transition:border-color .3s;}
 .req-sum-item.top{border-color:rgba(201,168,76,.45);}
@@ -609,10 +633,6 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
         <label class="daftar-label">Nama Lengkap *</label>
         <input type="text" class="daftar-input" id="dfNama" placeholder="Tulis nama sesuai data anggota..."/>
         <div class="nama-err" id="namaErr">✕ &nbsp;Nama tidak ditemukan dalam daftar anggota</div>
-        <div style="display:flex;align-items:flex-start;gap:8px;margin-top:8px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.12);padding:10px 14px;">
-          <span style="font-size:.85rem;flex-shrink:0;margin-top:1px;">🔒</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.92rem;font-style:italic;color:var(--muted);line-height:1.55;">Nama yang kamu masukkan hanya digunakan untuk <strong style="color:var(--cream);font-style:normal;">verifikasi</strong> dan <strong style="color:var(--cream);font-style:normal;">tidak akan ditampilkan</strong> secara publik di halaman anggota.</span>
-        </div>
       </div>
 
       <!-- Kelas -->
@@ -698,6 +718,15 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
   <div class="req-layout">
     <div class="rv d2">
       <div class="req-form-title">Detail Usulanmu</div>
+      <div class="fg">
+        <label class="fl">Nama Lengkap *</label>
+        <input type="text" class="fi" id="reqNama" placeholder="Tulis namamu sesuai data anggota..."/>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:7px;">
+          <span style="font-size:.75rem;opacity:.6;">🔒</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;color:var(--muted2);">Namamu hanya untuk verifikasi dan <strong style="color:var(--muted);font-style:normal;">tidak akan ditampilkan</strong> secara publik.</span>
+        </div>
+        <div id="reqNamaErr" style="display:none;font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.2em;color:#c0392b;text-transform:uppercase;margin-top:6px;">✕  Nama tidak terdaftar sebagai anggota</div>
+      </div>
       <div class="fg">
         <label class="fl">Tanggal Acara yang Diusulkan</label>
         <div class="date-row">
@@ -884,6 +913,30 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
     </div>
     <div class="pin-footer">
       <button class="pin-cancel" id="pinCancel">✕ &nbsp;Batalkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- VOTE MODAL -->
+<div class="vote-overlay" id="voteOverlay">
+  <div class="vote-box">
+    <div class="vote-header">
+      <span class="vote-icon">🗳️</span>
+      <div class="vote-title">Berikan <em>Suaramu</em></div>
+      <div class="vote-sub">Masukkan nama lengkapmu untuk memverifikasi bahwa kamu adalah anggota ANTITHESIS. Setiap anggota hanya bisa memberikan 1 suara per request.</div>
+    </div>
+    <div class="vote-body">
+      <label class="vote-label">Nama Lengkap</label>
+      <input type="text" class="vote-input" id="voteNamaInput" placeholder="Tulis nama sesuai data anggota..."/>
+      <div class="vote-err" id="voteErr"></div>
+      <div class="vote-privacy">
+        <span style="flex-shrink:0">🔒</span>
+        <span>Namamu hanya digunakan untuk verifikasi dan <strong style="color:var(--cream);font-style:normal;">tidak akan ditampilkan</strong> secara publik.</span>
+      </div>
+    </div>
+    <div class="vote-footer">
+      <button class="vote-btn-confirm" id="voteBtnConfirm">Kirim Suara →</button>
+      <button class="vote-btn-cancel" id="voteBtnCancel">Batal</button>
     </div>
   </div>
 </div>
@@ -1296,11 +1349,10 @@ function renderReq(){
 
   // ── Render tiap request + progress bar ──
   el.innerHTML = [...reqData]
-    .sort((a,b)=>(b.votes||0)-(a.votes||0)) // urutkan dari terbanyak votes
+    .sort((a,b)=>(b.votes||0)-(a.votes||0))
     .map(r => {
-      const liked = sessionStorage.getItem('liked_' + r.id);
-      const maxV  = Math.max(...reqData.map(x=>x.votes||0), 1);
-      const pct   = Math.round((r.votes||0) / maxV * 100);
+      const maxV = Math.max(...reqData.map(x=>x.votes||0), 1);
+      const pct  = Math.round((r.votes||0) / maxV * 100);
       return `<div class="re">
         <div class="re-top">
           <div class="re-type">${icons[r.type]||'📅'} ${r.type}</div>
@@ -1312,7 +1364,7 @@ function renderReq(){
             <div class="re-loc">📍 ${r.lokasi}</div>
           </div>
           <div class="re-vote-wrap">
-            <button class="re-vbtn${liked?' liked':''}" data-id="${r.id}" data-votes="${r.votes||0}">${liked?'✦ Setuju':'♡ Setuju'}</button>
+            <button class="re-vbtn" data-id="${r.id}">♡ Setuju</button>
             <span class="re-vnum">${r.votes||0}</span>
           </div>
         </div>
@@ -1322,7 +1374,7 @@ function renderReq(){
     }).join('');
 
   document.querySelectorAll('.re-vbtn').forEach(b => b.addEventListener('click', function(){
-    if(window.__voteReq) window.__voteReq(this.dataset.id, +this.dataset.votes);
+    if(window.__voteReq) window.__voteReq(this.dataset.id);
   }));
 }
 renderReq();
@@ -1437,16 +1489,38 @@ function initFirebase(){
     renderReq();
   });
   document.getElementById('btnReq').addEventListener('click', function(){
+    const nama   = document.getElementById('reqNama').value.trim();
     const tgl    = document.getElementById('reqTgl').value;
     const bulan  = document.getElementById('reqBulan').value;
     const tahun  = document.getElementById('reqTahun').value;
     const catatan = document.getElementById('reqCatatan').value.trim();
+    const namaInput = document.getElementById('reqNama');
+    const namaErr   = document.getElementById('reqNamaErr');
+
+    // Validasi nama
+    if(!nama){
+      namaInput.style.borderColor = 'rgba(201,168,76,.7)';
+      namaInput.focus();
+      return;
+    }
+    // Cek whitelist
+    if(Object.keys(whitelistData).length > 0 && !isNamaDiizinkan(nama)){
+      namaInput.style.borderColor = 'rgba(192,57,43,.7)';
+      namaErr.style.display = 'block';
+      namaInput.focus();
+      return;
+    }
+    namaErr.style.display = 'none';
+    namaInput.style.borderColor = '';
+
     if(!selType)  { alert('Pilih jenis acara terlebih dahulu!'); return; }
     if(!tgl || !bulan || !tahun){ alert('Lengkapi tanggal acara!'); return; }
     if(!selLokasi){ alert('Pilih lokasi terlebih dahulu!'); return; }
+
     push(reqRef, {type: selType, tgl, bulan, tahun, lokasi: selLokasi, catatan, votes: 0});
     document.getElementById('reqTypeConf').textContent = selType;
     document.getElementById('reqOk').style.display = 'block';
+    document.getElementById('reqNama').value  = '';
     document.getElementById('reqTgl').value   = '';
     document.getElementById('reqBulan').value = '';
     document.getElementById('reqTahun').value = '';
@@ -1457,14 +1531,99 @@ function initFirebase(){
     setTimeout(() => document.getElementById('reqOk').style.display = 'none', 5000);
   });
 
-  window.__voteReq = function(id, currentVotes){
-    const likedKey = 'liked_' + id;
-    const liked    = sessionStorage.getItem(likedKey);
-    const newVotes = liked ? Math.max(0, currentVotes - 1) : currentVotes + 1;
-    set(ref(db, 'antithesis/requests/' + id + '/votes'), newVotes);
-    if(liked) sessionStorage.removeItem(likedKey);
-    else sessionStorage.setItem(likedKey, '1');
+  // Reset error nama request saat ketik
+  document.getElementById('reqNama').addEventListener('input', () => {
+    document.getElementById('reqNama').style.borderColor = '';
+    document.getElementById('reqNamaErr').style.display = 'none';
+  });
+
+  // ── Vote dengan verifikasi nama ──
+  // votes sekarang disimpan sebagai objek: { namaLower: true }
+  // sehingga 1 nama = 1 vote per request
+  window.__voteReq = function(id){
+    // Buka modal vote
+    const overlay = document.getElementById('voteOverlay');
+    const input   = document.getElementById('voteNamaInput');
+    const errEl   = document.getElementById('voteErr');
+    input.value   = '';
+    errEl.style.display = 'none';
+    errEl.textContent   = '';
+    overlay.classList.add('show');
+    setTimeout(() => input.focus(), 200);
+
+    // Simpan id request yang sedang di-vote
+    overlay.dataset.reqId = id;
   };
+
+  document.getElementById('voteBtnCancel').addEventListener('click', () => {
+    document.getElementById('voteOverlay').classList.remove('show');
+  });
+  document.getElementById('voteOverlay').addEventListener('click', function(e){
+    if(e.target === this) this.classList.remove('show');
+  });
+
+  // Konfirmasi vote
+  document.getElementById('voteBtnConfirm').addEventListener('click', () => {
+    const id      = document.getElementById('voteOverlay').dataset.reqId;
+    const nama    = document.getElementById('voteNamaInput').value.trim();
+    const errEl   = document.getElementById('voteErr');
+    const input   = document.getElementById('voteNamaInput');
+
+    // 1. Nama kosong
+    if(!nama){
+      errEl.textContent   = '✕  Nama wajib diisi';
+      errEl.style.display = 'block';
+      input.style.borderColor = 'rgba(192,57,43,.7)';
+      input.focus();
+      return;
+    }
+
+    // 2. Cek whitelist
+    if(Object.keys(whitelistData).length > 0 && !isNamaDiizinkan(nama)){
+      errEl.textContent   = '✕  Nama tidak terdaftar sebagai anggota ANTITHESIS';
+      errEl.style.display = 'block';
+      input.style.borderColor = 'rgba(192,57,43,.7)';
+      input.classList.add('wl-denied');
+      setTimeout(() => input.classList.remove('wl-denied'), 500);
+      input.focus();
+      return;
+    }
+
+    const namaKey = nama.trim().toLowerCase().replace(/\s+/g,'_');
+
+    // 3. Cek apakah nama ini sudah vote di request ini (dari Firebase)
+    const reqTarget = reqData.find(r => r.id === id);
+    if(reqTarget && reqTarget.voters && reqTarget.voters[namaKey]){
+      errEl.textContent   = '✕  Kamu sudah memberikan suara untuk request ini';
+      errEl.style.display = 'block';
+      input.style.borderColor = 'rgba(192,57,43,.7)';
+      input.focus();
+      return;
+    }
+
+    // 4. Simpan vote ke Firebase — voters/{namaKey}: true
+    const votersRef = ref(db, 'antithesis/requests/' + id + '/voters/' + namaKey);
+    set(votersRef, true).then(() => {
+      // Hitung ulang votes dari jumlah voters
+      const allVoters = Object.keys((reqTarget?.voters || {})).length + 1;
+      set(ref(db, 'antithesis/requests/' + id + '/votes'), allVoters);
+      document.getElementById('voteOverlay').classList.remove('show');
+      showNotifSukses('✦ Suaramu berhasil dikirim!');
+    }).catch(err => {
+      errEl.textContent   = '✕  Gagal mengirim suara, coba lagi';
+      errEl.style.display = 'block';
+    });
+  });
+
+  // Enter untuk konfirmasi
+  document.getElementById('voteNamaInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter') document.getElementById('voteBtnConfirm').click();
+  });
+  // Reset error saat ketik
+  document.getElementById('voteNamaInput').addEventListener('input', () => {
+    document.getElementById('voteNamaInput').style.borderColor = '';
+    document.getElementById('voteErr').style.display = 'none';
+  });
 
   // ── Buku Kenangan ──
   const bukuRef = ref(db, 'antithesis/buku');
