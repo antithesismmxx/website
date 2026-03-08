@@ -362,8 +362,20 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 
 @media(max-width:1000px){
   .sections{grid-template-columns:1fr;}
-  .main{padding:80px 20px 40px;}
-  .topnav{padding:16px 20px;}
+  .main{padding:80px 16px 40px;}
+  .topnav{padding:14px 16px;}
+  .nav-brand span{display:none;}
+  .page-title{font-size:1.8rem;}
+}
+@media(max-width:480px){
+  .main{padding:70px 12px 32px;}
+  .topnav{padding:12px 14px;}
+  .nav-brand{font-size:.95rem;}
+  .nav-badge{display:none;}
+  .btn-back,.btn-logout{font-size:.42rem;padding:7px 12px;}
+  .section{border-radius:0;}
+  .page-title{font-size:1.4rem;}
+  .pin-card{margin:16px;}
 }
 </style>
 </head>
@@ -497,6 +509,37 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
           <button class="btn-ac-set" id="cdBtnSet">💾 Simpan</button>
           <button class="btn-ac-clear" id="cdBtnClear">🗑 Hapus</button>
         </div>
+      </div>
+    </div>
+
+    <!-- REQUEST ACARA -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-title-row">
+          <div class="sec-title">Request <em>Acara</em></div>
+          <div class="count-badge" id="reqAdminCount">0</div>
+        </div>
+        <div class="sec-sub">Usulan acara dari anggota beserta jumlah suara. Admin dapat menghapus request yang tidak sesuai.</div>
+      </div>
+      <div class="list-scroll" id="reqAdminList">
+        <div class="empty-note">Memuat data…</div>
+      </div>
+    </div>
+
+    <!-- BUKU KENANGAN -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-title-row">
+          <div class="sec-title">Buku <em>Kenangan</em></div>
+          <div class="count-badge" id="bukuAdminCount">0</div>
+        </div>
+        <div class="sec-sub">Pesan anonim dari anggota. Admin dapat menghapus pesan yang tidak pantas.</div>
+      </div>
+      <div class="search-bar">
+        <input type="text" class="search-input" id="bukuAdminSearch" placeholder="🔍  Cari isi pesan..." oninput="renderBukuAdmin()"/>
+      </div>
+      <div class="list-scroll" id="bukuAdminList">
+        <div class="empty-note">Memuat data…</div>
       </div>
     </div>
 
@@ -661,6 +704,76 @@ function showToast(msg){
   setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .5s'; setTimeout(()=>el.remove(),500); },3000);
 }
 window.showToast=showToast;
+
+// ── REQUEST ACARA ──
+let reqAdminData={};
+onValue(ref(db,'antithesis/requests'), snap=>{
+  reqAdminData=snap.val()||{};
+  renderRequests();
+});
+
+function renderRequests(){
+  const entries=Object.entries(reqAdminData);
+  document.getElementById('reqAdminCount').textContent=entries.length;
+  const list=document.getElementById('reqAdminList');
+  if(!entries.length){list.innerHTML='<div class="empty-note">Belum ada request masuk.</div>';return;}
+  const icons={HBH:'🌙',Bukber:'🍽️','Temu Kangen':'🤝'};
+  const bln=['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+  entries.sort((a,b)=>(b[1].votes||0)-(a[1].votes||0));
+  list.innerHTML=entries.map(([id,r])=>`
+    <div class="list-item" id="req-${id}">
+      <div class="item-left" style="flex:1;min-width:0;">
+        <div class="item-avatar">${icons[r.type]||'📅'}</div>
+        <div style="min-width:0;">
+          <div class="item-name">${r.type}</div>
+          <div class="item-sub">📍 ${r.lokasi} · 📅 ${r.tgl} ${bln[+r.bulan]||''} ${r.tahun} · 🗳 ${r.votes||0} suara · @${r.submitter||'?'}</div>
+          ${r.catatan?`<div class="item-sub" style="color:var(--muted);font-style:italic;">"${r.catatan}"</div>`:''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="icon-btn del-btn" onclick="hapusReqAdmin('${id}','${r.type}')" title="Hapus Request">✕</button>
+      </div>
+    </div>`).join('');
+}
+window.hapusReqAdmin=function(id,type){
+  if(confirm('Hapus request '+type+' ini?\nAksi ini tidak bisa dibatalkan.')){
+    remove(ref(db,'antithesis/requests/'+id)).then(()=>showToast('✦ Request dihapus.'));
+  }
+};
+
+// ── BUKU KENANGAN ──
+let bukuAdminData={};
+onValue(ref(db,'antithesis/buku'), snap=>{
+  bukuAdminData=snap.val()||{};
+  renderBukuAdmin();
+});
+
+function renderBukuAdmin(){
+  const entries=Object.entries(bukuAdminData);
+  document.getElementById('bukuAdminCount').textContent=entries.length;
+  const list=document.getElementById('bukuAdminList');
+  if(!entries.length){list.innerHTML='<div class="empty-note">Belum ada pesan kenangan.</div>';return;}
+  const q=(document.getElementById('bukuAdminSearch')?.value||'').toLowerCase();
+  const filtered=q?entries.filter(([,b])=>b.msg?.toLowerCase().includes(q)):entries;
+  list.innerHTML=filtered.reverse().map(([id,b])=>`
+    <div class="list-item" id="buku-${id}">
+      <div class="item-left" style="flex:1;min-width:0;">
+        <div class="item-avatar">${b.mood||'💬'}</div>
+        <div style="min-width:0;">
+          <div class="item-name" style="font-size:.88rem;white-space:normal;line-height:1.4;">${b.msg||''}</div>
+          <div class="item-sub">🔒 Anonim · ${b.waktu||''}</div>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="icon-btn del-btn" onclick="hapusBukuAdmin('${id}')" title="Hapus Pesan">✕</button>
+      </div>
+    </div>`).join('');
+}
+window.hapusBukuAdmin=function(id){
+  if(confirm('Hapus pesan ini dari buku kenangan?\nAksi ini tidak bisa dibatalkan.')){
+    remove(ref(db,'antithesis/buku/'+id)).then(()=>showToast('✦ Pesan dihapus.'));
+  }
+};
 
 // ── DIREKTORI ANGGOTA ──
 let anggotaDir={};
