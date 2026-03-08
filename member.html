@@ -614,7 +614,7 @@ document.getElementById('btnShowDaftar').addEventListener('click',function(){
   const wrap=document.getElementById('daftarFormWrap');
   wrap.classList.toggle('show'); this.classList.toggle('active');
   if(wrap.classList.contains('show')) wrap.scrollIntoView({behavior:'smooth',block:'start'});
-  if(document.getElementById('dfNama').value==='') document.getElementById('dfNama').value=currentUser.nama;
+  const dfNamaEl=document.getElementById('dfNama'); dfNamaEl.value=currentUser.nama; dfNamaEl.setAttribute('readonly','true'); dfNamaEl.style.opacity='0.7'; dfNamaEl.style.cursor='not-allowed';
 });
 document.getElementById('btnCancelDaftar').addEventListener('click',()=>{
   document.getElementById('daftarFormWrap').classList.remove('show');
@@ -651,7 +651,8 @@ document.getElementById('btnSubmitDaftar').addEventListener('click',function(){
   const namaEl=document.getElementById('dfNama');
   const namaErr=document.getElementById('namaErr');
   if(!nama){namaEl.style.borderColor='rgba(201,168,76,.7)';namaEl.focus();return;}
-  if(!isNamaDiizinkan(nama)){namaEl.style.borderColor='rgba(192,57,43,.7)';namaErr.style.display='block';namaEl.focus();return;}
+  if(nama.toLowerCase()!==currentUser.nama.toLowerCase()){namaEl.style.borderColor='rgba(192,57,43,.7)';namaErr.textContent='✕  Nama harus sesuai dengan akun Anda ('+currentUser.nama+')';namaErr.style.display='block';namaEl.focus();return;}
+  if(!isNamaDiizinkan(nama)){namaEl.style.borderColor='rgba(192,57,43,.7)';namaErr.textContent='✕  Nama tidak ada dalam daftar anggota';namaErr.style.display='block';namaEl.focus();return;}
   const sudahDaftar=anggotaFirebase.some(a=>a.nama.toLowerCase()===nama.toLowerCase());
   if(sudahDaftar){namaEl.style.borderColor='rgba(192,57,43,.7)';namaErr.textContent='✕  Nama ini sudah terdaftar';namaErr.style.display='block';namaEl.focus();return;}
   namaErr.style.display='none';
