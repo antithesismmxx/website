@@ -322,6 +322,28 @@ nav.scrolled{background:rgba(8,8,8,.98);border-bottom-color:rgba(201,168,76,.15)
 .re-vnum{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);min-width:22px;text-align:center;}
 .req-empty{text-align:center;padding:50px 20px;color:var(--muted);font-style:italic;}
 
+/* ══ PERSENTASE REQUEST ══ */
+.req-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.req-sum-item{background:var(--dark3);border:1px solid rgba(201,168,76,.09);padding:14px 12px;text-align:center;position:relative;overflow:hidden;transition:border-color .3s;}
+.req-sum-item.top{border-color:rgba(201,168,76,.45);}
+.req-sum-item.top::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
+.req-sum-icon{font-size:1.3rem;display:block;margin-bottom:4px;}
+.req-sum-type{font-family:'Montserrat',sans-serif;font-size:.45rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;}
+.req-sum-pct{font-family:'Playfair Display',serif;font-size:1.65rem;font-weight:900;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-top:4px;}
+.req-sum-votes{font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.2em;color:var(--muted2);margin-top:3px;}
+.top-badge{position:absolute;top:6px;right:6px;font-family:'Montserrat',sans-serif;font-size:.38rem;letter-spacing:.15em;color:var(--black);background:var(--gold);padding:2px 6px;text-transform:uppercase;}
+.re-pct-bar{margin-top:10px;height:3px;background:rgba(201,168,76,.1);overflow:hidden;}
+.re-pct-fill{height:100%;background:linear-gradient(to right,var(--gold),var(--gold-light));transition:width 1s cubic-bezier(.25,.46,.45,.94);}
+.re-pct-label{font-family:'Montserrat',sans-serif;font-size:.45rem;letter-spacing:.22em;color:rgba(201,168,76,.6);margin-top:4px;text-align:right;}
+
+/* ══ PRIVASI NAMA WHITELIST ══ */
+.wl-name-wrap{display:flex;align-items:center;gap:8px;flex:1;}
+.wl-name-masked{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream);filter:blur(5px);user-select:none;transition:filter .3s;cursor:pointer;letter-spacing:.03em;}
+.wl-name-masked:hover{filter:blur(0);}
+.wl-reveal-hint{font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.2em;color:var(--muted2);text-transform:uppercase;margin-top:12px;text-align:center;font-style:italic;}
+.wl-eye{background:none;border:none;color:var(--muted2);font-size:.8rem;cursor:pointer;padding:2px 4px;transition:color .2s;flex-shrink:0;}
+.wl-eye:hover{color:var(--gold);}
+
 /* MOTTO */
 .motto-wrap{text-align:center;padding:150px 60px;position:relative;overflow:hidden;}
 .motto-wrap::before{content:'';position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.055),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);}
@@ -472,9 +494,9 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
   <div class="hero-ring r3"></div>
   <p class="hero-eyebrow">SMA &amp; MA Al Muayyad Surakarta &nbsp;·&nbsp; Angkatan 2018–2020</p>
   <h1 class="hero-main"><span class="gg">ANTI</span>THESIS</h1>
-  <p class="hero-sub">DIREST BE CREATNES.</p>
+  <p class="hero-sub">Berbeda untuk Bersatu. Bersatu untuk Abadi.</p>
   <div class="hero-line"></div>
-  <p class="hero-school">Respectful-Behave-Creative-Compactness</p>
+  <p class="hero-school">Melampaui Batas — Mewarisi Kebanggaan — Mengukir Sejarah</p>
   <div class="hero-badge">Angkatan &nbsp;·&nbsp; 2018 — 2020</div>
   <div class="hero-scroll">
     <span>Scroll</span>
@@ -485,7 +507,7 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
 <!-- STATS -->
 <div class="stats-wrap">
   <div class="stats-inner">
-    <div class="stat rv"><div class="stat-n" data-target="150">0</div><div class="stat-l">Total Anggota</div></div>
+    <div class="stat rv"><div class="stat-n" data-target="180">0</div><div class="stat-l">Total Anggota</div></div>
     <div class="stat rv d1"><div class="stat-n" data-target="3">0</div><div class="stat-l">Tahun Bersama</div></div>
     <div class="stat rv d2"><div class="stat-n" data-target="24">0</div><div class="stat-l">Event Bersama</div></div>
   </div>
@@ -718,6 +740,26 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
       <div class="rl-head">
         <div class="rl-title">Usulan Masuk</div>
         <div class="rl-count" id="reqCount">0</div>
+      </div>
+      <div class="req-summary" id="reqSummary" style="display:none;">
+        <div class="req-sum-item" id="sumHBH">
+          <span class="req-sum-icon">🌙</span>
+          <div class="req-sum-type">HBH</div>
+          <div class="req-sum-pct" id="sumHBHpct">0%</div>
+          <div class="req-sum-votes" id="sumHBHvotes">0 suara</div>
+        </div>
+        <div class="req-sum-item" id="sumBukber">
+          <span class="req-sum-icon">🍽️</span>
+          <div class="req-sum-type">Bukber</div>
+          <div class="req-sum-pct" id="sumBukberpct">0%</div>
+          <div class="req-sum-votes" id="sumBukbervotes">0 suara</div>
+        </div>
+        <div class="req-sum-item" id="sumTemu">
+          <span class="req-sum-icon">🤝</span>
+          <div class="req-sum-type">Temu Kangen</div>
+          <div class="req-sum-pct" id="sumTemupct">0%</div>
+          <div class="req-sum-votes" id="sumTemuvotes">0 suara</div>
+        </div>
       </div>
       <div class="req-entries" id="reqEntries">
         <div class="req-empty">Belum ada usulan. Jadilah yang pertama! ✦</div>
@@ -1115,7 +1157,7 @@ function showNotifSukses(msg){
   }, 3000);
 }
 
-// ── Render daftar whitelist di panel admin ──
+// ── Render daftar whitelist di panel admin — nama disamarkan ──
 function renderWlList(raw){
   const list = document.getElementById('wlList');
   if(!list) return;
@@ -1126,13 +1168,40 @@ function renderWlList(raw){
   }
   list.innerHTML = entries.map(([key, nama]) =>
     `<div class="wl-item">
-      <span class="wl-item-name">${nama}</span>
-      <button class="wl-item-del" data-key="${key}" title="Hapus">✕</button>
+      <div class="wl-name-wrap">
+        <span class="wl-name-masked" data-revealed="false" title="Klik untuk lihat nama">${nama}</span>
+        <button class="wl-eye" title="Tampilkan/Sembunyikan">👁</button>
+      </div>
+      <button class="wl-item-del" data-key="${key}" data-nama="${nama}" title="Hapus">✕</button>
     </div>`
-  ).join('');
+  ).join('') +
+  '<div class="wl-reveal-hint">Arahkan kursor atau klik 👁 untuk melihat nama</div>';
+
+  // Toggle tampil/sembunyikan nama
+  list.querySelectorAll('.wl-eye').forEach(btn => {
+    btn.addEventListener('click', function(){
+      const nameEl = this.previousElementSibling;
+      const revealed = nameEl.dataset.revealed === 'true';
+      nameEl.style.filter = revealed ? 'blur(5px)' : 'blur(0)';
+      nameEl.dataset.revealed = !revealed;
+      this.textContent = revealed ? '👁' : '🙈';
+    });
+  });
+  // Klik langsung di nama juga bisa toggle
+  list.querySelectorAll('.wl-name-masked').forEach(nameEl => {
+    nameEl.addEventListener('click', function(){
+      const revealed = this.dataset.revealed === 'true';
+      this.style.filter = revealed ? 'blur(5px)' : 'blur(0)';
+      this.dataset.revealed = !revealed;
+      const eyeBtn = this.nextElementSibling;
+      if(eyeBtn) eyeBtn.textContent = revealed ? '👁' : '🙈';
+    });
+  });
+  // Tombol hapus
   list.querySelectorAll('.wl-item-del').forEach(btn =>
     btn.addEventListener('click', function(){
-      if(confirm('Hapus "' + this.closest('.wl-item').querySelector('.wl-item-name').textContent + '" dari whitelist?')){
+      const nama = this.dataset.nama;
+      if(confirm('Hapus nama ini dari whitelist?')){
         window.__remove(window.__ref(window.__db, 'antithesis/whitelist/' + this.dataset.key));
       }
     })
@@ -1180,29 +1249,74 @@ document.querySelectorAll('.lp').forEach(p => p.addEventListener('click', functi
 function renderReq(){
   const el = document.getElementById('reqEntries');
   document.getElementById('reqCount').textContent = reqData.length;
+
   if(!reqData.length){
     el.innerHTML = '<div class="req-empty">Belum ada usulan. Jadilah yang pertama! ✦</div>';
+    document.getElementById('reqSummary').style.display = 'none';
     return;
   }
-  el.innerHTML = [...reqData].map(r => {
-    const liked = sessionStorage.getItem('liked_' + r.id);
-    return `<div class="re">
-      <div class="re-top">
-        <div class="re-type">${icons[r.type]||'📅'} ${r.type}</div>
-        <div class="re-date-badge">${r.tgl} ${bln[+r.bulan]||''} ${r.tahun}</div>
-      </div>
-      <div class="re-bot">
-        <div>
-          <div class="re-info">oleh <strong>🔒 Anonim</strong>${r.catatan ? ' · "' + r.catatan + '"' : ''}</div>
-          <div class="re-loc">📍 ${r.lokasi}</div>
+
+  // ── Hitung total votes per tipe ──
+  const tipeMap = {HBH:0, Bukber:0, 'Temu Kangen':0};
+  reqData.forEach(r => {
+    if(tipeMap[r.type] !== undefined) tipeMap[r.type] += (r.votes||0);
+  });
+  const totalVotes = Object.values(tipeMap).reduce((a,b)=>a+b,0);
+  const topType = Object.entries(tipeMap).sort((a,b)=>b[1]-a[1])[0][0];
+
+  // ── Render summary ──
+  const sumEl = document.getElementById('reqSummary');
+  sumEl.style.display = 'grid';
+  const sumMap = {HBH:'HBH', Bukber:'Bukber', 'Temu Kangen':'Temu'};
+  Object.entries(tipeMap).forEach(([type, votes])=>{
+    const key = sumMap[type];
+    const pct = totalVotes>0 ? Math.round(votes/totalVotes*100) : 0;
+    const pctEl   = document.getElementById('sum'+key+'pct');
+    const votesEl = document.getElementById('sum'+key+'votes');
+    const boxEl   = document.getElementById('sum'+key);
+    if(pctEl)   pctEl.textContent   = pct+'%';
+    if(votesEl) votesEl.textContent = votes+' suara';
+    if(boxEl){
+      boxEl.classList.toggle('top', type===topType && totalVotes>0);
+      // Hapus badge lama
+      const oldBadge = boxEl.querySelector('.top-badge');
+      if(oldBadge) oldBadge.remove();
+      if(type===topType && totalVotes>0){
+        const badge = document.createElement('div');
+        badge.className = 'top-badge';
+        badge.textContent = '🏆 Terpopuler';
+        boxEl.appendChild(badge);
+      }
+    }
+  });
+
+  // ── Render tiap request + progress bar ──
+  el.innerHTML = [...reqData]
+    .sort((a,b)=>(b.votes||0)-(a.votes||0)) // urutkan dari terbanyak votes
+    .map(r => {
+      const liked = sessionStorage.getItem('liked_' + r.id);
+      const maxV  = Math.max(...reqData.map(x=>x.votes||0), 1);
+      const pct   = Math.round((r.votes||0) / maxV * 100);
+      return `<div class="re">
+        <div class="re-top">
+          <div class="re-type">${icons[r.type]||'📅'} ${r.type}</div>
+          <div class="re-date-badge">${r.tgl} ${bln[+r.bulan]||''} ${r.tahun}</div>
         </div>
-        <div class="re-vote-wrap">
-          <button class="re-vbtn${liked?' liked':''}" data-id="${r.id}" data-votes="${r.votes||0}">${liked?'✦ Setuju':'♡ Setuju'}</button>
-          <span class="re-vnum">${r.votes||0}</span>
+        <div class="re-bot">
+          <div>
+            <div class="re-info">oleh <strong>🔒 Anonim</strong>${r.catatan?' · "'+r.catatan+'"':''}</div>
+            <div class="re-loc">📍 ${r.lokasi}</div>
+          </div>
+          <div class="re-vote-wrap">
+            <button class="re-vbtn${liked?' liked':''}" data-id="${r.id}" data-votes="${r.votes||0}">${liked?'✦ Setuju':'♡ Setuju'}</button>
+            <span class="re-vnum">${r.votes||0}</span>
+          </div>
         </div>
-      </div>
-    </div>`;
-  }).join('');
+        <div class="re-pct-bar"><div class="re-pct-fill" style="width:${pct}%"></div></div>
+        <div class="re-pct-label">${pct}% dari suara terbanyak</div>
+      </div>`;
+    }).join('');
+
   document.querySelectorAll('.re-vbtn').forEach(b => b.addEventListener('click', function(){
     if(window.__voteReq) window.__voteReq(this.dataset.id, +this.dataset.votes);
   }));
