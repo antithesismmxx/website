@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANTITHESIS — Portal Anggota</title>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, get, set, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain:        "antithesis-al-muayyad.firebaseapp.com",
+  databaseURL:       "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "antithesis-al-muayyad",
+  storageBucket:     "antithesis-al-muayyad.firebasestorage.app",
+  messagingSenderId: "1014116431079",
+  appId:             "1:1014116431079:web:5f490096bf6ecdf7011e42"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// Hash password pakai SHA-256 (Web Crypto API)
+async function hashPass(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+let whitelist   = {};  // { key: namaLower }
+let accounts    = {};  // { username: { nama, pass, createdAt } }
+let fbReady     = false;
+
+// Load whitelist
+onValue(ref(db,'antithesis/whitelist'), snap => {
+  const raw = snap.val() || {};
+  whitelist = {};
+  Object.entries(raw).forEach(([k,v]) => {
+    const nama = typeof v === 'string' ? v : (v.nama || '');
+    whitelist[k] = nama.toLowerCase();
+  });
+});
+
+// Load accounts
+onValue(ref(db,'antithesis/accounts'), snap => {
+  accounts = snap.val() || {};
+  fbReady  = true;
+});
+
+// ── LOGIN ──
+window.__doLogin = async function(username, password) {
+  await waitReady();
+  const ukey   = username.trim().toLowerCase();
+  const acc    = accounts[ukey];
+  if(!acc) return { ok: false, msg: 'Username tidak ditemukan.' };
+  const hashed = await hashPass(password);
+  if(acc.pass !== hashed) return { ok: false, msg: 'Password salah.' };
+  return { ok: true, nama: acc.nama, username: ukey };
+};
+
+// ── DAFTAR ──
+window.__doDaftar = async function(namaInput, username, password) {
+  await waitReady();
+  const namaLower = namaInput.trim().toLowerCase();
+  const ukey      = username.trim().toLowerCase();
+
+  // Cek whitelist
+  const allowed = Object.values(whitelist).includes(namaLower);
+  if(!allowed) return { ok: false, field: 'nama', msg: 'Nama tidak terdaftar sebagai anggota ANTITHESIS. Hubungi admin.' };
+
+  // Cek nama sudah punya akun
+  const namaUsed = Object.values(accounts).some(a => a.nama.toLowerCase() === namaLower);
+  if(namaUsed) return { ok: false, field: 'nama', msg: 'Nama ini sudah memiliki akun. Silakan login.' };
+
+  // Cek username sudah dipakai
+  if(accounts[ukey]) return { ok: false, field: 'username', msg: 'Username sudah digunakan, pilih yang lain.' };
+
+  // Validasi username: huruf/angka/underscore saja
+  if(!/^[a-z0-9_.]{3,20}$/.test(ukey))
+    return { ok: false, field: 'username', msg: 'Username 3–20 karakter, hanya huruf, angka, titik, atau underscore.' };
+
+  const hashed = await hashPass(password);
+  const namaProper = namaInput.trim(); // simpan nama asli (tidak lowercase)
+  await set(ref(db, 'antithesis/accounts/' + ukey), {
+    nama: namaProper,
+    pass: hashed,
+    createdAt: Date.now()
+  });
+  return { ok: true, nama: namaProper, username: ukey };
+};
+
+// ── GANTI PASSWORD (self-service) ──
+window.__gantiPassword = async function(username, oldPass, newPass) {
+  await waitReady();
+  const ukey = username.trim().toLowerCase();
+  const acc  = accounts[ukey];
+  if(!acc) return { ok: false, msg: 'Username tidak ditemukan.' };
+  const hashed = await hashPass(oldPass);
+  if(acc.pass !== hashed) return { ok: false, msg: 'Password lama salah.' };
+  const newHashed = await hashPass(newPass);
+  await set(ref(db, 'antithesis/accounts/' + ukey + '/pass'), newHashed);
+  return { ok: true };
+};
+
+function waitReady(ms=8000) {
+  return new Promise((res, rej) => {
+    if(fbReady) return res();
+    const start = Date.now();
+    const t = setInterval(() => {
+      if(fbReady){ clearInterval(t); res(); }
+      else if(Date.now()-start > ms){ clearInterval(t); rej('timeout'); }
+    }, 200);
+  });
+}
+window.__fbReady = () => fbReady;
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#C9A84C; --gold-l:#E8C97A; --gold-p:#F5E6B8;
+  --black:#060606; --dark:#0D0D0D; --dark2:#151515; --dark3:#1E1E1E; --dark4:#262626;
+  --white:#F8F4EF; --cream:#EDE0C4; --muted:#6A5E50; --muted2:#3E3830;
+  --red:#c0392b; --green:#27ae60;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  min-height:100vh; background:var(--black); color:var(--white);
+  font-family:'Cormorant Garamond',serif;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow-x:hidden; position:relative;
+}
+
+/* NOISE */
+body::before{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+}
+
+/* BG */
+.bg-orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(201,168,76,.065),transparent 70%);top:-280px;left:-220px;animation:odrift 16s ease-in-out infinite;}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,.045),transparent 70%);bottom:-200px;right:-200px;animation:odrift 19s ease-in-out infinite reverse;}
+@keyframes odrift{0%,100%{transform:translate(0,0);}50%{transform:translate(30px,30px);}}
+.bg-grid{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(201,168,76,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.02) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.bg-ring{position:fixed;border-radius:50%;border:1px solid rgba(201,168,76,.05);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0;}
+.r1{width:360px;height:360px;animation:rp 10s ease-in-out infinite;}
+.r2{width:680px;height:680px;animation:rp 10s ease-in-out infinite 3.3s;}
+.r3{width:1040px;height:1040px;animation:rp 10s ease-in-out infinite 6.6s;}
+@keyframes rp{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}50%{opacity:.07;transform:translate(-50%,-50%) scale(1.04);}}
+
+/* CARD */
+.card{
+  position:relative;z-index:10;
+  width:100%;max-width:440px;margin:24px;
+  background:rgba(11,11,11,.94);
+  border:1px solid rgba(201,168,76,.16);
+  backdrop-filter:blur(28px);
+  overflow:hidden;
+  animation:card-in .85s cubic-bezier(.25,.46,.45,.94) forwards;
+  opacity:0;
+}
+@keyframes card-in{from{opacity:0;transform:translateY(36px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.topbar{height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold-l),var(--gold),transparent);}
+.corner{position:absolute;width:16px;height:16px;pointer-events:none;z-index:5;}
+.corner-tl{top:9px;left:9px;border-top:1px solid rgba(201,168,76,.32);border-left:1px solid rgba(201,168,76,.32);}
+.corner-br{bottom:9px;right:9px;border-bottom:1px solid rgba(201,168,76,.32);border-right:1px solid rgba(201,168,76,.32);}
+
+/* HEADER */
+.card-head{
+  padding:40px 44px 28px;text-align:center;
+  border-bottom:1px solid rgba(201,168,76,.08);position:relative;
+}
+.card-head::after{
+  content:'';position:absolute;top:-70px;right:-70px;width:180px;height:180px;
+  border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.06),transparent 70%);pointer-events:none;
+}
+.sym{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:52px;height:52px;border:1px solid rgba(201,168,76,.28);border-radius:50%;
+  margin-bottom:18px;background:rgba(201,168,76,.04);position:relative;
+  animation:sglow 4.5s ease-in-out infinite;
+}
+.sym::before{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(201,168,76,.1);}
+.sym span{font-size:1.4rem;}
+@keyframes sglow{0%,100%{box-shadow:0 0 0 rgba(201,168,76,0);}50%{box-shadow:0 0 22px rgba(201,168,76,.2);}}
+.brand{
+  font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;letter-spacing:.14em;
+  background:linear-gradient(135deg,var(--gold-p),var(--gold),var(--gold-l));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;margin-bottom:7px;
+}
+.brand-sub{font-family:'Montserrat',sans-serif;font-size:.47rem;letter-spacing:.44em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+.brand-tag{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:rgba(201,168,76,.45);}
+
+/* TABS */
+.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(201,168,76,.08);}
+.tab-btn{
+  padding:15px 10px;
+  font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.38em;
+  text-transform:uppercase;color:var(--muted);
+  background:none;border:none;cursor:pointer;
+  position:relative;transition:color .3s;
+}
+.tab-btn::after{
+  content:'';position:absolute;bottom:0;left:20%;right:20%;height:1px;
+  background:var(--gold);transform:scaleX(0);transition:transform .35s cubic-bezier(.25,.46,.45,.94);
+}
+.tab-btn.active{color:var(--gold);}
+.tab-btn.active::after{transform:scaleX(1);}
+.tab-btn:hover:not(.active){color:var(--cream);}
+
+/* PANELS */
+.panel{display:none;padding:32px 44px 36px;animation:pfade .35s ease forwards;}
+.panel.active{display:block;}
+@keyframes pfade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* FIELDS */
+.field{margin-bottom:18px;}
+.field-label{
+  font-family:'Montserrat',sans-serif;font-size:.46rem;letter-spacing:.36em;
+  color:var(--gold);text-transform:uppercase;display:block;margin-bottom:9px;opacity:.9;
+}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field-input{
+  width:100%;background:var(--dark3);
+  border:1px solid rgba(201,168,76,.14);color:var(--white);
+  font-family:'Cormorant Garamond',serif;font-size:1.05rem;
+  padding:13px 16px;outline:none;
+  transition:border-color .3s,background .3s;-webkit-appearance:none;
+}
+.field-input::placeholder{color:var(--muted2);}
+.field-input:focus{border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.03);}
+.field-input.err{border-color:rgba(192,57,43,.7)!important;animation:shake .42s ease;}
+.field-input.ok{border-color:rgba(39,174,96,.4);}
+@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px)}30%{transform:translateX(8px)}45%{transform:translateX(-5px)}60%{transform:translateX(5px)}75%{transform:translateX(-2px)}90%{transform:translateX(2px)}}
+.field-hint{font-family:'Cormorant Garamond',serif;font-size:.86rem;font-style:italic;color:var(--muted);margin-top:6px;line-height:1.5;}
+.field-err{
+  display:none;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-style:italic;
+  color:#d9534f;margin-top:6px;padding:9px 14px;
+  background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.18);line-height:1.5;
+}
+.field-err.show{display:block;}
+.global-err{
+  display:none;font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;
+  color:#d9534f;margin-bottom:16px;padding:12px 16px;
+  background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.2);line-height:1.55;
+  border-left:3px solid rgba(192,57,43,.6);
+}
+.global-err.show{display:block;}
+
+/* PASSWORD WRAPPER */
+.pass-wrap{position:relative;}
+.pass-wrap .field-input{padding-right:46px;}
+.pass-toggle{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:.9rem;padding:4px;transition:color .2s;
+}
+.pass-toggle:hover{color:var(--gold);}
+
+/* STRENGTH BAR */
+.strength-wrap{margin-top:7px;display:none;}
+.strength-wrap.show{display:block;}
+.strength-bar{height:2px;background:rgba(201,168,76,.1);overflow:hidden;margin-bottom:5px;}
+.strength-fill{height:100%;width:0%;transition:width .4s,background .4s;}
+.strength-label{font-family:'Montserrat',sans-serif;font-size:.44rem;letter-spacing:.25em;text-transform:uppercase;}
+
+/* SUBMIT */
+.btn-submit{
+  width:100%;padding:15px;margin-top:6px;
+  background:linear-gradient(135deg,var(--gold),#a8832a);
+  border:none;color:var(--black);
+  font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:.44em;
+  text-transform:uppercase;font-weight:700;cursor:pointer;
+  position:relative;overflow:hidden;transition:opacity .3s,transform .15s;
+}
+.btn-submit::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-l),var(--gold));opacity:0;transition:opacity .3s;}
+.btn-submit:hover::before{opacity:1;}
+.btn-submit:active{transform:scale(.98);}
+.btn-submit span{position:relative;z-index:1;}
+.btn-submit:disabled{opacity:.45;cursor:not-allowed;pointer-events:none;}
+.btn-submit.loading span{opacity:.5;}
+.btn-submit.loading::after{
+  content:'';position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  width:13px;height:13px;border:2px solid rgba(0,0,0,.25);border-top-color:var(--black);
+  border-radius:50%;animation:spin .7s linear infinite;z-index:2;
+}
+@keyframes spin{to{transform:translateY(-50%) rotate(360deg);}}
+
+.link-btn{
+  background:none;border:none;color:var(--gold);
+  font-family:'Cormorant Garamond',serif;font-size:.92rem;font-style:italic;
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;
+  transition:color .2s;padding:0;
+}
+.link-btn:hover{color:var(--gold-l);}
+.panel-footer{
+  margin-top:20px;text-align:center;
+  font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:var(--muted);
+}
+
+/* CARD FOOTER */
+.card-foot{
+  padding:14px 44px 22px;border-top:1px solid rgba(201,168,76,.07);
+}
+.foot-note{
+  font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;
+  color:var(--muted);text-align:center;line-height:1.65;
+}
+.foot-note strong{color:rgba(201,168,76,.55);font-style:normal;font-weight:600;}
+
+/* GANTI PASSWORD MODAL */
+.modal-bg{
+  position:fixed;inset:0;z-index:8000;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(14px);
+}
+.modal-bg.show{display:flex;animation:mbg .35s ease;}
+@keyframes mbg{from{opacity:0;}to{opacity:1;}}
+.modal-box{
+  position:relative;width:100%;max-width:400px;margin:24px;
+  background:var(--dark2);border:1px solid rgba(201,168,76,.18);
+  overflow:hidden;animation:mbox .4s cubic-bezier(.25,.46,.45,.94);
+}
+@keyframes mbox{from{opacity:0;transform:translateY(28px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.modal-topbar{height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold-l),var(--gold),transparent);}
+.modal-head{padding:28px 32px 20px;border-bottom:1px solid rgba(201,168,76,.08);}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:4px;}
+.modal-title em{font-style:italic;color:var(--gold);}
+.modal-sub{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:var(--muted);}
+.modal-body{padding:24px 32px 28px;}
+.modal-close{
+  position:absolute;top:18px;right:18px;
+  background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;
+  transition:color .2s;padding:4px 8px;
+}
+.modal-close:hover{color:var(--gold);}
+.modal-err{
+  display:none;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-style:italic;
+  color:#d9534f;margin-bottom:14px;padding:10px 14px;
+  background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.18);
+}
+.modal-err.show{display:block;}
+.modal-ok{
+  display:none;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-style:italic;
+  color:var(--green);margin-bottom:14px;padding:10px 14px;
+  background:rgba(39,174,96,.07);border:1px solid rgba(39,174,96,.2);
+}
+.modal-ok.show{display:block;}
+
+/* SUCCESS */
+.success-overlay{
+  display:none;position:absolute;inset:0;
+  background:var(--dark);z-index:20;
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;
+}
+.success-overlay.show{display:flex;animation:sfade .5s ease forwards;}
+@keyframes sfade{from{opacity:0;}to{opacity:1;}}
+.s-icon{font-size:2.8rem;animation:sicon .55s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0;}
+@keyframes sicon{from{opacity:0;transform:scale(.3);}to{opacity:1;transform:scale(1);}}
+.s-title{
+  font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;
+  color:var(--white);text-align:center;line-height:1.3;
+  animation:srise .55s ease .18s forwards;opacity:0;
+}
+.s-title em{font-style:italic;color:var(--gold);}
+.s-sub{
+  font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;
+  color:var(--muted);text-align:center;
+  animation:srise .55s ease .3s forwards;opacity:0;
+}
+.s-bar-wrap{
+  width:150px;height:1px;background:rgba(201,168,76,.15);overflow:hidden;margin-top:6px;
+  animation:srise .55s ease .44s forwards;opacity:0;
+}
+.s-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-l));transition:width 2.6s linear;}
+@keyframes srise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+.yr{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  font-family:'Montserrat',sans-serif;font-size:.43rem;letter-spacing:.46em;
+  color:var(--muted2);text-transform:uppercase;z-index:10;white-space:nowrap;
+}
+@media(max-width:480px){
+  .card{margin:14px;}
+  .card-head,.panel,.card-foot{padding-left:24px;padding-right:24px;}
+  .field-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-grid"></div>
+<div class="bg-ring r1"></div>
+<div class="bg-ring r2"></div>
+<div class="bg-ring r3"></div>
+
+<div class="card" id="mainCard">
+  <div class="topbar"></div>
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-br"></div>
+
+  <!-- HEADER -->
+  <div class="card-head">
+    <div class="sym"><span>✦</span></div>
+    <div class="brand">ANTITHESIS</div>
+    <div class="brand-sub">SMA &amp; MA Al Muayyad Surakarta</div>
+    <div class="brand-tag">Berbeda untuk Bersatu. Bersatu untuk Abadi.</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="login" id="tabLogin">Masuk</button>
+    <button class="tab-btn" data-tab="daftar" id="tabDaftar">Daftar</button>
+  </div>
+
+  <!-- ── PANEL LOGIN ── -->
+  <div class="panel active" id="panelLogin">
+    <div class="global-err" id="loginErr"></div>
+
+    <div class="field">
+      <label class="field-label" for="lUsername">Username</label>
+      <input type="text" class="field-input" id="lUsername" placeholder="username kamu..." autocomplete="username"/>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="lPassword">Password</label>
+      <div class="pass-wrap">
+        <input type="password" class="field-input" id="lPassword" placeholder="password..." autocomplete="current-password"/>
+        <button class="pass-toggle" type="button" data-target="lPassword">👁</button>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btnLogin"><span>Masuk →</span></button>
+
+    <div class="panel-footer">
+      <button class="link-btn" id="btnOpenGanti">Ganti password?</button>
+    </div>
+  </div>
+
+  <!-- ── PANEL DAFTAR ── -->
+  <div class="panel" id="panelDaftar">
+    <div class="global-err" id="daftarErr"></div>
+
+    <div class="field">
+      <label class="field-label" for="dNama">Nama Lengkap</label>
+      <input type="text" class="field-input" id="dNama" placeholder="sesuai data anggota..." autocomplete="off"/>
+      <div class="field-hint">Harus sesuai nama yang didaftarkan admin</div>
+      <div class="field-err" id="dNamaErr"></div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="dUsername">Username</label>
+      <input type="text" class="field-input" id="dUsername" placeholder="pilih username unik..." autocomplete="off"/>
+      <div class="field-hint">3–20 karakter: huruf kecil, angka, titik, atau underscore</div>
+      <div class="field-err" id="dUsernameErr"></div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="dPass">Password</label>
+        <div class="pass-wrap">
+          <input type="password" class="field-input" id="dPass" placeholder="password..." autocomplete="new-password"/>
+          <button class="pass-toggle" type="button" data-target="dPass">👁</button>
+        </div>
+        <div class="strength-wrap" id="strengthWrap">
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <span class="strength-label" id="strengthLabel"></span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label" for="dPass2">Konfirmasi</label>
+        <div class="pass-wrap">
+          <input type="password" class="field-input" id="dPass2" placeholder="ulang password..." autocomplete="new-password"/>
+          <button class="pass-toggle" type="button" data-target="dPass2">👁</button>
+        </div>
+        <div class="field-err" id="dPass2Err"></div>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btnDaftar"><span>Buat Akun →</span></button>
+
+    <div class="panel-footer">
+      Sudah punya akun? <button class="link-btn" data-tab="login">Masuk di sini</button>
+    </div>
+  </div>
+
+  <!-- CARD FOOTER -->
+  <div class="card-foot">
+    <div class="foot-note">
+      Hanya <strong>anggota terdaftar</strong> yang dapat mendaftar.<br>
+      Belum terdaftar? Hubungi admin angkatan.
+    </div>
+  </div>
+
+  <!-- SUCCESS OVERLAY -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="s-icon">✦</div>
+    <div class="s-title" id="sTitle">Selamat Datang,<br><em id="sName">—</em></div>
+    <div class="s-sub" id="sSub">Mengalihkan ke portal ANTITHESIS…</div>
+    <div class="s-bar-wrap"><div class="s-bar" id="sBar"></div></div>
+  </div>
+</div>
+
+<!-- GANTI PASSWORD MODAL -->
+<div class="modal-bg" id="gantiModal">
+  <div class="modal-box">
+    <div class="modal-topbar"></div>
+    <button class="modal-close" id="gantiClose">✕</button>
+    <div class="modal-head">
+      <div class="modal-title">Ganti <em>Password</em></div>
+      <div class="modal-sub">Masukkan username dan password lamamu terlebih dahulu</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-err" id="gantiErr"></div>
+      <div class="modal-ok"  id="gantiOk">✦ Password berhasil diubah! Silakan login kembali.</div>
+
+      <div class="field">
+        <label class="field-label">Username</label>
+        <input type="text" class="field-input" id="gUsername" placeholder="username kamu..." autocomplete="username"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Password Lama</label>
+        <div class="pass-wrap">
+          <input type="password" class="field-input" id="gOldPass" placeholder="password lama..." autocomplete="current-password"/>
+          <button class="pass-toggle" type="button" data-target="gOldPass">👁</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Password Baru</label>
+        <div class="pass-wrap">
+          <input type="password" class="field-input" id="gNewPass" placeholder="password baru..." autocomplete="new-password"/>
+          <button class="pass-toggle" type="button" data-target="gNewPass">👁</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:4px;">
+        <label class="field-label">Konfirmasi Password Baru</label>
+        <div class="pass-wrap">
+          <input type="password" class="field-input" id="gNewPass2" placeholder="ulang password baru..." autocomplete="new-password"/>
+          <button class="pass-toggle" type="button" data-target="gNewPass2">👁</button>
+        </div>
+        <div class="field-err" id="gPass2Err"></div>
+      </div>
+      <button class="btn-submit" id="btnGanti" style="margin-top:18px;"><span>Simpan Password →</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="yr">ANTITHESIS &nbsp;·&nbsp; 2018 — 2020</div>
+
+<script>
+// ── TABS ──
+document.querySelectorAll('.tab-btn, .link-btn[data-tab]').forEach(btn => {
+  btn.addEventListener('click', function(){
+    const tab = this.dataset.tab;
+    if(!tab) return;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id==='panel'+cap(tab)));
+    clearAll();
+  });
+});
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function clearAll(){
+  ['loginErr','daftarErr','dNamaErr','dUsernameErr','dPass2Err'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el){ el.classList.remove('show'); el.textContent=''; }
+  });
+  document.querySelectorAll('.field-input').forEach(i => i.classList.remove('err','ok'));
+}
+
+// ── SHOW/HIDE PASSWORD ──
+document.querySelectorAll('.pass-toggle').forEach(btn => {
+  btn.addEventListener('click', function(){
+    const inp = document.getElementById(this.dataset.target);
+    if(!inp) return;
+    const isText = inp.type === 'text';
+    inp.type = isText ? 'password' : 'text';
+    this.textContent = isText ? '👁' : '🙈';
+  });
+});
+
+// ── PASSWORD STRENGTH ──
+document.getElementById('dPass').addEventListener('input', function(){
+  const wrap  = document.getElementById('strengthWrap');
+  const fill  = document.getElementById('strengthFill');
+  const label = document.getElementById('strengthLabel');
+  const v = this.value;
+  if(!v){ wrap.classList.remove('show'); return; }
+  wrap.classList.add('show');
+  let score = 0;
+  if(v.length >= 8)  score++;
+  if(/[A-Z]/.test(v)) score++;
+  if(/[0-9]/.test(v)) score++;
+  if(/[^a-zA-Z0-9]/.test(v)) score++;
+  const levels = [
+    { pct:'25%', color:'#c0392b', text:'Lemah' },
+    { pct:'50%', color:'#e67e22', text:'Cukup' },
+    { pct:'75%', color:'#f1c40f', text:'Baik' },
+    { pct:'100%',color:'#27ae60', text:'Kuat' },
+  ];
+  const l = levels[Math.max(score-1,0)];
+  fill.style.width = l.pct;
+  fill.style.background = l.color;
+  label.style.color = l.color;
+  label.textContent = l.text;
+});
+
+// ── KONFIRMASI PASSWORD MATCH ──
+document.getElementById('dPass2').addEventListener('input', function(){
+  const p1 = document.getElementById('dPass').value;
+  const errEl = document.getElementById('dPass2Err');
+  if(this.value && this.value !== p1){
+    errEl.textContent = 'Password tidak cocok.';
+    errEl.classList.add('show');
+    this.classList.add('err');
+  } else {
+    errEl.classList.remove('show');
+    this.classList.remove('err');
+    if(this.value) this.classList.add('ok');
+  }
+});
+
+// ── ENTER NAVIGATION ──
+function enterNav(ids){
+  ids.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('keydown', e => {
+      if(e.key !== 'Enter') return;
+      if(i < ids.length-1){ document.getElementById(ids[i+1])?.focus(); }
+      else { el.blur(); }
+    });
+  });
+}
+enterNav(['lUsername','lPassword']);
+enterNav(['dNama','dUsername','dPass','dPass2']);
+document.getElementById('lPassword').addEventListener('keydown', e => { if(e.key==='Enter') btnLogin.click(); });
+document.getElementById('dPass2').addEventListener('keydown',    e => { if(e.key==='Enter') btnDaftar.click(); });
+
+// ── LOGIN ──
+const btnLogin = document.getElementById('btnLogin');
+btnLogin.addEventListener('click', async () => {
+  const username = document.getElementById('lUsername').value.trim();
+  const password = document.getElementById('lPassword').value;
+  const errEl    = document.getElementById('loginErr');
+  errEl.classList.remove('show');
+
+  if(!username){ markErr('lUsername'); return; }
+  if(!password){ markErr('lPassword'); return; }
+
+  setLoading(btnLogin, true);
+  try {
+    const res = await window.__doLogin(username, password);
+    if(res.ok){
+      sessionStorage.setItem('antithesis_member',   res.nama);
+      sessionStorage.setItem('antithesis_username', res.username);
+      showSuccess(res.nama, 'Masuk ke portal ANTITHESIS…');
+    } else {
+      errEl.innerHTML = '✕ &nbsp;' + res.msg;
+      errEl.classList.add('show');
+      markErr('lUsername'); markErr('lPassword');
+    }
+  } catch(e) {
+    errEl.textContent = '⚠ Koneksi gagal. Periksa internetmu dan coba lagi.';
+    errEl.classList.add('show');
+  } finally {
+    setLoading(btnLogin, false);
+  }
+});
+
+// ── DAFTAR ──
+const btnDaftar = document.getElementById('btnDaftar');
+btnDaftar.addEventListener('click', async () => {
+  const nama     = document.getElementById('dNama').value.trim();
+  const username = document.getElementById('dUsername').value.trim();
+  const pass     = document.getElementById('dPass').value;
+  const pass2    = document.getElementById('dPass2').value;
+  const errEl    = document.getElementById('daftarErr');
+  clearFieldErrs();
+
+  if(!nama)    { showFieldErr('dNama','Nama wajib diisi.'); return; }
+  if(!username){ showFieldErr('dUsername','Username wajib diisi.'); return; }
+  if(!pass)    { markErr('dPass'); return; }
+  if(pass.length < 6){ markErr('dPass'); showFieldErr('dPass2Err','Password minimal 6 karakter.',true); return; }
+  if(pass !== pass2) { markErr('dPass2'); showFieldErr('dPass2Err','Password tidak cocok.'); return; }
+
+  setLoading(btnDaftar, true);
+  errEl.classList.remove('show');
+  try {
+    const res = await window.__doDaftar(nama, username, pass);
+    if(res.ok){
+      sessionStorage.setItem('antithesis_member',   res.nama);
+      sessionStorage.setItem('antithesis_username', res.username);
+      showSuccess(res.nama, 'Akun berhasil dibuat! Mengalihkan…', true);
+    } else {
+      if(res.field === 'nama')     showFieldErr('dNama', res.msg);
+      else if(res.field==='username') showFieldErr('dUsername', res.msg);
+      else { errEl.textContent = res.msg; errEl.classList.add('show'); }
+    }
+  } catch(e) {
+    errEl.textContent = '⚠ Koneksi gagal. Periksa internetmu dan coba lagi.';
+    errEl.classList.add('show');
+  } finally {
+    setLoading(btnDaftar, false);
+  }
+});
+
+// ── GANTI PASSWORD ──
+document.getElementById('btnOpenGanti').addEventListener('click', () => {
+  document.getElementById('gantiModal').classList.add('show');
+  document.getElementById('gUsername').focus();
+  resetGantiForm();
+});
+document.getElementById('gantiClose').addEventListener('click', closeGanti);
+document.getElementById('gantiModal').addEventListener('click', function(e){ if(e.target===this) closeGanti(); });
+function closeGanti(){ document.getElementById('gantiModal').classList.remove('show'); }
+function resetGantiForm(){
+  ['gUsername','gOldPass','gNewPass','gNewPass2'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('gantiErr').classList.remove('show');
+  document.getElementById('gantiOk').classList.remove('show');
+}
+
+enterNav(['gUsername','gOldPass','gNewPass','gNewPass2']);
+document.getElementById('gNewPass2').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('btnGanti').click(); });
+
+document.getElementById('btnGanti').addEventListener('click', async () => {
+  const username = document.getElementById('gUsername').value.trim();
+  const oldPass  = document.getElementById('gOldPass').value;
+  const newPass  = document.getElementById('gNewPass').value;
+  const newPass2 = document.getElementById('gNewPass2').value;
+  const errEl    = document.getElementById('gantiErr');
+  const okEl     = document.getElementById('gantiOk');
+  errEl.classList.remove('show'); okEl.classList.remove('show');
+
+  if(!username || !oldPass || !newPass){ errEl.textContent='Semua kolom wajib diisi.'; errEl.classList.add('show'); return; }
+  if(newPass.length < 6){ errEl.textContent='Password baru minimal 6 karakter.'; errEl.classList.add('show'); return; }
+  if(newPass !== newPass2){ errEl.textContent='Konfirmasi password tidak cocok.'; errEl.classList.add('show'); return; }
+
+  const btn = document.getElementById('btnGanti');
+  setLoading(btn, true);
+  try {
+    const res = await window.__gantiPassword(username, oldPass, newPass);
+    if(res.ok){ okEl.classList.add('show'); resetGantiForm(); document.getElementById('gantiOk').classList.add('show'); }
+    else { errEl.textContent = '✕ '+res.msg; errEl.classList.add('show'); }
+  } catch(e){
+    errEl.textContent = '⚠ Gagal terhubung. Coba lagi.'; errEl.classList.add('show');
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+// ── HELPERS ──
+function markErr(id){ const e=document.getElementById(id); if(e){ e.classList.add('err'); setTimeout(()=>e.classList.remove('err'),600); } }
+function showFieldErr(id, msg, raw=false){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(raw){ el.textContent=msg; el.classList.add('show'); return; }
+  // Try to find the sibling field-err
+  const field = el.closest('.field') || el.parentElement;
+  const errEl = field ? field.querySelector('.field-err') : null;
+  if(errEl){ errEl.textContent=msg; errEl.classList.add('show'); el.classList.add('err'); }
+  else { el.textContent=msg; el.classList.add('show'); }
+}
+function clearFieldErrs(){
+  document.querySelectorAll('.field-err').forEach(e=>{ e.classList.remove('show'); e.textContent=''; });
+  document.querySelectorAll('.field-input').forEach(i=>i.classList.remove('err','ok'));
+  document.getElementById('daftarErr').classList.remove('show');
+}
+function setLoading(btn, on){
+  btn.disabled = on;
+  btn.classList.toggle('loading', on);
+}
+function showSuccess(nama, sub='', isNew=false){
+  const ov = document.getElementById('successOverlay');
+  document.getElementById('sName').textContent = nama.split(' ')[0];
+  document.getElementById('sSub').textContent  = sub;
+  document.getElementById('sTitle').innerHTML  = (isNew?'Akun Dibuat,<br>':'Selamat Datang,<br>') + '<em id="sName">'+nama.split(' ')[0]+'</em>';
+  ov.classList.add('show');
+  setTimeout(()=>{ document.getElementById('sBar').style.width='100%'; },150);
+  setTimeout(()=>{ window.location.href='index.html'; },3100);
+}
+</script>
+</body>
+</html>
