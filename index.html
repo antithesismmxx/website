@@ -364,7 +364,32 @@ nav.scrolled{background:rgba(8,8,8,.98);border-bottom-color:rgba(201,168,76,.15)
 .cd-btn-clear{background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--muted);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:11px;transition:all .3s;cursor:pointer;}
 .cd-btn-clear:hover{border-color:rgba(201,168,76,.5);color:var(--gold);}
 
-/* ══ NOTIF SUKSES DAFTAR ══ */
+/* ══ WHITELIST PANEL ══ */
+.wl-panel{position:fixed;bottom:170px;right:28px;z-index:800;background:rgba(12,12,12,.97);border:1px solid rgba(201,168,76,.2);padding:28px;width:320px;display:none;backdrop-filter:blur(12px);max-height:70vh;overflow-y:auto;}
+.wl-panel.open{display:block;}
+.wl-panel-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.wl-panel-close{background:none;border:none;color:var(--muted);font-size:1.1rem;transition:color .2s;cursor:pointer;}
+.wl-panel-close:hover{color:var(--gold);}
+.wl-sub{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:var(--muted);margin-bottom:18px;line-height:1.5;}
+.wl-add-row{display:flex;gap:8px;margin-bottom:16px;}
+.wl-input{flex:1;background:var(--dark3);border:1px solid rgba(201,168,76,.15);color:var(--white);font-family:'Cormorant Garamond',serif;font-size:1rem;padding:10px 14px;outline:none;transition:border-color .3s;}
+.wl-input:focus{border-color:rgba(201,168,76,.5);}
+.wl-input::placeholder{color:var(--muted2);}
+.wl-btn-add{background:linear-gradient(135deg,var(--gold),#a8832a);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.2em;font-weight:600;padding:10px 16px;cursor:pointer;white-space:nowrap;transition:opacity .3s;}
+.wl-btn-add:hover{opacity:.85;}
+.wl-list{display:flex;flex-direction:column;gap:6px;}
+.wl-item{display:flex;align-items:center;justify-content:space-between;background:var(--dark3);border:1px solid rgba(201,168,76,.09);padding:10px 14px;transition:border-color .3s;}
+.wl-item:hover{border-color:rgba(201,168,76,.25);}
+.wl-item-name{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream);}
+.wl-item-del{background:none;border:none;color:var(--muted2);font-size:.85rem;cursor:pointer;padding:2px 6px;transition:color .3s;}
+.wl-item-del:hover{color:#c0392b;}
+.wl-empty-note{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted2);font-size:.95rem;text-align:center;padding:16px 0;}
+.wl-count-badge{font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.25em;color:var(--gold);background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);padding:3px 10px;margin-left:8px;}
+/* Error shake pada input nama */
+.wl-denied{border-color:rgba(192,57,43,.7)!important;animation:pin-shake .4s ease;}
+/* Info box di form daftar */
+.daftar-info{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;color:var(--muted);background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);padding:10px 14px;margin-bottom:18px;line-height:1.6;}
+.nama-err{display:none;font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.2em;color:#c0392b;margin-top:5px;text-transform:uppercase;}
 @keyframes notif-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .notif-sukses{
   position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
@@ -554,12 +579,14 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
   <div class="daftar-form-wrap" id="daftarFormWrap">
     <div class="daftar-title">Daftarkan <em>Profilmu</em></div>
     <div class="daftar-sub">Isi data di bawah ini. Nama dan sekolah wajib diisi.</div>
+    <div class="daftar-info">✦ Hanya anggota ANTITHESIS yang namanya telah terdaftar yang dapat mengisi profil ini.</div>
     <div class="daftar-grid">
 
       <!-- Nama Lengkap -->
-      <div class="daftar-field">
+      <div class="daftar-field full">
         <label class="daftar-label">Nama Lengkap *</label>
-        <input type="text" class="daftar-input" id="dfNama" placeholder="Nama kamu..."/>
+        <input type="text" class="daftar-input" id="dfNama" placeholder="Tulis nama sesuai data anggota..."/>
+        <div class="nama-err" id="namaErr">✕ &nbsp;Nama tidak ditemukan dalam daftar anggota</div>
       </div>
 
       <!-- Kelas -->
@@ -734,7 +761,24 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
 <!-- TOMBOL ADMIN (kanan bawah) -->
 <div class="admin-btn-group" id="adminBtnGroup" style="display:none;">
   <button class="admin-logout-btn" id="adminLogoutBtn">🔓 Keluar Admin</button>
+  <button class="pg-admin-btn" id="wlAdminBtn">📋 Kelola Whitelist</button>
   <button class="pg-admin-btn" id="pgAdminBtn">📢 Pengumuman</button>
+</div>
+
+<!-- Panel Whitelist Admin -->
+<div class="wl-panel" id="wlPanel">
+  <div class="wl-panel-title">
+    Kelola Whitelist
+    <button class="wl-panel-close" id="wlPanelClose">✕</button>
+  </div>
+  <div class="wl-sub">Hanya nama yang ada di daftar ini yang bisa mendaftarkan diri. Pencocokan tidak membedakan huruf besar/kecil.</div>
+  <div class="wl-add-row">
+    <input type="text" class="wl-input" id="wlInput" placeholder="Ketik nama anggota..."/>
+    <button class="wl-btn-add" id="wlBtnAdd">+ Tambah</button>
+  </div>
+  <div class="wl-list" id="wlList">
+    <div class="wl-empty-note">Belum ada nama. Tambahkan di atas.</div>
+  </div>
 </div>
 
 <!-- Panel Pengumuman Admin -->
@@ -987,6 +1031,17 @@ document.getElementById('btnSubmitDaftar').addEventListener('click', function(){
     document.getElementById('dfNama').focus();
     return;
   }
+  // Cek whitelist — hanya izinkan jika nama ada di daftar admin
+  if(Object.keys(whitelistData).length > 0 && !isNamaDiizinkan(nama)){
+    const namaEl = document.getElementById('dfNama');
+    namaEl.style.borderColor = 'rgba(192,57,43,.7)';
+    namaEl.classList.add('wl-denied');
+    document.getElementById('namaErr').style.display = 'block';
+    setTimeout(() => namaEl.classList.remove('wl-denied'), 500);
+    namaEl.focus();
+    return;
+  }
+  document.getElementById('namaErr').style.display = 'none';
   // Validasi sekolah
   if(!sekolah){
     document.getElementById('dfSekolah').style.borderColor = 'rgba(201,168,76,.7)';
@@ -1030,7 +1085,53 @@ function showNotifSukses(msg){
   }, 3000);
 }
 
+// ── Render daftar whitelist di panel admin ──
+function renderWlList(raw){
+  const list = document.getElementById('wlList');
+  if(!list) return;
+  const entries = Object.entries(raw || {});
+  if(!entries.length){
+    list.innerHTML = '<div class="wl-empty-note">Belum ada nama. Tambahkan di atas.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(([key, nama]) =>
+    `<div class="wl-item">
+      <span class="wl-item-name">${nama}</span>
+      <button class="wl-item-del" data-key="${key}" title="Hapus">✕</button>
+    </div>`
+  ).join('');
+  list.querySelectorAll('.wl-item-del').forEach(btn =>
+    btn.addEventListener('click', function(){
+      if(confirm('Hapus "' + this.closest('.wl-item').querySelector('.wl-item-name').textContent + '" dari whitelist?')){
+        window.__remove(window.__ref(window.__db, 'antithesis/whitelist/' + this.dataset.key));
+      }
+    })
+  );
+}
+
+// Whitelist panel toggle
+document.getElementById('wlAdminBtn').addEventListener('click', () => {
+  const p = document.getElementById('wlPanel');
+  p.classList.toggle('open');
+  // Tutup panel lain
+  document.getElementById('pgAdminPanel').classList.remove('open');
+});
+document.getElementById('wlPanelClose').addEventListener('click', () =>
+  document.getElementById('wlPanel').classList.remove('open'));
+
+// Reset error nama saat user mengetik ulang
+document.getElementById('dfNama').addEventListener('input', () => {
+  document.getElementById('dfNama').style.borderColor = '';
+  document.getElementById('namaErr').style.display = 'none';
+});
+
 // ══ REQUEST ACARA ══
+let whitelistData = {}; // { firebaseKey: namaLower }
+
+function isNamaDiizinkan(nama){
+  const lower = nama.trim().toLowerCase();
+  return Object.values(whitelistData).some(n => n === lower);
+}
 let selType = null, selLokasi = null, reqData = [];
 const icons = {HBH: '🌙', Bukber: '🍽️', 'Temu Kangen': '🤝'};
 const bln = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -1236,6 +1337,34 @@ function initFirebase(){
     push(bukuRef, {mood: selMood, msg, waktu});
     document.getElementById('bukuMsg').value = '';
     document.getElementById('bukuMsg').style.borderColor = '';
+  });
+
+  // ── Whitelist Anggota ──
+  const wlRef = ref(db, 'antithesis/whitelist');
+  onValue(wlRef, snap => {
+    const raw = snap.val() || {};
+    // Simpan: key Firebase → nama lowercase
+    whitelistData = Object.fromEntries(
+      Object.entries(raw).map(([k, v]) => [k, v.toLowerCase()])
+    );
+    renderWlList(raw);
+  });
+
+  document.getElementById('wlBtnAdd').addEventListener('click', () => {
+    const val = document.getElementById('wlInput').value.trim();
+    if(!val) return;
+    // Cek duplikat
+    if(Object.values(whitelistData).includes(val.toLowerCase())){
+      alert('Nama ini sudah ada di whitelist.');
+      return;
+    }
+    push(wlRef, val).then(() => {
+      document.getElementById('wlInput').value = '';
+    });
+  });
+  // Enter juga bisa tambah
+  document.getElementById('wlInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter') document.getElementById('wlBtnAdd').click();
   });
 
   // ── Daftar Mandiri → Firebase ──
