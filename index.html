@@ -537,9 +537,6 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
   <div class="profil-search-bar rv d1">
     <input type="text" class="profil-search" id="searchAnggota" placeholder="Cari nama atau kelas..."/>
     <button class="pfbtn active" data-filter="semua">Semua</button>
-    <button class="pfbtn" data-filter="IPA">IPA</button>
-    <button class="pfbtn" data-filter="IPS">IPS</button>
-    <button class="pfbtn" data-filter="Agama">Agama</button>
     <button class="pfbtn" data-filter="SMA">SMA</button>
     <button class="pfbtn" data-filter="MA">MA</button>
   </div>
@@ -556,7 +553,7 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
   <!-- Form daftar mandiri -->
   <div class="daftar-form-wrap" id="daftarFormWrap">
     <div class="daftar-title">Daftarkan <em>Profilmu</em></div>
-    <div class="daftar-sub">Isi data di bawah ini. Nama dan jurusan wajib diisi.</div>
+    <div class="daftar-sub">Isi data di bawah ini. Nama dan sekolah wajib diisi.</div>
     <div class="daftar-grid">
 
       <!-- Nama Lengkap -->
@@ -581,16 +578,7 @@ footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:
         </select>
       </div>
 
-      <!-- Jurusan -->
-      <div class="daftar-field">
-        <label class="daftar-label">Jurusan *</label>
-        <select class="daftar-select" id="dfJurusan">
-          <option value="">— Pilih Jurusan —</option>
-          <option value="IPA">IPA</option>
-          <option value="IPS">IPS</option>
-          <option value="Agama">Agama</option>
-        </select>
-      </div>
+
 
       <!-- NIS -->
       <div class="daftar-field">
@@ -886,11 +874,10 @@ function renderAnggota(data){
     const jabatan = a.jabatan ? ` · ${a.jabatan}` : '';
     const motto  = a.motto  ? `<div class="ac-motto">"${a.motto}"</div>` : '';
 
-    // Badge sekolah (SMA / MA) + badge jurusan
+    // Badge sekolah saja (jurusan dihapus)
     const sekolahBadge = a.sekolah
       ? `<div class="ac-badge sekolah">${a.sekolah}</div>` : '';
-    const jurusanBadge = a.jurusan
-      ? `<div class="ac-badge">${a.jurusan}</div>` : '';
+    const jurusanBadge = '';
 
     return `<div class="ac rv on" data-j="${a.jurusan||''}" data-s="${a.sekolah||''}">
       <div class="ac-corner"></div>
@@ -926,8 +913,8 @@ function doFilter(){
   renderAnggota(getAllAnggota().filter(a =>
     // Cari nama atau kelas
     (a.nama.toLowerCase().includes(q) || (a.kelas || '').toLowerCase().includes(q)) &&
-    // Filter: semua / jurusan / sekolah
-    (af === 'semua' || a.jurusan === af || a.sekolah === af)
+    // Filter: semua / sekolah (SMA/MA)
+    (af === 'semua' || a.sekolah === af)
   ));
 }
 
@@ -948,22 +935,38 @@ document.getElementById('btnCancelDaftar').addEventListener('click', () => {
   resetDaftarForm();
 });
 
-// Preview foto
+// Preview foto - kompresi agresif agar tidak melebihi batas Firebase
 document.getElementById('dfFoto').addEventListener('change', function(){
   const file = this.files[0];
   if(!file) return;
+  // Cek ukuran file mentah (max 2MB sebelum diproses)
+  if(file.size > 2 * 1024 * 1024){
+    alert('Ukuran foto terlalu besar. Maksimal 2MB.');
+    this.value = '';
+    return;
+  }
   const reader = new FileReader();
   reader.onload = function(ev){
     const img = new Image();
     img.onload = function(){
       const canvas = document.createElement('canvas');
-      const max = 300;
+      // Max 150px — cukup untuk avatar, jauh lebih kecil di Firebase
+      const max = 150;
       let w = img.width, h = img.height;
-      if(w > h){ if(w > max){ h = h*(max/w); w = max; }}
-      else{ if(h > max){ w = w*(max/h); h = max; }}
+      if(w > h){ if(w > max){ h = Math.round(h*(max/w)); w = max; }}
+      else{ if(h > max){ w = Math.round(w*(max/h)); h = max; }}
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      fotoBase64 = canvas.toDataURL('image/jpeg', 0.75);
+      // Kualitas 0.5 → ukuran sangat kecil
+      fotoBase64 = canvas.toDataURL('image/jpeg', 0.5);
+      // Jika masih > 50KB setelah kompresi, buang foto
+      if(fotoBase64.length > 50000){
+        fotoBase64 = '';
+        alert('Foto masih terlalu besar setelah kompresi. Coba foto lain yang lebih kecil.');
+        document.getElementById('fotoPreview').style.display = 'none';
+        document.getElementById('fotoPlaceholder').style.display = '';
+        return;
+      }
       document.getElementById('fotoPreview').src = fotoBase64;
       document.getElementById('fotoPreview').style.display = 'block';
       document.getElementById('fotoPlaceholder').style.display = 'none';
@@ -978,7 +981,6 @@ document.getElementById('btnSubmitDaftar').addEventListener('click', function(){
   const nama    = document.getElementById('dfNama').value.trim();
   const kelas   = document.getElementById('dfKelas').value.trim();
   const sekolah = document.getElementById('dfSekolah').value;
-  const jurusan = document.getElementById('dfJurusan').value;
   const nis     = document.getElementById('dfNis').value.trim();
   const motto   = document.getElementById('dfMotto').value.trim();
 
@@ -994,15 +996,9 @@ document.getElementById('btnSubmitDaftar').addEventListener('click', function(){
     document.getElementById('dfSekolah').focus();
     return;
   }
-  // Validasi jurusan
-  if(!jurusan){
-    document.getElementById('dfJurusan').style.borderColor = 'rgba(201,168,76,.7)';
-    document.getElementById('dfJurusan').focus();
-    return;
-  }
 
   if(window.__submitAnggota)
-    window.__submitAnggota({nama, kelas, sekolah, jurusan, nis, motto, foto: fotoBase64});
+    window.__submitAnggota({nama, kelas, sekolah, nis, motto, foto: fotoBase64});
 });
 
 function resetDaftarForm(){
@@ -1010,10 +1006,8 @@ function resetDaftarForm(){
     const el = document.getElementById(id);
     if(el){ el.value = ''; el.style.borderColor = ''; }
   });
-  ['dfSekolah','dfJurusan'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el){ el.value = ''; el.style.borderColor = ''; }
-  });
+  const dfSekolah = document.getElementById('dfSekolah');
+  if(dfSekolah){ dfSekolah.value = ''; dfSekolah.style.borderColor = ''; }
   fotoBase64 = '';
   document.getElementById('fotoPreview').style.display = 'none';
   document.getElementById('fotoPlaceholder').style.display = '';
@@ -1252,25 +1246,49 @@ function initFirebase(){
   onValue(anggotaRef, snap => {
     const raw = snap.val() || {};
     anggotaFirebase = Object.values(raw);
-    doFilter(); // langsung re-render dengan filter aktif
+    doFilter();
   });
 
   // Fungsi submit yang dipanggil dari tombol
   window.__submitAnggota = function(data){
-    push(anggotaRef, data).then(() => {
-      // Reset form
-      resetDaftarForm();
-      // Tutup form
-      document.getElementById('daftarFormWrap').classList.remove('show');
-      document.getElementById('btnShowDaftar').classList.remove('active');
-      // Tampilkan notifikasi sukses
-      showNotifSukses('✦ Profilmu berhasil ditambahkan! Selamat datang di ANTITHESIS.');
-      // Scroll ke grid anggota agar langsung terlihat
-      document.getElementById('anggotaGrid').scrollIntoView({behavior:'smooth', block:'start'});
-    }).catch(err => {
-      console.error('Gagal mendaftar:', err);
-      alert('Terjadi kesalahan, coba lagi.');
-    });
+    // Jika foto ada, coba simpan dengan foto; kalau gagal, coba tanpa foto
+    push(anggotaRef, data)
+      .then(() => {
+        resetDaftarForm();
+        document.getElementById('daftarFormWrap').classList.remove('show');
+        document.getElementById('btnShowDaftar').classList.remove('active');
+        showNotifSukses('✦ Profilmu berhasil ditambahkan! Selamat datang di ANTITHESIS.');
+        document.getElementById('anggotaGrid').scrollIntoView({behavior:'smooth', block:'start'});
+      })
+      .catch(err => {
+        console.error('Error Firebase:', err.code, err.message);
+        // Jika ada foto dan gagal, coba ulang tanpa foto
+        if(data.foto){
+          const dataNoFoto = {...data, foto: ''};
+          push(anggotaRef, dataNoFoto)
+            .then(() => {
+              resetDaftarForm();
+              document.getElementById('daftarFormWrap').classList.remove('show');
+              document.getElementById('btnShowDaftar').classList.remove('active');
+              showNotifSukses('✦ Profil ditambahkan! (Foto tidak disertakan karena terlalu besar)');
+              document.getElementById('anggotaGrid').scrollIntoView({behavior:'smooth', block:'start'});
+            })
+            .catch(err2 => {
+              console.error('Retry error:', err2.code, err2.message);
+              if(err2.code === 'PERMISSION_DENIED'){
+                alert('Akses ditolak Firebase. Hubungi admin untuk mengatur Rules database.');
+              } else {
+                alert('Gagal menyimpan: ' + (err2.message || err2.code || 'Coba lagi.'));
+              }
+            });
+        } else {
+          if(err.code === 'PERMISSION_DENIED'){
+            alert('Akses ditolak Firebase. Hubungi admin untuk mengatur Rules database.');
+          } else {
+            alert('Gagal menyimpan: ' + (err.message || err.code || 'Coba lagi.'));
+          }
+        }
+      });
   };
 }
 
