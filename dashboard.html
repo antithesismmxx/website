@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dashboard — ANTITHESIS</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.dash-hero{padding:72px 60px 60px;background:var(--dark);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.dash-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 70% 50%,rgba(201,168,76,.05) 0%,transparent 65%);pointer-events:none;}
+.dash-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(201,168,76,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.02) 1px,transparent 1px);background-size:80px 80px;}
+.dash-greeting{font-family:'Montserrat',sans-serif;font-size:.46rem;letter-spacing:.45em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;}
+.dash-name{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;color:var(--white);line-height:1.05;}
+.dash-name em{font-style:italic;color:var(--gold);}
+.dash-date{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);margin-top:12px;}
+
+/* COUNTDOWN */
+.countdown-wrap{background:var(--dark2);border:1px solid var(--border2);padding:36px 40px;margin:40px 0;position:relative;overflow:hidden;display:none;}
+.countdown-wrap.visible{display:block;}
+.countdown-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
+.countdown-label{font-family:'Montserrat',sans-serif;font-size:.46rem;letter-spacing:.4em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.countdown-event{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:24px;}
+.countdown-units{display:flex;gap:24px;flex-wrap:wrap;}
+.cu{text-align:center;}
+.cu-num{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cu-lbl{font-family:'Montserrat',sans-serif;font-size:.4rem;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+.cu-sep{font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--border2);align-self:center;padding-bottom:4px;}
+.countdown-loc{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);margin-top:18px;}
+.countdown-loc span{color:var(--cream);}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:40px 0;}
+.stat-card{background:var(--dark2);border:1px solid var(--border);padding:24px 28px;transition:var(--trans);}
+.stat-card:hover{border-color:var(--border2);}
+.stat-card-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--white);}
+.stat-card-lbl{font-family:'Montserrat',sans-serif;font-size:.44rem;letter-spacing:.28em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+
+/* QUICK LINKS */
+.quick-links{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:40px 0;}
+.ql{background:var(--dark2);border:1px solid var(--border);padding:22px 24px;display:flex;align-items:center;gap:16px;transition:var(--trans);cursor:pointer;text-decoration:none;}
+.ql:hover{border-color:var(--border2);transform:translateX(4px);}
+.ql-icon{font-size:1.6rem;flex-shrink:0;}
+.ql-name{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:2px;}
+.ql-desc{font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;color:var(--muted);}
+.ql-arrow{margin-left:auto;color:var(--muted2);font-size:1rem;transition:transform .3s;}
+.ql:hover .ql-arrow{transform:translateX(4px);color:var(--gold);}
+
+/* PROFIL SAYA */
+.profil-section{background:var(--dark2);border-top:1px solid var(--border);}
+.profil-inner{padding:60px;}
+.profil-layout{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:start;}
+.profil-avatar-wrap{position:relative;}
+.profil-avatar{width:120px;height:120px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);}
+.profil-avatar-ph{width:120px;height:120px;border-radius:50%;border:2px solid var(--border);background:var(--dark3);display:flex;align-items:center;justify-content:center;font-size:2.8rem;color:var(--muted2);}
+.profil-detail-name{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--white);margin-bottom:6px;}
+.profil-detail-meta{font-family:'Montserrat',sans-serif;font-size:.44rem;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.profil-detail-motto{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);margin-bottom:24px;line-height:1.7;}
+.no-profil{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);margin-bottom:20px;}
+
+/* PENGUMUMAN */
+.pg-strip{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);padding:16px 24px;margin-bottom:32px;display:none;align-items:center;gap:14px;}
+.pg-strip.show{display:flex;}
+.pg-strip-icon{color:var(--gold);font-size:1rem;flex-shrink:0;}
+.pg-strip-text{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream);line-height:1.6;}
+
+@media(max-width:960px){
+  .dash-hero{padding:48px 28px 40px;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .quick-links{grid-template-columns:1fr;}
+  .profil-inner{padding:40px 28px;}
+  .profil-layout{grid-template-columns:1fr;gap:20px;}
+  .countdown-wrap{padding:24px 20px;}
+  .countdown-units{gap:14px;}
+  .cu-num{font-size:2.2rem;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <a href="index.html" class="nav-brand">ANTITHESIS<span>Al Muayyad Surakarta · 2018–2020</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+    <li><a href="anggota.html">Direktori</a></li>
+    <li><a href="polling.html">Polling</a></li>
+    <li><a href="galeri.html">Kenangan</a></li>
+    <li><a href="acara.html">Acara</a></li>
+  </ul>
+  <div class="nav-user">
+    <span class="nav-user-name">Halo, <span id="navNama">—</span></span>
+    <button class="btn-logout" id="btnLogout">Keluar</button>
+  </div>
+  <button class="nav-hamburger" id="navHam"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page">
+  <div class="notif-bar" id="pgBar">
+    <span class="notif-bar-icon">✦</span>
+    <span class="notif-bar-text" id="pgText"></span>
+  </div>
+
+  <!-- HERO GREETING -->
+  <div class="dash-hero">
+    <div class="dash-hero-bg"></div>
+    <div class="dash-hero-grid"></div>
+    <div class="container" style="position:relative;z-index:1;">
+      <div class="dash-greeting anim-up d1">Portal Anggota · ANTITHESIS</div>
+      <div class="dash-name anim-up d2">Selamat datang,<br><em id="heroNama">—</em></div>
+      <div class="dash-date anim-up d3" id="heroDate"></div>
+
+      <!-- COUNTDOWN -->
+      <div class="countdown-wrap anim-up d3" id="countdownWrap">
+        <div class="countdown-label">Menghitung hari menuju</div>
+        <div class="countdown-event" id="cdEvent">—</div>
+        <div class="countdown-units">
+          <div class="cu"><div class="cu-num" id="cdH">00</div><div class="cu-lbl">Hari</div></div>
+          <div class="cu-sep">:</div>
+          <div class="cu"><div class="cu-num" id="cdJ">00</div><div class="cu-lbl">Jam</div></div>
+          <div class="cu-sep">:</div>
+          <div class="cu"><div class="cu-num" id="cdM">00</div><div class="cu-lbl">Menit</div></div>
+          <div class="cu-sep">:</div>
+          <div class="cu"><div class="cu-num" id="cdS">00</div><div class="cu-lbl">Detik</div></div>
+        </div>
+        <div class="countdown-loc" id="cdLoc"></div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card rv d1"><div class="stat-card-num" id="statAnggota">—</div><div class="stat-card-lbl">Anggota Terdaftar</div></div>
+        <div class="stat-card rv d2"><div class="stat-card-num" id="statProfil">—</div><div class="stat-card-lbl">Profil Terisi</div></div>
+        <div class="stat-card rv d3"><div class="stat-card-num" id="statUsulan">—</div><div class="stat-card-lbl">Usulan Acara</div></div>
+        <div class="stat-card rv d4"><div class="stat-card-num" id="statKenangan">—</div><div class="stat-card-lbl">Kenangan Tersimpan</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div class="container section">
+    <div class="sec-label rv">Navigasi Cepat</div>
+    <h2 class="sec-h rv d1">Apa yang ingin kamu <em>lakukan?</em></h2>
+    <div class="quick-links" style="margin-top:32px;">
+      <a href="anggota.html" class="ql rv d1"><div class="ql-icon">👥</div><div><div class="ql-name">Direktori Anggota</div><div class="ql-desc">Lihat profil semua teman angkatan</div></div><div class="ql-arrow">→</div></a>
+      <a href="polling.html" class="ql rv d2"><div class="ql-icon">🗳️</div><div><div class="ql-name">Polling Acara</div><div class="ql-desc">Vote jenis acara & kirim usulan</div></div><div class="ql-arrow">→</div></a>
+      <a href="galeri.html"  class="ql rv d3"><div class="ql-icon">📖</div><div><div class="ql-name">Buku Kenangan</div><div class="ql-desc">Tulis dan baca kenangan bersama</div></div><div class="ql-arrow">→</div></a>
+      <a href="acara.html"   class="ql rv d4"><div class="ql-icon">📅</div><div><div class="ql-name">Info Acara</div><div class="ql-desc">Detail acara yang sudah ditetapkan</div></div><div class="ql-arrow">→</div></a>
+    </div>
+  </div>
+
+  <!-- PROFIL SAYA -->
+  <div class="profil-section">
+    <div class="profil-inner">
+      <div class="container">
+        <div class="sec-label rv">Akun Kamu</div>
+        <h2 class="sec-h rv d1">Profil <em>Saya</em></h2>
+        <div style="margin-top:32px;">
+          <!-- Jika belum punya profil -->
+          <div id="noProfilWrap" style="display:none;" class="rv d2">
+            <div class="no-profil">Kamu belum memiliki profil di direktori. Yuk isi profilmu!</div>
+            <a href="anggota.html" class="btn btn-primary">Isi Profil Sekarang →</a>
+          </div>
+          <!-- Jika sudah punya profil -->
+          <div id="profilWrap" class="profil-layout rv d2" style="display:none;">
+            <div class="profil-avatar-wrap">
+              <img class="profil-avatar" id="profilFoto" src="" alt="" style="display:none;"/>
+              <div class="profil-avatar-ph" id="profilPh">👤</div>
+            </div>
+            <div>
+              <div class="profil-detail-name" id="profilNama">—</div>
+              <div class="profil-detail-meta">
+                <span id="profilKelas"></span>
+                <span id="profilSekolah"></span>
+              </div>
+              <div class="profil-detail-motto" id="profilMotto"></div>
+              <a href="anggota.html" class="btn btn-outline">Edit Profil →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="foot-brand">ANTITHESIS<span>SMA & MA Al Muayyad Surakarta · 2018–2020</span></div>
+  <div class="foot-mid">Selamanya Bersama, Selamanya Bangga.</div>
+  <ul class="foot-links"><li><a href="#">Instagram</a></li><li><a href="#">WhatsApp</a></li></ul>
+</footer>
+
+<script type="module" src="dashboard.js"></script>
+</body>
+</html>
