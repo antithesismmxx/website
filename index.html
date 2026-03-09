@@ -1,524 +1,164 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>ANTITHESIS — SMA & MA Al Muayyad Surakarta</title>
-
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, remove }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey:            "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
-  authDomain:        "antithesis-al-muayyad.firebaseapp.com",
-  databaseURL:       "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:         "antithesis-al-muayyad",
-  storageBucket:     "antithesis-al-muayyad.firebasestorage.app",
-  messagingSenderId: "1014116431079",
-  appId:             "1:1014116431079:web:5f490096bf6ecdf7011e42"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
-
-window.__db     = db;
-window.__ref    = ref;
-window.__set    = set;
-window.__remove = remove;
-window.__onValue = onValue;
-window.__firebaseReady = true;
-window.dispatchEvent(new Event('firebase-ready'));
-</script>
-
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"/>
 <style>
-:root{
-  --gold:#C9A84C;--gold-light:#E8C97A;--gold-pale:#F5E6B8;
-  --black:#080808;--dark:#101010;--dark2:#181818;--dark3:#222222;--dark4:#2C2C2C;
-  --white:#F8F4EF;--cream:#EDE0C4;--muted:#6A5E50;--muted2:#4A4438;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--black);color:var(--white);font-family:'Cormorant Garamond',serif;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9990;opacity:.5;}
-
-/* ══ NAV ══ */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:22px 60px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(8,8,8,.97),transparent);border-bottom:1px solid rgba(201,168,76,.07);transition:background .4s,border-color .4s;}
-nav.scrolled{background:rgba(8,8,8,.98);border-bottom-color:rgba(201,168,76,.15);}
-.nav-brand-name{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;letter-spacing:.12em;color:var(--gold);}
-.nav-brand-sub{font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.4em;color:var(--muted);text-transform:uppercase;margin-top:2px;}
-.nav-links{display:flex;gap:0;list-style:none;align-items:center;}
-.nav-links li a{font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.28em;color:var(--muted);text-decoration:none;text-transform:uppercase;padding:10px 16px;position:relative;transition:color .3s;}
-.nav-links li a::after{content:'';position:absolute;bottom:6px;left:16px;right:16px;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .3s;}
-.nav-links li a:hover{color:var(--gold-light);}
-.nav-links li a:hover::after,.nav-links li a.active::after{transform:scaleX(1);}
-.nav-links li a.active{color:var(--gold);}
-
-/* Nav auth area */
-.nav-auth{display:flex;align-items:center;gap:10px;margin-left:8px;}
-.btn-masuk{background:transparent;border:1px solid rgba(201,168,76,.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:9px 20px;cursor:pointer;transition:all .3s;white-space:nowrap;}
-.btn-masuk:hover{border-color:var(--gold);background:rgba(201,168,76,.08);}
-.nav-user{display:none;align-items:center;gap:10px;}
-.nav-user.show{display:flex;}
-.nav-user-name{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--cream);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.nav-user-name span{color:var(--gold);font-size:.6rem;font-style:normal;font-family:'Montserrat',sans-serif;letter-spacing:.2em;text-transform:uppercase;display:block;margin-bottom:1px;}
-.btn-keluar{background:transparent;border:1px solid rgba(192,57,43,.3);color:#c0392b;font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.25em;text-transform:uppercase;padding:8px 14px;cursor:pointer;transition:all .3s;white-space:nowrap;}
-.btn-keluar:hover{border-color:#c0392b;background:rgba(192,57,43,.08);}
-
-/* ══ PENGUMUMAN BANNER ══ */
-.pengumuman-bar{display:none;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));border-bottom:1px solid rgba(201,168,76,.25);padding:14px 60px;position:relative;z-index:999;}
-.pengumuman-bar.show{display:flex;align-items:center;gap:16px;padding-top:80px;}
-.pg-icon{font-size:1rem;flex-shrink:0;}
-.pg-label{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;flex-shrink:0;}
-.pg-text{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--cream);flex:1;line-height:1.5;}
-.pg-close{background:none;border:none;color:var(--muted);font-size:1.1rem;padding:0;flex-shrink:0;transition:color .2s;cursor:pointer;}
-.pg-close:hover{color:var(--gold);}
-
-/* ══ ADMIN BUTTONS ══ */
-.admin-btn-group{position:fixed;bottom:28px;right:28px;z-index:800;display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
-.pg-admin-btn,.admin-logout-btn{background:rgba(10,10,10,.92);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:12px 20px;transition:all .3s;backdrop-filter:blur(8px);cursor:pointer;white-space:nowrap;}
-.pg-admin-btn:hover{border-color:var(--gold);background:rgba(201,168,76,.08);}
-.admin-logout-btn{border-color:rgba(180,60,60,.4);color:#c0392b;}
-.admin-logout-btn:hover{border-color:#c0392b;background:rgba(192,57,43,.1);}
-.pg-admin-panel{position:fixed;bottom:130px;right:28px;z-index:800;background:rgba(12,12,12,.97);border:1px solid rgba(201,168,76,.2);padding:28px;width:300px;display:none;backdrop-filter:blur(12px);}
-.pg-admin-panel.open{display:block;}
-.pg-panel-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
-.pg-panel-close{background:none;border:none;color:var(--muted);font-size:1.1rem;transition:color .2s;cursor:pointer;}
-.pg-panel-close:hover{color:var(--gold);}
-.pg-afl{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:8px;margin-top:14px;}
-.pg-afi{width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,.15);color:var(--white);font-family:'Cormorant Garamond',serif;font-size:1rem;padding:10px 14px;outline:none;transition:border-color .3s;resize:none;}
-.pg-afi:focus{border-color:rgba(201,168,76,.5);}
-.pg-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;}
-.pg-btn-post{background:linear-gradient(135deg,var(--gold),#a8832a);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;font-weight:600;padding:11px;transition:opacity .3s;cursor:pointer;}
-.pg-btn-post:hover{opacity:.85;}
-.pg-btn-del{background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--muted);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:11px;transition:all .3s;cursor:pointer;}
-.pg-btn-del:hover{border-color:rgba(201,168,76,.5);color:var(--gold);}
-
-/* PIN MODAL */
-.pin-overlay{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);}
-.pin-overlay.show{display:flex;animation:pin-bg-in .4s ease forwards;}
-@keyframes pin-bg-in{from{background:rgba(0,0,0,0);backdrop-filter:blur(0)}to{background:rgba(0,0,0,.88);backdrop-filter:blur(12px)}}
-.pin-box{position:relative;width:360px;background:var(--dark2);border:1px solid rgba(201,168,76,.18);overflow:hidden;animation:pin-box-in .45s cubic-bezier(.25,.46,.45,.94) forwards;}
-@keyframes pin-box-in{from{opacity:0;transform:translateY(32px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-.pin-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold-light),var(--gold),transparent);}
-.pin-header{padding:36px 36px 28px;text-align:center;border-bottom:1px solid rgba(201,168,76,.08);}
-.pin-lock-icon{width:52px;height:52px;border:1px solid rgba(201,168,76,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.3rem;background:rgba(201,168,76,.05);}
-.pin-title{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:700;color:var(--white);margin-bottom:6px;}
-.pin-title em{font-style:italic;color:var(--gold);}
-.pin-sub{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;color:var(--muted);}
-.pin-indicator{padding:24px 36px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;}
-.pin-dots{display:flex;justify-content:center;gap:14px;}
-.pin-dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(201,168,76,.25);background:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
-.pin-dot.filled{background:var(--gold);border-color:var(--gold);transform:scale(1.15);box-shadow:0 0 8px rgba(201,168,76,.4);}
-.pin-dot.error{background:#c0392b;border-color:#c0392b;}
-.pin-hint{font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted2);height:14px;}
-.pin-hint.err{color:#c0392b;}
-.pin-numpad{padding:0 28px 28px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.pin-key{background:var(--dark3);border:1px solid rgba(201,168,76,.08);color:var(--white);font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;padding:18px 10px;transition:all .18s;cursor:pointer;}
-.pin-key:hover{border-color:rgba(201,168,76,.35);background:rgba(201,168,76,.06);color:var(--gold);}
-.pin-key:active{transform:scale(.96);}
-.pin-key.del{font-family:'Montserrat',sans-serif;font-size:.6rem;color:var(--muted);font-weight:400;}
-.pin-key.del:hover{color:var(--gold);}
-.pin-footer{padding:14px 36px 22px;text-align:center;border-top:1px solid rgba(201,168,76,.07);}
-.pin-cancel{background:none;border:none;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:8px 20px;cursor:pointer;transition:color .2s;}
-.pin-cancel:hover{color:var(--gold);}
-.pin-shake{animation:pin-shake .45s ease;}
-@keyframes pin-shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-9px)}30%{transform:translateX(9px)}45%{transform:translateX(-6px)}60%{transform:translateX(6px)}75%{transform:translateX(-3px)}90%{transform:translateX(3px)}}
-
-/* ══ HERO ══ */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;overflow:hidden;padding:140px 60px 100px;text-align:center;}
-.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 55% 45% at 50% 55%,rgba(201,168,76,.055) 0%,transparent 70%);}
-.hero-ring{position:absolute;border-radius:50%;border:1px solid rgba(201,168,76,.055);}
-.r1{width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%);animation:rp 7s ease-in-out infinite;}
-.r2{width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);animation:rp 7s ease-in-out infinite 2.5s;}
-.r3{width:1120px;height:1120px;top:50%;left:50%;transform:translate(-50%,-50%);animation:rp 7s ease-in-out infinite 5s;}
-@keyframes rp{0%,100%{opacity:.35;transform:translate(-50%,-50%) scale(1)}50%{opacity:.07;transform:translate(-50%,-50%) scale(1.04)}}
-.hero-eyebrow{font-family:'Montserrat',sans-serif;font-size:.6rem;letter-spacing:.55em;color:var(--gold);text-transform:uppercase;margin-bottom:28px;opacity:0;animation:fu .9s ease forwards .2s;}
-.hero-main{font-family:'Playfair Display',serif;font-size:clamp(4.5rem,13vw,11rem);font-weight:900;line-height:.85;letter-spacing:-.02em;opacity:0;animation:fu .9s ease forwards .4s;}
-.gg{background:linear-gradient(135deg,var(--gold-pale) 0%,var(--gold) 35%,var(--gold-light) 65%,var(--gold-pale) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.hero-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(.9rem,2vw,1.2rem);font-style:italic;color:var(--muted);margin-top:24px;letter-spacing:.1em;opacity:0;animation:fu .9s ease forwards .65s;}
-.hero-line{width:100px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:34px auto;opacity:0;animation:fu .9s ease forwards .85s;}
-.hero-school{font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:.45em;color:var(--muted);text-transform:uppercase;opacity:0;animation:fu .9s ease forwards 1s;}
-.hero-badge{display:inline-flex;align-items:center;gap:12px;border:1px solid rgba(201,168,76,.25);padding:10px 28px;margin-top:28px;font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;opacity:0;animation:fu .9s ease forwards 1.2s;}
-.hero-scroll{position:absolute;bottom:45px;left:0;right:0;margin:0 auto;width:fit-content;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fu .9s ease forwards 1.5s;}
-.hero-scroll span{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.45em;color:var(--muted);text-transform:uppercase;}
-.hs-bar{width:1px;height:50px;background:linear-gradient(to bottom,var(--gold),transparent);animation:sa 2.2s ease-in-out infinite;}
-@keyframes sa{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-@keyframes fu{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-
-/* SECTION BASE */
-.sec{padding:110px 60px;}
-.sec-label{font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.5em;color:var(--gold);text-transform:uppercase;display:flex;align-items:center;gap:18px;margin-bottom:16px;}
-.sec-label::before{content:'';width:44px;height:1px;background:var(--gold);flex-shrink:0;}
-.sec-h{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,4.5vw,3.8rem);font-weight:700;line-height:1.1;}
-.sec-h em{font-style:italic;color:var(--gold);}
-
-/* STATS */
-.stats-wrap{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);border-bottom:1px solid rgba(201,168,76,.09);}
-.stats-inner{display:grid;grid-template-columns:repeat(3,1fr);max-width:900px;margin:0 auto;}
-.stat{padding:55px 30px;text-align:center;border-right:1px solid rgba(201,168,76,.09);}
-.stat:last-child{border-right:none;}
-.stat-n{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,5rem);font-weight:900;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
-.stat-l{font-family:'Montserrat',sans-serif;font-size:.55rem;letter-spacing:.35em;color:var(--muted);text-transform:uppercase;margin-top:10px;}
-
-/* TENTANG */
-.tentang-grid{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center;margin-top:70px;max-width:1200px;}
-.tentang-p{font-size:1.3rem;line-height:1.95;color:var(--muted);margin-bottom:28px;}
-.tentang-p strong{color:var(--cream);font-weight:600;}
-.quote-box{border:1px solid rgba(201,168,76,.14);padding:46px;background:linear-gradient(135deg,rgba(201,168,76,.035),transparent);position:relative;}
-.quote-box::before{content:'\201C';font-family:'Playfair Display',serif;font-size:7rem;color:var(--gold);opacity:.18;position:absolute;top:-16px;left:26px;line-height:1;}
-.quote-box blockquote{font-family:'Playfair Display',serif;font-size:1.45rem;font-style:italic;color:var(--cream);line-height:1.65;}
-.quote-box cite{display:block;font-family:'Montserrat',sans-serif;font-size:.55rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-top:22px;}
-
-/* COUNTDOWN — hidden by default, shown only when logged in */
-.countdown-wrap{display:none;background:var(--dark);border-top:1px solid rgba(201,168,76,.09);border-bottom:1px solid rgba(201,168,76,.09);padding:70px 60px;}
-.countdown-wrap.visible{display:block;}
-.cd-inner{max-width:900px;margin:0 auto;text-align:center;}
-.cd-label{font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.5em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:16px;}
-.cd-label::before,.cd-label::after{content:'';width:40px;height:1px;background:var(--gold);opacity:.5;}
-.cd-event-name{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.5rem);font-weight:700;color:var(--white);margin-bottom:6px;}
-.cd-event-date{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);margin-bottom:44px;}
-.cd-boxes{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;}
-.cd-box{background:var(--dark3);border:1px solid rgba(201,168,76,.15);padding:28px 32px;min-width:110px;}
-.cd-box::before{content:'';display:block;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:.35;margin-bottom:14px;}
-.cd-num{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block;}
-.cd-unit{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.35em;color:var(--muted);text-transform:uppercase;margin-top:10px;display:block;}
-.cd-done{font-family:'Playfair Display',serif;font-size:1.6rem;font-style:italic;color:var(--gold);padding:28px 0 0;text-align:center;}
-
-/* MOTTO */
-.motto-wrap{text-align:center;padding:150px 60px;position:relative;overflow:hidden;}
-.motto-wrap::before{content:'';position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.055),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);}
-.motto-eyebrow{font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.5em;color:var(--gold);text-transform:uppercase;margin-bottom:28px;}
-.motto-big{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,6vw,5.5rem);font-weight:900;line-height:1.1;max-width:860px;margin:0 auto;}
-.motto-sep{width:55px;height:1px;background:var(--gold);margin:46px auto;opacity:.45;}
-.motto-body{font-family:'Cormorant Garamond',serif;font-size:1.18rem;font-style:italic;color:var(--muted);max-width:560px;margin:0 auto;line-height:1.85;}
-
-/* NOTIF */
-.notif-sukses{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(12,12,12,.97);border:1px solid rgba(201,168,76,.4);padding:16px 32px;z-index:9999;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--gold);text-align:center;backdrop-filter:blur(12px);animation:notif-in .4s ease;white-space:nowrap;}
-@keyframes notif-in{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
-/* FOOTER */
-footer{background:var(--dark);border-top:1px solid rgba(201,168,76,.09);padding:55px 60px;display:flex;justify-content:space-between;align-items:center;}
-.foot-brand{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--gold);}
-.foot-brand span{display:block;font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.35em;color:var(--muted);font-weight:300;text-transform:uppercase;margin-top:4px;}
-.foot-mid-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95rem;color:var(--muted);}
-.foot-links{display:flex;gap:30px;list-style:none;}
-.foot-links a{font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:.28em;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .3s;}
-.foot-links a:hover{color:var(--gold-light);}
-
-/* REVEAL */
-.rv{opacity:0;transform:translateY(36px);transition:opacity .85s ease,transform .85s ease;}
-.rv.on{opacity:1;transform:translateY(0);}
-.rv.d1{transition-delay:.1s;}.rv.d2{transition-delay:.2s;}.rv.d3{transition-delay:.3s;}
-
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 60px 80px;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 20% 60%,rgba(201,168,76,.06) 0%,transparent 60%),radial-gradient(ellipse 40% 50% at 85% 20%,rgba(201,168,76,.04) 0%,transparent 55%);}
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px);background-size:80px 80px;}
+.hero-content{position:relative;z-index:1;max-width:760px;}
+.hero-eyebrow{font-family:'Montserrat',sans-serif;font-size:.46rem;letter-spacing:.55em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:14px;}
+.hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--gold);}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,8vw,7.5rem);font-weight:900;line-height:.95;color:var(--white);letter-spacing:-.02em;}
+.hero h1 em{font-style:italic;color:var(--gold);display:block;}
+.hero-tagline{font-family:'Cormorant Garamond',serif;font-size:clamp(1.05rem,2vw,1.35rem);font-style:italic;color:var(--muted);margin-top:28px;line-height:1.9;max-width:500px;}
+.hero-actions{display:flex;gap:16px;margin-top:44px;flex-wrap:wrap;}
+.hero-stats{position:absolute;right:60px;bottom:80px;display:flex;flex-direction:column;gap:28px;text-align:right;z-index:1;}
+.stat-num{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-lbl{font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;margin-top:3px;}
+.hero-scroll{position:absolute;bottom:36px;left:60px;display:flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.35em;color:var(--muted2);text-transform:uppercase;z-index:1;animation:bounce 2.2s ease-in-out infinite;}
+.hero-scroll::before{content:'↓';font-size:.7rem;color:var(--gold);}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+.tentang{background:var(--dark2);padding:100px 60px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.tentang-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto;}
+.tentang-quote{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.5rem);font-weight:700;font-style:italic;color:var(--white);line-height:1.35;position:relative;padding-left:28px;}
+.tentang-quote::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);}
+.tentang-body p{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted);line-height:1.9;margin-bottom:16px;}
+.pg-section{padding:80px 60px;text-align:center;}
+.pg-card{max-width:860px;margin:32px auto 0;background:var(--dark2);border:1px solid rgba(201,168,76,.18);padding:36px 40px;position:relative;display:none;}
+.pg-card.show{display:block;}
+.pg-card::before{content:'✦';position:absolute;top:-11px;left:36px;background:var(--dark);padding:0 8px;color:var(--gold);font-size:.7rem;}
+.pg-text{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.9;color:var(--cream);}
+.motto-section{padding:120px 60px;text-align:center;background:var(--dark);border-top:1px solid var(--border);position:relative;overflow:hidden;}
+.motto-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 50% 60% at 50% 50%,rgba(201,168,76,.04) 0%,transparent 70%);}
+.motto-text{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,3.2rem);font-weight:700;font-style:italic;color:var(--white);line-height:1.4;max-width:780px;margin:0 auto 28px;}
+.motto-text span{color:var(--gold);}
+.motto-sub{font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.5em;color:var(--muted);text-transform:uppercase;}
+.cta-section{background:var(--dark2);border-top:1px solid var(--border);padding:100px 60px;text-align:center;}
+.cta-section h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);color:var(--white);margin-bottom:12px;}
+.cta-section p{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--muted);margin-bottom:0;}
+.cta-cards{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:44px;}
+.cta-card{background:var(--dark3);border:1px solid var(--border);padding:32px 28px;width:200px;text-align:center;transition:var(--trans);display:block;}
+.cta-card:hover{border-color:var(--border2);transform:translateY(-4px);}
+.cta-icon{font-size:2rem;margin-bottom:12px;}
+.cta-name{font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.cta-desc{font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;color:var(--muted);}
 @media(max-width:960px){
-  nav{padding:18px 24px;}
-  .nav-links{display:none;}
-  .sec{padding:80px 24px;}
-  .stats-inner{grid-template-columns:repeat(2,1fr);}
-  .tentang-grid{grid-template-columns:1fr;}
-  footer{flex-direction:column;gap:28px;text-align:center;}
+  .hero{padding:100px 28px 80px;}
+  .hero-stats,.hero-scroll{display:none;}
+  .tentang{padding:64px 28px;}
+  .tentang-grid{grid-template-columns:1fr;gap:36px;}
+  .pg-section{padding:64px 28px;}
+  .motto-section{padding:80px 28px;}
+  .cta-section{padding:64px 28px;}
 }
 </style>
 </head>
 <body>
 
-<!-- PENGUMUMAN BANNER -->
-<div class="pengumuman-bar" id="pgBar">
-  <span class="pg-icon">📢</span>
-  <span class="pg-label">Pengumuman</span>
-  <span class="pg-text" id="pgText"></span>
-  <button class="pg-close" id="pgClose">✕</button>
-</div>
-
-<!-- NAV -->
-<nav id="mainNav">
-  <div class="nav-brand">
-    <div class="nav-brand-name">ANTITHESIS</div>
-    <div class="nav-brand-sub">Al Muayyad Surakarta · 2018–2020</div>
-  </div>
-  <ul class="nav-links">
+<nav class="nav" id="mainNav">
+  <div class="nav-brand">ANTITHESIS<span>Al Muayyad Surakarta · 2018–2020</span></div>
+  <ul class="nav-links" id="navLinks">
     <li><a href="#tentang">Tentang</a></li>
-    <li><a href="#motto">Motto</a></li>
+    <li><a href="#pengumuman">Pengumuman</a></li>
+    <li><a href="login.html" class="btn btn-primary" style="padding:9px 22px;font-size:.48rem;">Masuk Portal →</a></li>
   </ul>
-  <div class="nav-auth">
-    <button class="btn-masuk" id="btnMasukNav" onclick="window.location.href='login.html'">Masuk</button>
-    <div class="nav-user" id="navUser">
-      <div class="nav-user-name">
-        <span>Anggota</span>
-        <span id="navUserName">—</span>
-      </div>
-      <button class="btn-keluar" id="btnKeluar">Keluar</button>
-    </div>
-  </div>
+  <button class="nav-hamburger" id="navHam"><span></span><span></span><span></span></button>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-ring r1"></div><div class="hero-ring r2"></div><div class="hero-ring r3"></div>
-  <p class="hero-eyebrow">SMA &amp; MA Al Muayyad Surakarta &nbsp;·&nbsp; Angkatan 2018–2020</p>
-  <h1 class="hero-main"><span class="gg">ANTI</span>THESIS</h1>
-  <p class="hero-sub">Berbeda untuk Bersatu. Bersatu untuk Abadi.</p>
-  <div class="hero-line"></div>
-  <p class="hero-school">Melampaui Batas — Mewarisi Kebanggaan — Mengukir Sejarah</p>
-  <div class="hero-badge">Angkatan &nbsp;·&nbsp; 2018 — 2020</div>
-  <div class="hero-scroll"><span>Scroll</span><div class="hs-bar"></div></div>
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow anim-up d1">Angkatan 2018–2020</div>
+    <h1 class="anim-up d2">ANTI<em>THESIS</em></h1>
+    <p class="hero-tagline anim-up d3">Satu angkatan, satu kenangan, satu nama. Portal resmi reuni dan komunikasi anggota SMA & MA Al Muayyad Surakarta.</p>
+    <div class="hero-actions anim-up d4">
+      <a href="login.html" class="btn btn-primary">Masuk Portal →</a>
+      <a href="#tentang" class="btn btn-outline">Tentang Kami</a>
+    </div>
+  </div>
+  <div class="hero-stats anim-in d3">
+    <div><div class="stat-num" id="statAnggota">—</div><div class="stat-lbl">Anggota Terdaftar</div></div>
+    <div><div class="stat-num">2020</div><div class="stat-lbl">Tahun Lulus</div></div>
+  </div>
+  <div class="hero-scroll">Gulir ke bawah</div>
 </section>
 
-<!-- STATS -->
-<div class="stats-wrap">
-  <div class="stats-inner">
-    <div class="stat rv"><div class="stat-n" data-target="180">0</div><div class="stat-l">Total Anggota</div></div>
-    <div class="stat rv d1"><div class="stat-n" data-target="3">0</div><div class="stat-l">Tahun Bersama</div></div>
-    <div class="stat rv d2"><div class="stat-n" data-target="24">0</div><div class="stat-l">Event Bersama</div></div>
-  </div>
+<div class="notif-bar" id="pgBar">
+  <span class="notif-bar-icon">✦</span>
+  <span class="notif-bar-text" id="pgText"></span>
 </div>
 
-<!-- TENTANG -->
-<section class="sec" id="tentang">
-  <div class="sec-label rv">Tentang Kami</div>
-  <h2 class="sec-h rv"><em>Antithesis</em> — Kontradiksi<br>yang Menjadi Kekuatan</h2>
+<section class="tentang" id="tentang">
   <div class="tentang-grid">
-    <div class="rv d1">
-      <p class="tentang-p">Kami lahir dari keberagaman yang justru menjadi <strong>kekuatan terbesar</strong> kami. Di bawah nama <strong>ANTITHESIS</strong>, kami merangkul perbedaan sebagai identitas, bukan penghalang.</p>
-      <p class="tentang-p">Tiga tahun di bawah atap <strong>SMA & MA Al Muayyad Surakarta</strong> bukan sekadar perjalanan akademik. Ini adalah perjalanan jiwa — tentang menemukan siapa diri kita sesungguhnya.</p>
-      <p class="tentang-p">Dari 2018 hingga 2020, kami <strong>melampaui ekspektasi</strong>, menantang batasan, dan menciptakan warisan yang takkan pudar bersama waktu.</p>
-    </div>
-    <div class="quote-box rv d2">
-      <blockquote>"Dalam kontradiksi, kami menemukan harmoni. Dalam perbedaan, kami menemukan kekuatan."</blockquote>
-      <cite>— Spirit Angkatan ANTITHESIS</cite>
-    </div>
-  </div>
-</section>
-
-<!-- COUNTDOWN — hanya tampil jika login & ada acara -->
-<div class="countdown-wrap" id="countdownWrap">
-  <div class="cd-inner">
-    <div class="cd-label rv">Acara Mendatang</div>
-    <div class="cd-event-name rv" id="cdEventName">—</div>
-    <div class="cd-event-date rv" id="cdEventDate">—</div>
-    <div class="cd-boxes rv d1">
-      <div class="cd-box"><span class="cd-num" id="cdH">00</span><span class="cd-unit">Hari</span></div>
-      <div class="cd-box"><span class="cd-num" id="cdJ">00</span><span class="cd-unit">Jam</span></div>
-      <div class="cd-box"><span class="cd-num" id="cdM">00</span><span class="cd-unit">Menit</span></div>
-      <div class="cd-box"><span class="cd-num" id="cdD">00</span><span class="cd-unit">Detik</span></div>
-    </div>
-    <div class="cd-done" id="cdDone" style="display:none;">🌟 Waktunya Berkumpul! 🌟</div>
-  </div>
-</div>
-
-<!-- MOTTO -->
-<section class="motto-wrap" id="motto">
-  <p class="motto-eyebrow rv">Jiwa Angkatan</p>
-  <h2 class="motto-big rv"><span class="gg">Berbeda itu Indah,</span><br>Bersatu itu Kuat</h2>
-  <div class="motto-sep rv"></div>
-  <p class="motto-body rv">ANTITHESIS bukan tentang siapa yang paling menonjol, melainkan tentang bagaimana kita saling melengkapi.</p>
-</section>
-
-<!-- ADMIN PANEL (Pengumuman saja) -->
-<div class="admin-btn-group" id="adminBtnGroup" style="display:none;">
-  <button class="admin-logout-btn" id="adminLogoutBtn">🔓 Keluar Admin</button>
-  <button class="pg-admin-btn" id="pgAdminBtn">📢 Pengumuman</button>
-</div>
-<div class="pg-admin-panel" id="pgAdminPanel">
-  <div class="pg-panel-title">Post Pengumuman <button class="pg-panel-close" id="pgPanelClose">✕</button></div>
-  <label class="pg-afl">Isi Pengumuman</label>
-  <textarea class="pg-afi" id="pgInput" rows="4" placeholder="Tulis pengumuman..."></textarea>
-  <div class="pg-btns">
-    <button class="pg-btn-post" id="pgBtnPost">Tayangkan</button>
-    <button class="pg-btn-del" id="pgBtnDel">Hapus</button>
-  </div>
-</div>
-
-<!-- PIN MODAL -->
-<div class="pin-overlay" id="pinOverlay">
-  <div class="pin-box" id="pinBox">
-    <div class="pin-header">
-      <div class="pin-lock-icon">🔐</div>
-      <div class="pin-title">Panel <em>Admin</em></div>
-      <div class="pin-sub">Masukkan PIN 6 digit untuk melanjutkan</div>
-    </div>
-    <div class="pin-indicator">
-      <div class="pin-dots" id="pinDots">
-        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div>
-        <div class="pin-dot" id="pd3"></div><div class="pin-dot" id="pd4"></div><div class="pin-dot" id="pd5"></div>
+    <div class="rv"><div class="tentang-quote">"Kami bukan sekadar angkatan — kami adalah ikatan yang tidak lekang oleh waktu."</div></div>
+    <div class="rv d2">
+      <div class="sec-label">Tentang Kami</div>
+      <div class="tentang-body">
+        <p>ANTITHESIS adalah nama yang kami pilih bersama — bukan karena kami berlawanan, melainkan karena kami percaya perbedaan adalah kekuatan. Lahir dari lorong-lorong Al Muayyad, kami tumbuh menjadi lebih dari sekadar teman sekelas.</p>
+        <p>Portal ini adalah ruang digital kami: tempat berbagi kabar, mengusulkan acara, dan menjaga kenangan tetap hidup — meski jarak memisahkan langkah kami.</p>
       </div>
-      <div class="pin-hint" id="pinHint">Ketuk angka di bawah</div>
     </div>
-    <div class="pin-numpad">
-      <button class="pin-key" data-n="1">1</button><button class="pin-key" data-n="2">2</button><button class="pin-key" data-n="3">3</button>
-      <button class="pin-key" data-n="4">4</button><button class="pin-key" data-n="5">5</button><button class="pin-key" data-n="6">6</button>
-      <button class="pin-key" data-n="7">7</button><button class="pin-key" data-n="8">8</button><button class="pin-key" data-n="9">9</button>
-      <button class="pin-key del" id="pinDel">⌫</button><button class="pin-key" data-n="0">0</button><button class="pin-key del" id="pinClearAll">Reset</button>
-    </div>
-    <div class="pin-footer"><button class="pin-cancel" id="pinCancel">✕ &nbsp;Batalkan</button></div>
   </div>
-</div>
+</section>
+
+<section class="pg-section" id="pengumuman">
+  <div class="rv">
+    <div class="sec-label" style="justify-content:center;">Info Terkini</div>
+    <h2 class="sec-h">Pengumuman <em>Komunitas</em></h2>
+  </div>
+  <div class="pg-card rv d2" id="pgCard"><p class="pg-text" id="pgCardText"></p></div>
+  <div id="pgEmpty" class="rv d2">
+    <div class="empty-state"><div class="empty-state-icon">📢</div><div class="empty-state-text">Belum ada pengumuman.</div></div>
+  </div>
+</section>
+
+<section class="motto-section rv">
+  <div class="motto-glow"></div>
+  <div class="motto-text">Selamanya <span>Bersama</span>,<br>Selamanya <span>Bangga</span>.</div>
+  <div class="motto-sub">ANTITHESIS · SMA & MA Al Muayyad Surakarta · 2018–2020</div>
+</section>
+
+<section class="cta-section" id="portal">
+  <div class="rv">
+    <div class="sec-label" style="justify-content:center;">Portal Anggota</div>
+    <h2>Akses <em style="font-style:italic;color:var(--gold)">Komunitas</em></h2>
+    <p>Masuk portal untuk mengakses semua fitur eksklusif angkatan.</p>
+  </div>
+  <div class="cta-cards">
+    <a href="dashboard.html" class="cta-card rv d1"><div class="cta-icon">🏠</div><div class="cta-name">Dashboard</div><div class="cta-desc">Beranda & countdown</div></a>
+    <a href="anggota.html"   class="cta-card rv d2"><div class="cta-icon">👥</div><div class="cta-name">Direktori</div><div class="cta-desc">Profil semua anggota</div></a>
+    <a href="polling.html"   class="cta-card rv d3"><div class="cta-icon">🗳️</div><div class="cta-name">Polling</div><div class="cta-desc">Vote acara angkatan</div></a>
+    <a href="galeri.html"    class="cta-card rv d4"><div class="cta-icon">📖</div><div class="cta-name">Kenangan</div><div class="cta-desc">Buku kenangan bersama</div></a>
+    <a href="acara.html"     class="cta-card rv d5"><div class="cta-icon">📅</div><div class="cta-name">Acara</div><div class="cta-desc">Info acara ditetapkan</div></a>
+  </div>
+</section>
 
 <footer>
   <div class="foot-brand">ANTITHESIS<span>SMA & MA Al Muayyad Surakarta · 2018–2020</span></div>
-  <div><div class="foot-mid-text">Selamanya Bersama, Selamanya Bangga.</div></div>
-  <ul class="foot-links"><li><a href="#">Instagram</a></li><li><a href="#">WhatsApp</a></li><li><a href="#">YouTube</a></li></ul>
+  <div class="foot-mid">Selamanya Bersama, Selamanya Bangga.</div>
+  <ul class="foot-links"><li><a href="#">Instagram</a></li><li><a href="#">WhatsApp</a></li></ul>
 </footer>
 
-<script>
-// ══ SESSION ══
-let currentUser = null;
-function loadSession(){
-  const nama     = sessionStorage.getItem('antithesis_member');
-  const username = sessionStorage.getItem('antithesis_username');
-  if(nama && username){
-    currentUser = { nama, username };
-    updateAuthUI();
-  }
-}
-function updateAuthUI(){
-  const loggedIn = !!currentUser;
-  document.getElementById('btnMasukNav').style.display = loggedIn ? 'none' : '';
-  document.getElementById('navUser').classList.toggle('show', loggedIn);
-  if(loggedIn) document.getElementById('navUserName').textContent = currentUser.nama.split(' ')[0];
-  // Countdown hanya muncul saat login — Firebase akan handle show/hide via initFirebase
-}
-loadSession();
-
-// ══ NAV SCROLL ══
-window.addEventListener('scroll',()=>document.getElementById('mainNav').classList.toggle('scrolled',scrollY>80));
-
-// ══ REVEAL ══
-const rvObs=new IntersectionObserver(entries=>entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); }),{threshold:.1});
-document.querySelectorAll('.rv').forEach(el=>rvObs.observe(el));
-
-// ══ COUNTER ══
-function animCount(el,target){ let c=0; const step=target/80; const t=setInterval(()=>{ c=Math.min(c+step,target); el.textContent=Math.floor(c); if(c>=target) clearInterval(t); },20); }
-const cntObs=new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.querySelectorAll('.stat-n').forEach(n=>animCount(n,+n.dataset.target)); cntObs.unobserve(e.target); } }); },{threshold:.5});
-document.querySelector('.stats-inner')&&cntObs.observe(document.querySelector('.stats-inner'));
-
-// ══ KELUAR ══
-document.getElementById('btnKeluar').addEventListener('click',()=>{
-  if(confirm('Keluar dari portal ANTITHESIS?')){
-    sessionStorage.removeItem('antithesis_member');
-    sessionStorage.removeItem('antithesis_username');
-    currentUser=null;
-    updateAuthUI();
-    document.getElementById('countdownWrap').classList.remove('visible');
-    showNotif('Kamu telah keluar. Sampai jumpa!');
-  }
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getDatabase,ref,onValue,get}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const db=getDatabase(initializeApp({databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",apiKey:"AIzaSyExample",projectId:"antithesis-al-muayyad",appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"}));
+onValue(ref(db,'antithesis/pengumuman'),s=>{
+  const t=s.val()||'';
+  if(t){document.getElementById('pgText').textContent=t;document.getElementById('pgCardText').textContent=t;document.getElementById('pgBar').classList.add('show');document.getElementById('pgCard').classList.add('show');document.getElementById('pgEmpty').style.display='none';}
+  else{document.getElementById('pgBar').classList.remove('show');document.getElementById('pgCard').classList.remove('show');document.getElementById('pgEmpty').style.display='';}
 });
-
-// ══ COUNTDOWN ══
-const namaBln=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-let cdInterval=null;
-function pad(n){return String(n).padStart(2,'0');}
-function startCountdown(acara){
-  clearInterval(cdInterval);
-  // Hanya tampil jika user login
-  if(!currentUser) return;
-  const wrap=document.getElementById('countdownWrap');
-  const dateStr=acara.jam?acara.date+'T'+acara.jam+':00':acara.date+'T00:00:00';
-  const target=new Date(dateStr);
-  let tglStr=target.getDate()+' '+namaBln[target.getMonth()]+' '+target.getFullYear();
-  if(acara.jam) tglStr+=' · ⏰ '+acara.jam+' WIB';
-  if(acara.lokasi) tglStr+=' · 📍 '+acara.lokasi;
-  document.getElementById('cdEventName').innerHTML=acara.type;
-  document.getElementById('cdEventDate').textContent=tglStr;
-  wrap.classList.add('visible');
-  document.getElementById('cdDone').style.display='none';
-  function tick(){
-    const diff=target-new Date();
-    if(diff<=0){clearInterval(cdInterval);['cdH','cdJ','cdM','cdD'].forEach(id=>document.getElementById(id).textContent='00');document.getElementById('cdDone').style.display='block';return;}
-    document.getElementById('cdH').textContent=pad(Math.floor(diff/864e5));
-    document.getElementById('cdJ').textContent=pad(Math.floor((diff%864e5)/36e5));
-    document.getElementById('cdM').textContent=pad(Math.floor((diff%36e5)/6e4));
-    document.getElementById('cdD').textContent=pad(Math.floor((diff%6e4)/1e3));
-  }
-  tick(); cdInterval=setInterval(tick,1000);
-}
-
-// ══ FIREBASE INIT ══
-function initFirebase(){
-  const db=window.__db, ref=window.__ref, set=window.__set, remove=window.__remove, onValue=window.__onValue;
-
-  // Countdown
-  onValue(ref(db,'antithesis/acara'),snap=>{
-    const a=snap.val();
-    if(a&&a.date){ startCountdown(a); }
-    else{ clearInterval(cdInterval); document.getElementById('countdownWrap').classList.remove('visible'); }
-  });
-
-  // Pengumuman
-  onValue(ref(db,'antithesis/pengumuman'),snap=>{
-    const txt=snap.val()||'';
-    document.getElementById('pgInput').value=txt;
-    const bar=document.getElementById('pgBar');
-    if(txt){document.getElementById('pgText').textContent=txt;bar.classList.add('show');}
-    else{bar.classList.remove('show');}
-  });
-  document.getElementById('pgBtnPost').addEventListener('click',()=>{
-    const v=document.getElementById('pgInput').value.trim();
-    if(!v){alert('Tulis pengumuman dulu!');return;}
-    set(ref(db,'antithesis/pengumuman'),v);
-    document.getElementById('pgAdminPanel').classList.remove('open');
-  });
-  document.getElementById('pgBtnDel').addEventListener('click',()=>{remove(ref(db,'antithesis/pengumuman'));document.getElementById('pgAdminPanel').classList.remove('open');});
-}
-
-if(window.__firebaseReady) initFirebase();
-else window.addEventListener('firebase-ready',initFirebase);
-
-// ══ PIN ADMIN ══
-const ADMIN_PIN='300105';
-let pinInput='', isAdminSession=false;
-function updateAdminUI(){document.getElementById('adminBtnGroup').style.display=isAdminSession?'flex':'none';}
-updateAdminUI();
-function updatePinDots(){
-  for(let i=0;i<6;i++){const d=document.getElementById('pd'+i);if(!d)return;d.classList.toggle('filled',i<pinInput.length);d.classList.remove('error');}
-  const h=document.getElementById('pinHint');h.classList.remove('err');h.textContent=pinInput.length===0?'Ketuk angka di bawah':`${pinInput.length} / 6 digit`;
-}
-function openPin(){pinInput='';updatePinDots();document.getElementById('pinOverlay').classList.add('show');}
-function closePin(){document.getElementById('pinOverlay').classList.remove('show');pinInput='';}
-function pinSuccess(){isAdminSession=true;closePin();updateAdminUI();}
-function pinError(){
-  for(let i=0;i<6;i++){const d=document.getElementById('pd'+i);if(d)d.classList.add('error');}
-  const h=document.getElementById('pinHint');h.textContent='✕  PIN salah';h.classList.add('err');
-  document.getElementById('pinBox').classList.add('pin-shake');
-  setTimeout(()=>{document.getElementById('pinBox').classList.remove('pin-shake');pinInput='';updatePinDots();},600);
-}
-document.querySelectorAll('.pin-key[data-n]').forEach(k=>k.addEventListener('click',function(){
-  if(pinInput.length>=ADMIN_PIN.length)return;
-  pinInput+=this.dataset.n;updatePinDots();
-  if(pinInput.length===ADMIN_PIN.length){setTimeout(()=>{if(pinInput===ADMIN_PIN)pinSuccess();else pinError();},150);}
-}));
-document.getElementById('pinDel').addEventListener('click',()=>{pinInput=pinInput.slice(0,-1);updatePinDots();});
-document.getElementById('pinClearAll').addEventListener('click',()=>{pinInput='';updatePinDots();});
-document.getElementById('pinCancel').addEventListener('click',closePin);
-document.getElementById('pinOverlay').addEventListener('click',function(e){if(e.target===this)closePin();});
-document.getElementById('adminLogoutBtn').addEventListener('click',()=>{if(confirm('Keluar dari mode admin?')){isAdminSession=false;updateAdminUI();document.getElementById('pgAdminPanel').classList.remove('open');}});
-document.getElementById('pgAdminBtn').addEventListener('click',()=>{
-  const p=document.getElementById('pgAdminPanel');
-  if(p.classList.contains('open')){p.classList.remove('open');return;}
-  if(isAdminSession) p.classList.add('open'); else openPin();
+get(ref(db,'antithesis/anggota')).then(s=>{
+  document.getElementById('statAnggota').textContent=s.val()?Object.keys(s.val()).length:'0';
 });
-document.getElementById('pgPanelClose').addEventListener('click',()=>document.getElementById('pgAdminPanel').classList.remove('open'));
-document.getElementById('pgClose').addEventListener('click',()=>document.getElementById('pgBar').classList.remove('show'));
-
-// ══ NOTIF ══
-function showNotif(msg){
-  const old=document.getElementById('notifEl');if(old)old.remove();
-  const el=document.createElement('div');el.className='notif-sukses';el.id='notifEl';el.textContent=msg;
-  document.body.appendChild(el);
-  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .5s';setTimeout(()=>el.remove(),500);},3000);
-}
-
-// ══ NAV ACTIVE ══
-const secs=document.querySelectorAll('section[id]');
-window.addEventListener('scroll',()=>{
-  let c='';secs.forEach(s=>{if(scrollY>=s.offsetTop-200)c=s.id;});
-  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+c));
-});
+document.getElementById('navHam').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
