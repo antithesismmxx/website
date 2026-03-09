@@ -7,7 +7,7 @@ import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebas
 
 const firebaseConfig = {
   databaseURL: "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
-  apiKey: "AIzaSyExample", projectId: "antithesis-al-muayyad",
+  apiKey: "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg", projectId: "antithesis-al-muayyad",
   appId: "1:1014116431079:web:5f490096bf6ecdf7011e42"
 };
 const db = getDatabase(initializeApp(firebaseConfig));
