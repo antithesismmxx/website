@@ -135,6 +135,8 @@ body::before{
   background:rgba(11,11,11,.94);border:1px solid rgba(201,168,76,.16);
   backdrop-filter:blur(28px);overflow:visible;
   animation:card-in .85s cubic-bezier(.25,.46,.45,.94) forwards;opacity:0;
+  max-height:calc(100dvh - 80px);
+  display:flex;flex-direction:column;
 }
 @keyframes card-in{from{opacity:0;transform:translateY(36px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
 .topbar{height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold-l),var(--gold),transparent);}
@@ -142,7 +144,7 @@ body::before{
 .corner-tl{top:9px;left:9px;border-top:1px solid rgba(201,168,76,.32);border-left:1px solid rgba(201,168,76,.32);}
 .corner-br{bottom:9px;right:9px;border-bottom:1px solid rgba(201,168,76,.32);border-right:1px solid rgba(201,168,76,.32);}
 
-.card-head{padding:36px 44px 28px;text-align:center;border-bottom:1px solid rgba(201,168,76,.08);position:relative;}
+.card-head{padding:36px 44px 28px;text-align:center;border-bottom:1px solid rgba(201,168,76,.08);position:relative;flex-shrink:0;}
 .card-head::after{content:'';position:absolute;top:-70px;right:-70px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.06),transparent 70%);pointer-events:none;}
 
 /* ── LOGO ANGKATAN ── */
@@ -197,14 +199,14 @@ body::before{
 .brand-sub{font-family:'Montserrat',sans-serif;font-size:.47rem;letter-spacing:.44em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
 .brand-tag{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:rgba(201,168,76,.45);}
 
-.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(201,168,76,.08);}
+.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(201,168,76,.08);flex-shrink:0;}
 .tab-btn{padding:15px 10px;font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.38em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:pointer;position:relative;transition:color .3s;}
 .tab-btn::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .35s cubic-bezier(.25,.46,.45,.94);}
 .tab-btn.active{color:var(--gold);}
 .tab-btn.active::after{transform:scaleX(1);}
 .tab-btn:hover:not(.active){color:var(--cream);}
 
-.panel{display:none;padding:32px 44px 36px;animation:pfade .35s ease forwards;}
+.panel{display:none;padding:32px 44px 36px;animation:pfade .35s ease forwards;overflow-y:auto;flex:1;}
 .panel.active{display:block;}
 @keyframes pfade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
@@ -248,7 +250,7 @@ body::before{
 .link-btn:hover{color:var(--gold-l);}
 .panel-footer{margin-top:20px;text-align:center;font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:var(--muted);}
 
-.card-foot{padding:14px 44px 22px;border-top:1px solid rgba(201,168,76,.07);}
+.card-foot{padding:14px 44px 22px;border-top:1px solid rgba(201,168,76,.07);flex-shrink:0;}
 .foot-note{font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;color:var(--muted);text-align:center;line-height:1.65;}
 .foot-note strong{color:rgba(201,168,76,.55);font-style:normal;font-weight:600;}
 
