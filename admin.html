@@ -672,10 +672,14 @@ function renderAnggota(){
   const grid=document.getElementById('anggotaGrid');
   if(!entries.length){grid.innerHTML='<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">Belum ada profil.</div></div>';return;}
   grid.innerHTML=entries.map(([k,a])=>{
-    const avatar=a.foto?`<img class="amc-avatar" src="${a.foto}" alt=""/>`:`<div class="amc-avatar-ph">👤</div>`;
+    const avatar=a.foto?`<img class="amc-avatar" src="${a.foto}" alt="" style="cursor:pointer;" onclick="lihatFoto('${k}')"/>`:`<div class="amc-avatar-ph">👤</div>`;
+    const btnFoto=a.foto
+      ?`<button class="btn btn-outline" style="padding:4px 10px;font-size:.4rem;margin-bottom:4px;" onclick="lihatFoto('${k}')">🖼 Lihat Foto</button>`
+      :`<div style="font-family:'Montserrat',sans-serif;font-size:.38rem;letter-spacing:.15em;color:var(--muted2);margin-bottom:4px;">Belum ada foto</div>`;
     return`<div class="amc">${avatar}
       <div class="amc-name">${a.nama||'—'}</div>
-      <div class="amc-meta">${a.kelas?a.kelas+' · ':''}${a.sekolah||''}</div>
+      <div class="amc-meta">${a.kelas?a.kelas+' · ':''}${a.sekolah||''}${a.domisili?' · '+a.domisili:''}</div>
+      ${btnFoto}
       <button class="amc-del" onclick="hapusProfil('${k}','${(a.nama||'').replace(/'/g,'')}')">🗑 Hapus</button>
     </div>`;
   }).join('');
@@ -684,6 +688,26 @@ window.hapusProfil=function(k,nama){
   confirm2('Hapus Profil',`Profil "${nama}" akan dihapus dari direktori.`,()=>{
     remove(ref(db,'antithesis/anggota/'+k)).then(()=>toast('Profil dihapus.'));
   });
+};
+window.lihatFoto=function(k){
+  const a=anggotaData[k];
+  if(!a||!a.foto){toast('Tidak ada foto.',true);return;}
+  // Buat modal foto
+  let modal=document.getElementById('__fotoModal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='__fotoModal';
+    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
+    modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML=`
+    <div style="font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;">${a.nama||'—'}</div>
+    <img src="${a.foto}" style="max-width:90vw;max-height:70vh;object-fit:contain;border:1px solid rgba(201,168,76,.3);"/>
+    <div style="display:flex;gap:12px;">
+      <a href="${a.foto}" download="${(a.nama||'foto').replace(/\s+/g,'_')}.jpg" class="btn btn-primary" style="font-size:.45rem;">⬇ Download Foto</a>
+      <button onclick="document.getElementById('__fotoModal').remove()" class="btn btn-outline" style="font-size:.45rem;">Tutup</button>
+    </div>`;
 };
 
 // ══════════════════════
