@@ -321,7 +321,7 @@
           <div class="ap-title">Semua Akun (<span id="accCount">0</span>)</div>
           <div class="item-list">
             <table class="admin-table" id="accTable">
-              <thead><tr><th>Username</th><th>Nama</th><th>Aksi</th></tr></thead>
+              <thead><tr><th>Email</th><th>Nama</th><th>Aksi</th></tr></thead>
               <tbody id="accBody"></tbody>
             </table>
           </div>
@@ -329,7 +329,7 @@
         <div class="ap">
           <div class="ap-title">Reset Password</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Username</label><input class="form-input" id="rpUser" type="text" placeholder="username..."/></div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Email Akun</label><input class="form-input" id="rpUser" type="email" placeholder="email@..."/></div>
             <div class="form-group" style="margin-bottom:0;"><label class="form-label">Password Baru</label><input class="form-input" id="rpPass" type="text" placeholder="password baru..."/></div>
           </div>
           <div class="form-err" id="rpErr" style="display:none;margin-top:10px;"></div>
@@ -476,7 +476,7 @@ function initData(){
   // Whitelist
   onValue(ref(db,'antithesis/whitelist'),s=>{whitelist=s.val()||{};renderWhitelist();});
   // Accounts
-  onValue(ref(db,'antithesis/accounts'),s=>{accounts=s.val()||{};renderAccounts();updateOverview();});
+  onValue(ref(db,'antithesis/akun'),s=>{accounts=s.val()||{};renderAccounts();updateOverview();});
   // Anggota
   onValue(ref(db,'antithesis/anggota'),s=>{anggotaData=s.val()||{};renderAnggota();updateOverview();});
   // Votes
@@ -616,31 +616,33 @@ function renderAccounts(){
   document.getElementById('accCount').textContent=entries.length;
   const tbody=document.getElementById('accBody');
   if(!entries.length){tbody.innerHTML='<tr><td colspan="3" class="td-muted">Belum ada akun.</td></tr>';return;}
-  tbody.innerHTML=entries.map(([uname,data])=>`
+  tbody.innerHTML=entries.map(([uid,data])=>`
     <tr>
-      <td><span style="font-family:'Montserrat',sans-serif;font-size:.9rem;">@${uname}</span></td>
+      <td><span style="font-family:'Montserrat',sans-serif;font-size:.9rem;">${data.email||uid}</span></td>
       <td>${data.nama||'—'}</td>
-      <td><button class="btn btn-danger" style="padding:6px 12px;font-size:.42rem;" onclick="hapusAkun('${uname}')">Hapus</button></td>
+      <td><button class="btn btn-danger" style="padding:6px 12px;font-size:.42rem;" onclick="hapusAkun('${uid}','${data.email||''}')">Hapus</button></td>
     </tr>`).join('');
 }
-window.hapusAkun=function(uname){
-  confirm2('Hapus Akun','Akun @'+uname+' akan dihapus permanen.',()=>{
-    remove(ref(db,'antithesis/accounts/'+uname)).then(()=>toast('Akun @'+uname+' dihapus.'));
+window.hapusAkun=function(uid,email){
+  confirm2('Hapus Akun','Akun '+email+' akan dihapus dari database.',()=>{
+    remove(ref(db,'antithesis/akun/'+uid)).then(()=>toast('Akun '+email+' dihapus.'));
   });
 };
 document.getElementById('btnResetPass').addEventListener('click',async()=>{
-  const uname=document.getElementById('rpUser').value.trim().toLowerCase();
-  const pass=document.getElementById('rpPass').value.trim();
+  const email=document.getElementById('rpUser').value.trim();
   const errEl=document.getElementById('rpErr');const okEl=document.getElementById('rpOk');
   errEl.style.display='none';okEl.style.display='none';
-  if(!uname||!pass){errEl.textContent='✕ Lengkapi semua field';errEl.style.display='block';return;}
-  if(pass.length<6){errEl.textContent='✕ Password min 6 karakter';errEl.style.display='block';return;}
-  const snap=await get(ref(db,'antithesis/accounts/'+uname));
-  if(!snap.exists()){errEl.textContent='✕ Username tidak ditemukan';errEl.style.display='block';return;}
-  const hash=await sha256(pass);
-  await set(ref(db,'antithesis/accounts/'+uname+'/password'),hash);
-  okEl.textContent='✦ Password @'+uname+' berhasil direset!';okEl.style.display='block';
-  document.getElementById('rpUser').value='';document.getElementById('rpPass').value='';
+  if(!email){errEl.textContent='✕ Masukkan email akun';errEl.style.display='block';return;}
+  // Import Firebase Auth untuk kirim reset email
+  const {getAuth,sendPasswordResetEmail}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+  const authAdmin=getAuth();
+  try{
+    await sendPasswordResetEmail(authAdmin,email);
+    okEl.textContent='✦ Link reset password dikirim ke '+email;okEl.style.display='block';
+    document.getElementById('rpUser').value='';
+  }catch(e){
+    errEl.textContent='✕ Gagal: '+e.message;errEl.style.display='block';
+  }
 });
 
 // ══════════════════════
