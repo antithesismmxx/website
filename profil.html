@@ -178,14 +178,30 @@ function toast(msg,err=false){
   clearTimeout(t.__tid);t.__tid=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)';},3200);
 }
 
-// ── Preview foto dari file ──
-document.getElementById('fFoto').addEventListener('change',function(){
+// ── Preview + compress foto ──
+function compressFoto(file,maxSize=300){
+  return new Promise(res=>{
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      let w=img.width,h=img.height;
+      if(w>h){if(w>maxSize){h=h*maxSize/w;w=maxSize;}}
+      else{if(h>maxSize){w=w*maxSize/h;h=maxSize;}}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      res(canvas.toDataURL('image/jpeg',0.7));
+    };
+    img.src=url;
+  });
+}
+document.getElementById('fFoto').addEventListener('change',async function(){
   const prev=document.getElementById('fFotoPreview');
   const file=this.files[0];
   if(file){
-    const reader=new FileReader();
-    reader.onload=e=>{prev.src=e.target.result;prev.style.display='block';};
-    reader.readAsDataURL(file);
+    const compressed=await compressFoto(file);
+    prev.src=compressed;prev.style.display='block';
   } else prev.style.display='none';
 });
 
@@ -250,19 +266,15 @@ document.getElementById('btnSaveProfil').addEventListener('click',async()=>{
   const btn=document.getElementById('btnSaveProfil');
   btn.textContent='Menyimpan...';btn.disabled=true;
 
-  // Foto: convert ke base64 kalau ada file baru
+  // Foto: compress lalu simpan sebagai base64
   let fotoData='';
   const fotoFile=document.getElementById('fFoto').files[0];
   if(fotoFile){
-    fotoData=await new Promise(res=>{
-      const r=new FileReader();
-      r.onload=e=>res(e.target.result);
-      r.readAsDataURL(fotoFile);
-    });
-  } else if(myKey){
-    // Pertahankan foto lama
-    const snap=await get(ref(db,'antithesis/anggota/'+myKey+'/foto'));
-    fotoData=snap.val()||'';
+    fotoData=await compressFoto(fotoFile,300);
+  } else {
+    // Pertahankan foto lama dari preview
+    const prev=document.getElementById('fFotoPreview');
+    fotoData=prev.src&&prev.style.display!=='none'?prev.src:'';
   }
 
   const data={
