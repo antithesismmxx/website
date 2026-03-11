@@ -11,12 +11,10 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,
-  onAuthStateChanged,
   signOut,
   updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ── Firebase Config ──
 const app = initializeApp({
   apiKey:            "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
   authDomain:        "antithesis-al-muayyad.firebaseapp.com",
@@ -29,6 +27,9 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 const db   = getDatabase(app);
+
+// ── Pastikan user ter-logout saat buka halaman login ──
+signOut(auth).catch(() => {});
 
 // ── Helpers ──
 function showErr(id, msg) {
@@ -62,7 +63,7 @@ function firebaseErrMsg(code) {
   return map[code] || 'Terjadi kesalahan. Coba lagi.';
 }
 
-// ── Cek nama di whitelist Firebase (case-insensitive) ──
+// ── Cek whitelist ──
 async function cekWhitelist(nama) {
   const snap = await get(ref(db, 'antithesis/whitelist'));
   if (!snap.exists()) return false;
@@ -71,31 +72,6 @@ async function cekWhitelist(nama) {
     (item.nama || item || '').toString().toLowerCase() === namaLower
   );
 }
-
-// ── Cek jika sudah login — tapi HANYA redirect kalau datang bukan dari logout ──
-let isProcessing = false;
-const cameFromLogout = document.referrer.includes('dashboard') || 
-                       sessionStorage.getItem('just_logged_out') === '1';
-if (cameFromLogout) sessionStorage.removeItem('just_logged_out');
-
-onAuthStateChanged(auth, async user => {
-  if (isProcessing || cameFromLogout) return;
-  if (user && user.emailVerified) {
-    // Cek banned
-    try {
-      const akunSnap = await get(ref(db, 'antithesis/akun'));
-      if (akunSnap.exists()) {
-        const myAkun = Object.values(akunSnap.val()).find(a => a.email === user.email);
-        if (myAkun && myAkun.banned === true) { await signOut(auth); return; }
-      }
-    } catch(e) {}
-    sessionStorage.setItem('antithesis_member', user.displayName || user.email);
-    sessionStorage.setItem('antithesis_username', user.email.split('@')[0]);
-    window.location.href = 'dashboard.html';
-  } else if (user && !user.emailVerified) {
-    await signOut(auth);
-  }
-});
 
 // ══════════════════════════
 //  TAB SWITCHING
@@ -124,11 +100,10 @@ document.getElementById('btnLogin')?.addEventListener('click', async () => {
   btn.textContent = 'Memproses...'; btn.disabled = true;
 
   try {
-    isProcessing = true;
     const cred = await signInWithEmailAndPassword(auth, email, pass);
 
+    // Cek verifikasi email
     if (!cred.user.emailVerified) {
-      isProcessing = false;
       await signOut(auth);
       sessionStorage.setItem('pending_verif_email', email);
       document.getElementById('btnResendVerif').style.display = 'block';
@@ -137,52 +112,49 @@ document.getElementById('btnLogin')?.addEventListener('click', async () => {
       return;
     }
 
-    // Cek status banned di database
+    // Cek banned
     const akunSnap = await get(ref(db, 'antithesis/akun'));
-    let isBanned = false;
     if (akunSnap.exists()) {
-      const allAkun = akunSnap.val();
-      const myAkun = Object.values(allAkun).find(a => a.email === email);
-      if (myAkun && myAkun.banned === true) isBanned = true;
-    }
-    if (isBanned) {
-      isProcessing = false;
-      await signOut(auth);
-      showErr('loginErr', '✕ Akun kamu telah dinonaktifkan. Hubungi admin.');
-      btn.textContent = 'Masuk →'; btn.disabled = false;
-      return;
+      const myAkun = Object.values(akunSnap.val()).find(a => a.email === email);
+      if (myAkun && myAkun.banned === true) {
+        await signOut(auth);
+        showErr('loginErr', '✕ Akun kamu telah dinonaktifkan. Hubungi admin.');
+        btn.textContent = 'Masuk →'; btn.disabled = false;
+        return;
+      }
     }
 
+    // Login sukses
     sessionStorage.setItem('antithesis_member', cred.user.displayName || cred.user.email);
     sessionStorage.setItem('antithesis_username', cred.user.email.split('@')[0]);
     window.location.href = 'dashboard.html';
 
   } catch (e) {
-    isProcessing = false;
     showErr('loginErr', firebaseErrMsg(e.code));
     btn.textContent = 'Masuk →'; btn.disabled = false;
   }
 });
 
-// ── Kirim ulang email verifikasi ──
+// ── Kirim ulang verifikasi ──
 document.getElementById('btnResendVerif')?.addEventListener('click', async () => {
   const email = sessionStorage.getItem('pending_verif_email') || '';
   const pass  = document.getElementById('loginPass').value;
   if (!email || !pass) return showErr('loginErr', 'Masukkan password dulu.');
   try {
-    isProcessing = true;
     const cred = await signInWithEmailAndPassword(auth, email, pass);
-    await sendEmailVerification(cred.user);
+    if (cred.user.emailVerified) {
+      showOk('loginOk', '✦ Email sudah terverifikasi! Silakan masuk.');
+    } else {
+      await sendEmailVerification(cred.user);
+      showOk('loginOk', '✦ Email verifikasi dikirim ulang! Cek inbox kamu.');
+    }
     await signOut(auth);
-    isProcessing = false;
-    showOk('loginOk', '✦ Email verifikasi dikirim ulang! Cek inbox kamu.');
   } catch (e) {
-    isProcessing = false;
-    showErr('loginErr', 'Gagal kirim ulang: ' + firebaseErrMsg(e.code));
+    showErr('loginErr', firebaseErrMsg(e.code));
   }
 });
 
-// ── Toggle password (login) ──
+// ── Toggle password ──
 document.getElementById('toggleLoginPass')?.addEventListener('click', function() {
   const inp = document.getElementById('loginPass');
   inp.type         = inp.type === 'password' ? 'text' : 'password';
@@ -208,7 +180,7 @@ function goStep(n) {
   });
 }
 
-// STEP 1 → cek whitelist dulu
+// STEP 1 → cek whitelist
 document.getElementById('btnKirimKode')?.addEventListener('click', async () => {
   hideErr('regErr1');
   const nama  = document.getElementById('regNama').value.trim();
@@ -223,7 +195,7 @@ document.getElementById('btnKirimKode')?.addEventListener('click', async () => {
   try {
     const diizinkan = await cekWhitelist(nama);
     if (!diizinkan) {
-      showErr('regErr1', '✕ Nama kamu tidak ada dalam daftar anggota. Hubungi admin.');
+      showErr('regErr1', '✕ Nama tidak ada dalam daftar anggota. Hubungi admin.');
       btn.textContent = 'Lanjut →'; btn.disabled = false;
       return;
     }
@@ -237,7 +209,7 @@ document.getElementById('btnKirimKode')?.addEventListener('click', async () => {
   }
 });
 
-// STEP 2 → Buat akun + kirim email verifikasi
+// STEP 2 → Buat akun + kirim verifikasi
 document.getElementById('btnDaftar')?.addEventListener('click', async () => {
   hideErr('regErr3');
   const pass  = document.getElementById('regPass').value;
@@ -253,7 +225,6 @@ document.getElementById('btnDaftar')?.addEventListener('click', async () => {
   btn.textContent = 'Membuat akun...'; btn.disabled = true;
 
   try {
-    isProcessing = true;
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(cred.user, { displayName: nama });
     await sendEmailVerification(cred.user);
@@ -261,7 +232,6 @@ document.getElementById('btnDaftar')?.addEventListener('click', async () => {
       nama, email, createdAt: Date.now(), verified: false
     });
     await signOut(auth);
-    isProcessing = false;
 
     document.getElementById('daftarStep2').innerHTML = `
       <div style="text-align:center;padding:20px 0;">
@@ -283,13 +253,12 @@ document.getElementById('btnDaftar')?.addEventListener('click', async () => {
       </div>`;
 
   } catch (e) {
-    isProcessing = false;
     showErr('regErr3', firebaseErrMsg(e.code));
     btn.textContent = 'Selesai & Masuk →'; btn.disabled = false;
   }
 });
 
-// ── Toggle password (daftar) ──
+// ── Toggle password daftar ──
 ['toggleRegPass', 'toggleRegPass2'].forEach(id => {
   document.getElementById(id)?.addEventListener('click', function() {
     const inp = this.previousElementSibling;
@@ -299,7 +268,7 @@ document.getElementById('btnDaftar')?.addEventListener('click', async () => {
 });
 
 // ══════════════════════════
-//  LUPA PASSWORD (RESET)
+//  LUPA PASSWORD
 // ══════════════════════════
 document.getElementById('btnOpenPass')?.addEventListener('click', () => {
   document.getElementById('passModal').classList.add('show');
@@ -307,15 +276,12 @@ document.getElementById('btnOpenPass')?.addEventListener('click', () => {
 document.getElementById('btnCloseModal')?.addEventListener('click', () => {
   document.getElementById('passModal').classList.remove('show');
 });
-
 document.getElementById('btnGantiPass')?.addEventListener('click', async () => {
   hideErr('gpErr');
   const email = document.getElementById('gpUser').value.trim();
   if (!email || !email.includes('@')) return showErr('gpErr', 'Masukkan email yang valid.');
-
   const btn = document.getElementById('btnGantiPass');
   btn.textContent = 'Mengirim...'; btn.disabled = true;
-
   try {
     await sendPasswordResetEmail(auth, email);
     document.getElementById('gpOk').style.display = 'block';
@@ -327,5 +293,4 @@ document.getElementById('btnGantiPass')?.addEventListener('click', async () => {
   }
 });
 
-// ── Tombol kembali ke step 1 ──
 document.getElementById('btnBackStep1')?.addEventListener('click', () => goStep(1));
