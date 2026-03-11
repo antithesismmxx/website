@@ -6,20 +6,23 @@
 <title>Profil Saya — ANTITHESIS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+
+
 <link rel="stylesheet" href="style.css"/>
 <style>
-.profil-hero{padding:72px 60px 60px;background:var(--bg2);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.profil-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 70% 50%,rgba(0,212,170,.05) 0%,transparent 65%);pointer-events:none;}
-.profil-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,212,170,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,170,.02) 1px,transparent 1px);background-size:80px 80px;}
+.profil-hero{padding:72px 60px 60px;background:var(--white);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.profil-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 70% 50%,rgba(0,0,0,.05) 0%,transparent 65%);pointer-events:none;}
+.profil-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.02) 1px,transparent 1px);background-size:80px 80px;}
 
-.profil-card{background:var(--bg2);border:1px solid var(--border);padding:40px;margin-top:40px;position:relative;}
+.profil-card{background:var(--white);border:1px solid var(--border);padding:40px;margin-top:40px;position:relative;}
 .profil-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
 .profil-avatar-wrap{display:flex;align-items:center;gap:28px;margin-bottom:32px;flex-wrap:wrap;}
 .profil-avatar{width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);}
-.profil-avatar-ph{width:100px;height:100px;border-radius:50%;border:2px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--muted);}
-.profil-name{font-family:'DM Serif Display',serif;font-size:2rem;font-weight:900;color:var(--text);}
-.profil-meta{font-family:'DM Sans',sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-top:6px;}
+.profil-avatar-ph{width:100px;height:100px;border-radius:50%;border:2px solid var(--border);background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--muted);}
+.profil-name{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:900;color:var(--text);}
+.profil-meta{font-family:'Instrument Sans',sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-top:6px;}
 
 .profil-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .foto-preview-wrap{margin-top:8px;}
@@ -58,10 +61,10 @@
     <div class="profil-hero-grid"></div>
     <div class="container" style="position:relative;z-index:1;">
       <div class="sec-label anim-up d1">Akun Kamu</div>
-      <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;color:var(--text);line-height:1.05;" class="anim-up d2">
-        Profil <em style="color:var(--green-dark)">Saya</em>
+      <h1 style="font-family:'Instrument Serif',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;color:var(--text);line-height:1.05;" class="anim-up d2">
+        Profil <em style="color:var(--black)">Saya</em>
       </h1>
-      <p style="font-family:'DM Sans',sans-serif;font-size:1.05rem;font-style:italic;color:var(--muted);margin-top:8px;" class="anim-up d3">
+      <p style="font-family:'Instrument Sans',sans-serif;font-size:1.05rem;font-style:italic;color:var(--muted);margin-top:8px;" class="anim-up d3">
         Lengkapi profilmu agar teman-teman bisa mengenalmu.
       </p>
     </div>
@@ -79,7 +82,7 @@
           <div class="profil-meta" id="dispMeta"></div>
         </div>
       </div>
-      <div style="font-family:'DM Sans',sans-serif;font-size:1.05rem;font-style:italic;color:var(--muted);margin-bottom:24px;line-height:1.8;" id="dispMotto"></div>
+      <div style="font-family:'Instrument Sans',sans-serif;font-size:1.05rem;font-style:italic;color:var(--muted);margin-bottom:24px;line-height:1.8;" id="dispMotto"></div>
       <button class="btn btn-outline" id="btnEditProfil">✏️ Edit Profil</button>
     </div>
 
@@ -98,7 +101,7 @@
       <div class="form-group">
         <label class="form-label">Nama Lengkap</label>
         <input class="form-input" id="fNama" type="text" disabled style="opacity:.5;cursor:not-allowed;"/>
-        <div style="font-family:'DM Sans',sans-serif;font-size:.85rem;font-style:italic;color:var(--muted);margin-top:4px;">Nama tidak dapat diubah.</div>
+        <div style="font-family:'Instrument Sans',sans-serif;font-size:.85rem;font-style:italic;color:var(--muted);margin-top:4px;">Nama tidak dapat diubah.</div>
       </div>
 
       <div class="profil-form-grid">
@@ -117,7 +120,7 @@
           </select>
         </div>
         <div class="form-group" style="grid-column:1/-1;">
-          <label class="form-label">Domisili Sekarang <span style="color:var(--green-dark)">*</span></label>
+          <label class="form-label">Domisili Sekarang <span style="color:var(--black)">*</span></label>
           <input class="form-input" id="fDomisili" type="text" placeholder="Nama kota domisili kamu..."/>
         </div>
       </div>
@@ -175,7 +178,7 @@ document.getElementById('navHam').addEventListener('click',()=>document.getEleme
 // ── Toast ──
 function toast(msg,err=false){
   let t=document.getElementById('__toast');
-  if(!t){t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--bg2);border:1px solid rgba(0,212,170,.35);font-family:Montserrat,sans-serif;font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;padding:12px 26px;z-index:9999;opacity:0;transition:all .4s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 36px rgba(0,0,0,.6);';document.body.appendChild(t);}
+  if(!t){t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--white);border:1px solid rgba(0,0,0,.35);font-family:Montserrat,sans-serif;font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;padding:12px 26px;z-index:9999;opacity:0;transition:all .4s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 36px rgba(0,0,0,.6);';document.body.appendChild(t);}
   t.style.color=err?'#e74c3c':'#c9a84c';
   t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
   clearTimeout(t.__tid);t.__tid=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)';},3200);

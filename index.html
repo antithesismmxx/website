@@ -6,7 +6,10 @@
 <title>ANTITHESIS — SMA & MA Al Muayyad Surakarta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+
+
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-VKBVNSTM84"></script>
@@ -32,24 +35,24 @@
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 70% 60% at 20% 60%, rgba(0,212,170,.06) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 50% at 85% 20%, rgba(0,212,170,.04) 0%, transparent 55%);
+    radial-gradient(ellipse 70% 60% at 20% 60%, rgba(0,0,0,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 85% 20%, rgba(0,0,0,.04) 0%, transparent 55%);
 }
 .hero-grid {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(0,212,170,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,170,.03) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.03) 1px, transparent 1px);
   background-size: 80px 80px;
 }
 .hero-content {
   position: relative; z-index: 1; max-width: 760px;
 }
 .hero-eyebrow {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.65rem;           /* was .46rem ≈ 7.4px → now 10.4px */
   letter-spacing: .55em;
-  color: var(--green-dark);
+  color: var(--black);
   text-transform: uppercase;
   margin-bottom: 20px;
   display: flex; align-items: center; gap: 14px;
@@ -59,7 +62,7 @@
   width: 40px; height: 1px; background: var(--gold);
 }
 .hero h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: clamp(3.5rem, 8vw, 7.5rem);
   font-weight: 900;
   line-height: .95;
@@ -67,10 +70,10 @@
   letter-spacing: -.02em;
 }
 .hero h1 em {
-  font-style: italic; color: var(--green-dark); display: block;
+  font-style: italic; color: var(--black); display: block;
 }
 .hero-tagline {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: clamp(1.05rem, 2vw, 1.35rem);
   font-style: italic;
   color: var(--muted);
@@ -87,7 +90,7 @@
   text-align: right; z-index: 1;
 }
 .stat-num {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: 2.8rem;
   font-weight: 900;
   line-height: 1;
@@ -97,7 +100,7 @@
   background-clip: text;
 }
 .stat-lbl {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.60rem;           /* was .42rem ≈ 6.7px → now 9.6px */
   letter-spacing: .3em;
   color: var(--muted);
@@ -107,7 +110,7 @@
 .hero-scroll {
   position: absolute; bottom: 36px; left: 60px;
   display: flex; align-items: center; gap: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.60rem;           /* was .42rem → now 9.6px */
   letter-spacing: .35em;
   color: var(--muted2);
@@ -115,7 +118,7 @@
   z-index: 1;
   animation: bounce 2.2s ease-in-out infinite;
 }
-.hero-scroll::before { content: '↓'; font-size: 0.78rem; color: var(--green-dark); }
+.hero-scroll::before { content: '↓'; font-size: 0.78rem; color: var(--black); }
 @keyframes bounce {
   0%,100% { transform: translateY(0); }
   50%      { transform: translateY(7px); }
@@ -137,7 +140,7 @@
   margin: 0 auto;
 }
 .tentang-quote {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: clamp(1.6rem, 3vw, 2.5rem);
   font-weight: 700;
   font-style: italic;
@@ -153,7 +156,7 @@
   background: linear-gradient(to bottom, transparent, var(--gold), transparent);
 }
 .tentang-body p {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--muted);
   line-height: 1.9;
@@ -169,7 +172,7 @@
   max-width: 860px;
   margin: 32px auto 0;
   background: var(--bg2);
-  border: 1px solid rgba(0,212,170,.18);
+  border: 1px solid rgba(0,0,0,.18);
   padding: 36px 40px;
   position: relative;
   display: none;
@@ -180,11 +183,11 @@
   position: absolute; top: -11px; left: 36px;
   background: var(--bg);
   padding: 0 8px;
-  color: var(--green-dark);
+  color: var(--black);
   font-size: 0.75rem;           /* was .7rem — slight bump */
 }
 .pg-text {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 1.15rem;
   line-height: 1.9;
   color: var(--text2);
@@ -201,10 +204,10 @@
 }
 .motto-glow {
   position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(0,212,170,.04) 0%, transparent 70%);
+  background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(0,0,0,.04) 0%, transparent 70%);
 }
 .motto-text {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: clamp(1.8rem, 4vw, 3.2rem);
   font-weight: 700;
   font-style: italic;
@@ -213,9 +216,9 @@
   max-width: 780px;
   margin: 0 auto 28px;
 }
-.motto-text span { color: var(--green-dark); }
+.motto-text span { color: var(--black); }
 .motto-sub {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.65rem;           /* was .48rem ≈ 7.7px → now 10.4px */
   letter-spacing: .5em;
   color: var(--muted);
@@ -230,13 +233,13 @@
   text-align: center;
 }
 .cta-section h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: clamp(2rem, 4vw, 3rem);
   color: var(--text);
   margin-bottom: 12px;
 }
 .cta-section p {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 1.1rem;
   font-style: italic;
   color: var(--muted);
@@ -263,15 +266,15 @@
 }
 .cta-icon { font-size: 2rem; margin-bottom: 12px; }
 .cta-name {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.65rem;           /* was .48rem ≈ 7.7px → now 10.4px */
   letter-spacing: .3em;
-  color: var(--green-dark);
+  color: var(--black);
   text-transform: uppercase;
   margin-bottom: 6px;
 }
 .cta-desc {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.92rem;           /* was .88rem — slight bump */
   font-style: italic;
   color: var(--muted);
@@ -396,7 +399,7 @@
 <section class="cta-section" id="portal">
   <div class="rv">
     <div class="sec-label" style="justify-content:center;">Portal Anggota</div>
-    <h2>Akses <em style="font-style:italic;color:var(--green-dark)">Komunitas</em></h2>
+    <h2>Akses <em style="font-style:italic;color:var(--black)">Komunitas</em></h2>
     <p>Masuk portal untuk mengakses semua fitur eksklusif angkatan.</p>
   </div>
   <div class="cta-cards">

@@ -35,7 +35,7 @@ signOut(auth).catch(() => {});
 function showErr(id, msg) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.textContent   = msg;
+  el.textContent = msg;
   el.style.display = 'block';
 }
 function hideErr(id) {
@@ -45,7 +45,7 @@ function hideErr(id) {
 function showOk(id, msg) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.textContent   = msg;
+  el.textContent = msg;
   el.style.display = 'block';
 }
 function firebaseErrMsg(code) {
@@ -76,10 +76,10 @@ async function cekWhitelist(nama) {
 // ══════════════════════════
 //  TAB SWITCHING
 // ══════════════════════════
-document.querySelectorAll('.tab-btn').forEach(btn => {
+document.querySelectorAll('.tab-switch-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b  => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-switch-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#tab-masuk,#tab-daftar').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
@@ -168,16 +168,17 @@ function goStep(n) {
   [1, 2].forEach(i => {
     const step = document.getElementById('daftarStep' + i);
     if (step) step.style.display = i === n ? 'block' : 'none';
-    const dot = document.getElementById('stepDot' + i);
-    if (dot) {
-      dot.classList.remove('active', 'done');
-      if (i === n) dot.classList.add('active');
-      if (i < n)   dot.classList.add('done');
-    }
   });
-  document.querySelectorAll('.step-line').forEach((l, idx) => {
-    l.classList.toggle('done', idx < n - 1);
-  });
+  // Update step dots
+  const d1 = document.getElementById('stepDot1');
+  const d2 = document.getElementById('stepDot2');
+  if (n === 1) {
+    if (d1) { d1.classList.remove('done'); d1.classList.add('active'); }
+    if (d2) { d2.classList.remove('active','done'); }
+  } else {
+    if (d1) { d1.classList.remove('active'); d1.classList.add('done'); }
+    if (d2) { d2.classList.remove('done'); d2.classList.add('active'); }
+  }
 }
 
 // STEP 1 → cek whitelist

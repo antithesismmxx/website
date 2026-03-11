@@ -6,48 +6,51 @@
 <title>Info Acara — ANTITHESIS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+
+
 <link rel="stylesheet" href="style.css"/>
 <style>
 /* HERO ACARA */
-.acara-hero{padding:72px 60px 60px;background:var(--bg2);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.acara-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 70% 50%,rgba(0,212,170,.06) 0%,transparent 65%);pointer-events:none;}
-.acara-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,212,170,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,170,.025) 1px,transparent 1px);background-size:70px 70px;}
+.acara-hero{padding:72px 60px 60px;background:var(--white);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.acara-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 70% 50%,rgba(0,0,0,.06) 0%,transparent 65%);pointer-events:none;}
+.acara-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.025) 1px,transparent 1px);background-size:70px 70px;}
 .acara-hero-content{position:relative;z-index:1;}
 
 /* COUNTDOWN HERO */
 .cd-hero{margin-top:44px;display:flex;gap:32px;flex-wrap:wrap;}
 .cd-unit{text-align:center;}
-.cd-num{font-family:'DM Serif Display',serif;font-size:4rem;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.cd-lbl{font-family:'DM Sans',sans-serif;font-size:.42rem;letter-spacing:.32em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
-.cd-sep{font-family:'DM Serif Display',serif;font-size:3.5rem;color:rgba(0,212,170,.25);align-self:flex-start;padding-top:6px;}
+.cd-num{font-family:'Instrument Serif',serif;font-size:4rem;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cd-lbl{font-family:'Instrument Sans',sans-serif;font-size:.42rem;letter-spacing:.32em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+.cd-sep{font-family:'Instrument Serif',serif;font-size:3.5rem;color:rgba(0,0,0,.25);align-self:flex-start;padding-top:6px;}
 
 /* DETAIL CARD */
 .acara-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:40px;}
-.detail-card{background:var(--bg3);border:1px solid var(--border);padding:24px 28px;position:relative;overflow:hidden;}
+.detail-card{background:var(--cream2);border:1px solid var(--border);padding:24px 28px;position:relative;overflow:hidden;}
 .detail-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:0;transition:opacity .3s;}
 .detail-card:hover::before{opacity:1;}
 .detail-icon{font-size:1.6rem;margin-bottom:12px;}
-.detail-label{font-family:'DM Sans',sans-serif;font-size:.44rem;letter-spacing:.3em;color:var(--green-dark);text-transform:uppercase;margin-bottom:6px;}
-.detail-value{font-family:'DM Serif Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);}
-.detail-sub{font-family:'DM Sans',sans-serif;font-size:.9rem;font-style:italic;color:var(--muted);margin-top:4px;}
+.detail-label{font-family:'Instrument Sans',sans-serif;font-size:.44rem;letter-spacing:.3em;color:var(--black);text-transform:uppercase;margin-bottom:6px;}
+.detail-value{font-family:'Instrument Serif',serif;font-size:1.3rem;font-weight:700;color:var(--text);}
+.detail-sub{font-family:'Instrument Sans',sans-serif;font-size:.9rem;font-style:italic;color:var(--muted);margin-top:4px;}
 
 /* HASIL VOTING */
 .hasil-section{padding:60px 0;border-top:1px solid var(--border);}
 .hasil-bars{display:flex;flex-direction:column;gap:16px;margin-top:32px;max-width:600px;}
 .hb-row{display:flex;align-items:center;gap:16px;}
-.hb-type{font-family:'DM Sans',sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--green-dark);text-transform:uppercase;width:100px;flex-shrink:0;}
-.hb-bar-wrap{flex:1;height:8px;background:rgba(0,212,170,.1);border-radius:4px;overflow:hidden;}
+.hb-type{font-family:'Instrument Sans',sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--black);text-transform:uppercase;width:100px;flex-shrink:0;}
+.hb-bar-wrap{flex:1;height:8px;background:rgba(0,0,0,.1);border-radius:4px;overflow:hidden;}
 .hb-bar{height:100%;background:linear-gradient(to right,var(--gold),var(--gold-light));border-radius:4px;transition:width 1s ease;}
-.hb-count{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);width:60px;text-align:right;flex-shrink:0;}
-.hb-win{color:var(--green-dark);}
-.winner-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid var(--border2);padding:8px 16px;margin-top:16px;font-family:'DM Sans',sans-serif;font-size:.48rem;letter-spacing:.25em;color:var(--green-dark);text-transform:uppercase;}
+.hb-count{font-family:'Instrument Serif',serif;font-size:1.1rem;font-weight:700;color:var(--text);width:60px;text-align:right;flex-shrink:0;}
+.hb-win{color:var(--black);}
+.winner-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid var(--border2);padding:8px 16px;margin-top:16px;font-family:'Instrument Sans',sans-serif;font-size:.48rem;letter-spacing:.25em;color:var(--black);text-transform:uppercase;}
 
 /* NO ACARA STATE */
 .no-acara{padding:80px 0;text-align:center;}
 .no-acara-icon{font-size:4rem;margin-bottom:20px;opacity:.35;}
-.no-acara-title{font-family:'DM Serif Display',serif;font-size:2rem;font-weight:700;color:var(--text);margin-bottom:10px;}
-.no-acara-sub{font-family:'DM Sans',sans-serif;font-size:1.1rem;font-style:italic;color:var(--muted);}
+.no-acara-title{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:700;color:var(--text);margin-bottom:10px;}
+.no-acara-sub{font-family:'Instrument Sans',sans-serif;font-size:1.1rem;font-style:italic;color:var(--muted);}
 
 @media(max-width:960px){
   .acara-hero{padding:48px 28px 40px;}
@@ -102,10 +105,10 @@
       <div class="acara-hero-content">
         <div class="container">
           <div class="sec-label anim-up d1">Acara Ditetapkan</div>
-          <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(2.4rem,5vw,4.5rem);font-weight:900;color:var(--text);line-height:1.05;" class="anim-up d2">
-            <span style="font-style:italic;color:var(--green-dark);" id="acaraJenis">—</span>
+          <h1 style="font-family:'Instrument Serif',serif;font-size:clamp(2.4rem,5vw,4.5rem);font-weight:900;color:var(--text);line-height:1.05;" class="anim-up d2">
+            <span style="font-style:italic;color:var(--black);" id="acaraJenis">—</span>
           </h1>
-          <p style="font-family:'DM Sans',sans-serif;font-size:1.1rem;font-style:italic;color:var(--muted);margin-top:8px;" class="anim-up d3" id="acaraSub">Acara angkatan ANTITHESIS</p>
+          <p style="font-family:'Instrument Sans',sans-serif;font-size:1.1rem;font-style:italic;color:var(--muted);margin-top:8px;" class="anim-up d3" id="acaraSub">Acara angkatan ANTITHESIS</p>
 
           <!-- COUNTDOWN -->
           <div class="cd-hero anim-up d3" id="cdHero">

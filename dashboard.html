@@ -6,7 +6,10 @@
 <title>Dashboard — ANTITHESIS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+
+
 <link rel="stylesheet" href="style.css"/>
 <style>
 /* ── DASH HERO ── */
@@ -19,34 +22,34 @@
 }
 .dash-hero-bg {
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(0,212,170,.05) 0%, transparent 65%);
+  background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(0,0,0,.05) 0%, transparent 65%);
   pointer-events: none;
 }
 .dash-hero-grid {
   position: absolute; inset: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(0,212,170,.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,170,.02) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.02) 1px, transparent 1px);
   background-size: 80px 80px;
 }
 .dash-greeting {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.65rem;           /* was .46rem ≈ 7.4px → now 10.4px */
   letter-spacing: .45em;
-  color: var(--green-dark);
+  color: var(--black);
   text-transform: uppercase;
   margin-bottom: 10px;
 }
 .dash-name {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: clamp(2.4rem, 5vw, 4.2rem);
   font-weight: 900;
   color: var(--text);
   line-height: 1.05;
 }
-.dash-name em { font-style: italic; color: var(--green-dark); }
+.dash-name em { font-style: italic; color: var(--black); }
 .dash-date {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 1rem;
   font-style: italic;
   color: var(--muted);
@@ -70,15 +73,15 @@
   background: linear-gradient(to right, transparent, var(--gold), transparent);
 }
 .countdown-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.65rem;           /* was .46rem → now 10.4px */
   letter-spacing: .4em;
-  color: var(--green-dark);
+  color: var(--black);
   text-transform: uppercase;
   margin-bottom: 6px;
 }
 .countdown-event {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text);
@@ -87,7 +90,7 @@
 .countdown-units { display: flex; gap: 24px; flex-wrap: wrap; }
 .cu { text-align: center; }
 .cu-num {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: 3rem;
   font-weight: 900;
   line-height: 1;
@@ -97,7 +100,7 @@
   background-clip: text;
 }
 .cu-lbl {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.58rem;           /* was .4rem ≈ 6.4px → now 9.3px */
   letter-spacing: .3em;
   color: var(--muted);
@@ -105,14 +108,14 @@
   margin-top: 4px;
 }
 .cu-sep {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: 2.5rem;
   color: var(--border2);
   align-self: center;
   padding-bottom: 4px;
 }
 .countdown-loc {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 1rem;
   font-style: italic;
   color: var(--muted);
@@ -135,13 +138,13 @@
 }
 .stat-card:hover { border-color: var(--border2); }
 .stat-card-num {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: 2.2rem;
   font-weight: 900;
   color: var(--text);
 }
 .stat-card-lbl {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.62rem;           /* was .44rem ≈ 7px → now 9.9px */
   letter-spacing: .28em;
   color: var(--muted);
@@ -170,15 +173,15 @@
 .ql:hover { border-color: var(--border2); transform: translateX(4px); }
 .ql-icon { font-size: 1.6rem; flex-shrink: 0; }
 .ql-name {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.65rem;           /* was .5rem ≈ 8px → now 10.4px */
   letter-spacing: .3em;
-  color: var(--green-dark);
+  color: var(--black);
   text-transform: uppercase;
   margin-bottom: 2px;
 }
 .ql-desc {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.92rem;           /* was .88rem — slight bump */
   font-style: italic;
   color: var(--muted);
@@ -189,7 +192,7 @@
   font-size: 1rem;
   transition: transform .3s;
 }
-.ql:hover .ql-arrow { transform: translateX(4px); color: var(--green-dark); }
+.ql:hover .ql-arrow { transform: translateX(4px); color: var(--black); }
 
 /* ── PROFIL SAYA ── */
 .profil-section { background: var(--bg2); border-top: 1px solid var(--border); }
@@ -217,14 +220,14 @@
   color: var(--muted2);
 }
 .profil-detail-name {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Instrument Serif', serif;
   font-size: 1.8rem;
   font-weight: 900;
   color: var(--text);
   margin-bottom: 6px;
 }
 .profil-detail-meta {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 0.62rem;           /* was .44rem ≈ 7px → now 9.9px */
   letter-spacing: .25em;
   color: var(--muted);
@@ -233,7 +236,7 @@
   display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
 }
 .profil-detail-motto {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 1rem;
   font-style: italic;
   color: var(--muted);
@@ -241,7 +244,7 @@
   line-height: 1.7;
 }
 .no-profil {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 1rem;
   font-style: italic;
   color: var(--muted);
@@ -250,8 +253,8 @@
 
 /* ── PENGUMUMAN STRIP ── */
 .pg-strip {
-  background: rgba(0,212,170,.06);
-  border: 1px solid rgba(0,212,170,.15);
+  background: rgba(0,0,0,.06);
+  border: 1px solid rgba(0,0,0,.15);
   padding: 16px 24px;
   margin-bottom: 32px;
   display: none;
@@ -259,9 +262,9 @@
   gap: 14px;
 }
 .pg-strip.show { display: flex; }
-.pg-strip-icon { color: var(--green-dark); font-size: 1rem; flex-shrink: 0; }
+.pg-strip-icon { color: var(--black); font-size: 1rem; flex-shrink: 0; }
 .pg-strip-text {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 1rem;
   color: var(--text2);
   line-height: 1.6;
