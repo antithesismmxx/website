@@ -229,6 +229,62 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   filter: brightness(0) invert(1);
   opacity: 0.85;
 }
+
+/* ── MULTI-STEP ── */
+.step-indicator {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 36px;
+}
+.step {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all .3s;
+  flex-shrink: 0;
+}
+.step.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--black);
+}
+.step.done {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.step-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  transition: background .3s;
+}
+.step-line.done { background: var(--gold); opacity: .5; }
+
+/* ── KODE BOXES ── */
+.kode-inputs {
+  display: flex; gap: 10px; justify-content: center;
+  margin: 28px 0 8px;
+}
+.kode-box {
+  width: 48px; height: 56px;
+  background: var(--dark3);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: border-color .3s;
+  caret-color: var(--gold);
+}
+.kode-box:focus { border-color: rgba(201,168,76,.5); }
+.kode-box.filled { border-color: var(--gold); color: var(--gold); }
 </style>
 </head>
 <body>
@@ -270,8 +326,8 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
         <div class="login-title">Selamat <em style="font-style:italic;color:var(--gold)">Kembali</em></div>
         <div class="login-sub">Masuk dengan username dan password kamu.</div>
         <div class="form-group">
-          <label class="form-label">Username</label>
-          <input class="form-input" id="loginUser" type="text" placeholder="username..."/>
+          <label class="form-label">Email</label>
+          <input class="form-input" id="loginUser" type="email" placeholder="email kamu..."/>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
@@ -282,31 +338,77 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
         </div>
         <div class="form-err" id="loginErr"></div>
         <button class="btn btn-primary btn-full" id="btnLogin" style="margin-top:8px;">Masuk →</button>
-        <div class="login-link"><a id="btnOpenPass">Lupa password? Ganti password</a></div>
+        <div class="login-link"><a id="btnOpenPass">Lupa password?</a></div>
       </div>
 
-      <!-- DAFTAR -->
+      <!-- DAFTAR (multi-step) -->
       <div class="tab-panel" id="tab-daftar">
-        <div class="login-title">Buat <em style="font-style:italic;color:var(--gold)">Akun</em></div>
-        <div class="login-sub">Gunakan nama lengkap sesuai daftar anggota.</div>
-        <div class="form-group">
-          <label class="form-label">Username</label>
-          <input class="form-input" id="regUser" type="text" placeholder="pilih username unik..."/>
+
+        <!-- Step indicator -->
+        <div class="step-indicator">
+          <div class="step active" id="stepDot1"><span>1</span></div>
+          <div class="step-line"></div>
+          <div class="step" id="stepDot2"><span>2</span></div>
+          <div class="step-line"></div>
+          <div class="step" id="stepDot3"><span>3</span></div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Nama Lengkap</label>
-          <input class="form-input" id="regNama" type="text" placeholder="sesuai daftar anggota..."/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <div class="pass-wrap">
-            <input class="form-input" id="regPass" type="password" placeholder="minimal 6 karakter..."/>
-            <button class="pass-toggle" id="toggleRegPass" type="button">👁</button>
+
+        <!-- STEP 1: Nama + Email -->
+        <div id="daftarStep1">
+          <div class="login-title">Buat <em style="font-style:italic;color:var(--gold)">Akun</em></div>
+          <div class="login-sub">Gunakan nama lengkap sesuai daftar anggota.</div>
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input class="form-input" id="regNama" type="text" placeholder="nama lengkap kamu..."/>
           </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="regEmail" type="email" placeholder="email aktif kamu..."/>
+          </div>
+          <div class="form-err" id="regErr1"></div>
+          <button class="btn btn-primary btn-full" id="btnKirimKode" style="margin-top:8px;">Kirim Kode Verifikasi →</button>
         </div>
-        <div class="form-err" id="regErr"></div>
-        <div class="form-ok" id="regOk">✦ Akun berhasil dibuat! Silakan masuk.</div>
-        <button class="btn btn-primary btn-full" id="btnDaftar" style="margin-top:8px;">Daftar →</button>
+
+        <!-- STEP 2: Kode Verifikasi -->
+        <div id="daftarStep2" style="display:none;">
+          <div class="login-title">Cek <em style="font-style:italic;color:var(--gold)">Email</em></div>
+          <div class="login-sub" id="subKode">Kode verifikasi telah dikirim ke emailmu.</div>
+          <div class="kode-inputs" id="kodeInputs">
+            <input class="kode-box" maxlength="1" type="text" inputmode="numeric"/>
+            <input class="kode-box" maxlength="1" type="text" inputmode="numeric"/>
+            <input class="kode-box" maxlength="1" type="text" inputmode="numeric"/>
+            <input class="kode-box" maxlength="1" type="text" inputmode="numeric"/>
+            <input class="kode-box" maxlength="1" type="text" inputmode="numeric"/>
+            <input class="kode-box" maxlength="1" type="text" inputmode="numeric"/>
+          </div>
+          <div class="form-err" id="regErr2"></div>
+          <button class="btn btn-primary btn-full" id="btnVerifKode" style="margin-top:16px;">Verifikasi →</button>
+          <div class="login-link"><a id="btnResendKode">Kirim ulang kode</a></div>
+        </div>
+
+        <!-- STEP 3: Buat Password -->
+        <div id="daftarStep3" style="display:none;">
+          <div class="login-title">Buat <em style="font-style:italic;color:var(--gold)">Password</em></div>
+          <div class="login-sub">Satu langkah lagi untuk masuk ke komunitas.</div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="pass-wrap">
+              <input class="form-input" id="regPass" type="password" placeholder="minimal 6 karakter..."/>
+              <button class="pass-toggle" id="toggleRegPass" type="button">👁</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Konfirmasi Password</label>
+            <div class="pass-wrap">
+              <input class="form-input" id="regPass2" type="password" placeholder="ulangi password..."/>
+              <button class="pass-toggle" id="toggleRegPass2" type="button">👁</button>
+            </div>
+          </div>
+          <div class="form-err" id="regErr3"></div>
+          <div class="form-ok" id="regOk">✦ Akun berhasil dibuat! Mengalihkan...</div>
+          <button class="btn btn-primary btn-full" id="btnDaftar" style="margin-top:8px;">Selesai & Masuk →</button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -317,29 +419,23 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 <div class="pass-modal" id="passModal">
   <div class="pass-modal-box anim-up">
     <div class="pass-modal-head">
-      <div class="pass-modal-title">Ganti <em style="font-style:italic;color:var(--gold)">Password</em></div>
+      <div class="pass-modal-title">Reset <em style="font-style:italic;color:var(--gold)">Password</em></div>
     </div>
     <div class="pass-modal-body">
       <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">Username</label>
-        <input class="form-input" id="gpUser" type="text" placeholder="username kamu..."/>
+        <label class="form-label">Email</label>
+        <input class="form-input" id="gpUser" type="email" placeholder="email kamu..."/>
       </div>
-      <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">Password Lama</label>
-        <input class="form-input" id="gpOld" type="password" placeholder="••••••••"/>
-      </div>
-      <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">Password Baru</label>
-        <input class="form-input" id="gpNew" type="password" placeholder="minimal 6 karakter..."/>
-      </div>
+
       <div class="form-err" id="gpErr"></div>
       <div class="form-ok" id="gpOk">✦ Password berhasil diubah!</div>
-      <button class="btn btn-primary btn-full" id="btnGantiPass">Ganti Password →</button>
+      <button class="btn btn-primary btn-full" id="btnGantiPass">Kirim Link Reset →</button>
       <button class="btn btn-ghost btn-full" id="btnCloseModal">Batal</button>
     </div>
   </div>
 </div>
 
 <script type="module" src="login.js"></script>
+
 </body>
 </html>
