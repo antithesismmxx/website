@@ -32,10 +32,16 @@ document.getElementById('heroDate').textContent =
   `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
 
 // ── Logout ──
-document.getElementById('btnLogout').addEventListener('click', () => {
+document.getElementById('btnLogout').addEventListener('click', async () => {
+  try {
+    const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+    await signOut(getAuth());
+  } catch(e) {}
   sessionStorage.clear();
   window.location.href = 'login.html';
 });
+
+
 
 // ── Hamburger ──
 document.getElementById('navHam').addEventListener('click', () =>
