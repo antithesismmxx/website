@@ -85,35 +85,37 @@
       <div class="sec-label" style="margin-bottom:20px;" id="formTitle">Isi Profil</div>
 
       <div class="form-group">
-        <label class="form-label">Foto Profil (URL gambar, opsional)</label>
-        <input class="form-input" id="fFoto" type="url" placeholder="https://..."/>
-        <div class="foto-preview-wrap">
-          <img class="foto-preview" id="fFotoPreview" alt="preview"/>
+        <label class="form-label">Foto Profil</label>
+        <input class="form-input" id="fFoto" type="file" accept="image/*" style="padding:10px;"/>
+        <div class="foto-preview-wrap" style="margin-top:10px;">
+          <img class="foto-preview" id="fFotoPreview" alt="preview" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);"/>
         </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap</label>
+        <input class="form-input" id="fNama" type="text" disabled style="opacity:.5;cursor:not-allowed;"/>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:.85rem;font-style:italic;color:var(--muted2);margin-top:4px;">Nama tidak dapat diubah.</div>
       </div>
 
       <div class="profil-form-grid">
         <div class="form-group">
-          <label class="form-label">Nama Lengkap</label>
-          <input class="form-input" id="fNama" type="text" placeholder="Nama lengkap..."/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Kelas</label>
-          <select class="form-select" id="fKelas">
-            <option value="">Pilih kelas...</option>
-            <option>X</option><option>XI</option><option>XII</option>
-          </select>
-        </div>
-        <div class="form-group">
           <label class="form-label">Sekolah</label>
-          <select class="form-select" id="fSekolah">
+          <select class="form-select" id="fKelas">
             <option value="">Pilih sekolah...</option>
             <option>SMA</option><option>MA</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Domisili Sekarang</label>
-          <input class="form-input" id="fDomisili" type="text" placeholder="Kota domisili..."/>
+          <label class="form-label">Jurusan</label>
+          <select class="form-select" id="fSekolah">
+            <option value="">Pilih jurusan...</option>
+            <option>IPA</option><option>IPS</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label">Domisili Sekarang <span style="color:var(--gold)">*</span></label>
+          <input class="form-input" id="fDomisili" type="text" placeholder="Nama kota domisili kamu..."/>
         </div>
       </div>
 
@@ -163,6 +165,7 @@ const app = getApps().length===0 ? initializeApp({
 const db = getDatabase(app);
 
 document.getElementById('navNama').textContent = nama;
+document.getElementById('fNama').value = nama; // Nama permanen dari session
 document.getElementById('btnLogout').addEventListener('click',()=>{sessionStorage.clear();window.location.href='login.html';});
 document.getElementById('navHam').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
 
@@ -175,11 +178,15 @@ function toast(msg,err=false){
   clearTimeout(t.__tid);t.__tid=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)';},3200);
 }
 
-// ── Preview foto ──
-document.getElementById('fFoto').addEventListener('input',function(){
+// ── Preview foto dari file ──
+document.getElementById('fFoto').addEventListener('change',function(){
   const prev=document.getElementById('fFotoPreview');
-  if(this.value){prev.src=this.value;prev.style.display='block';}
-  else prev.style.display='none';
+  const file=this.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=e=>{prev.src=e.target.result;prev.style.display='block';};
+    reader.readAsDataURL(file);
+  } else prev.style.display='none';
 });
 
 // ── Load profil ──
@@ -207,7 +214,6 @@ onValue(ref(db,'antithesis/anggota'),snap=>{
     }
     // Isi form untuk edit
     document.getElementById('fNama').value=p.nama||nama;
-    document.getElementById('fFoto').value=p.foto||'';
     document.getElementById('fKelas').value=p.kelas||'';
     document.getElementById('fSekolah').value=p.sekolah||'';
     document.getElementById('fDomisili').value=p.domisili||'';
@@ -218,7 +224,6 @@ onValue(ref(db,'antithesis/anggota'),snap=>{
   } else {
     document.getElementById('profilDisplay').style.display='none';
     document.getElementById('profilForm').style.display='block';
-    document.getElementById('fNama').value=nama;
   }
 });
 
@@ -239,15 +244,33 @@ document.getElementById('btnSaveProfil').addEventListener('click',async()=>{
   const fNama=document.getElementById('fNama').value.trim();
   if(!fNama){errEl.textContent='✕ Nama wajib diisi.';errEl.style.display='block';return;}
 
+  const domisili=document.getElementById('fDomisili').value.trim();
+  if(!domisili){errEl.textContent='✕ Domisili wajib diisi.';errEl.style.display='block';return;}
+
   const btn=document.getElementById('btnSaveProfil');
   btn.textContent='Menyimpan...';btn.disabled=true;
 
+  // Foto: convert ke base64 kalau ada file baru
+  let fotoData='';
+  const fotoFile=document.getElementById('fFoto').files[0];
+  if(fotoFile){
+    fotoData=await new Promise(res=>{
+      const r=new FileReader();
+      r.onload=e=>res(e.target.result);
+      r.readAsDataURL(fotoFile);
+    });
+  } else if(myKey){
+    // Pertahankan foto lama
+    const snap=await get(ref(db,'antithesis/anggota/'+myKey+'/foto'));
+    fotoData=snap.val()||'';
+  }
+
   const data={
     nama:fNama,
-    foto:document.getElementById('fFoto').value.trim(),
+    foto:fotoData,
     kelas:document.getElementById('fKelas').value,
     sekolah:document.getElementById('fSekolah').value,
-    domisili:document.getElementById('fDomisili').value.trim(),
+    domisili:domisili,
     motto:document.getElementById('fMotto').value.trim(),
     cerita:document.getElementById('fCerita').value.trim(),
     username:username,
