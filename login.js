@@ -1,327 +1,125 @@
 // ══════════════════════════════════════════════
-//  ANTITHESIS — login.js
-//  Firebase Auth + Whitelist + Email Verification
+//  dashboard.js — ANTITHESIS Dashboard
 // ══════════════════════════════════════════════
 
-import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, get }             from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  sendEmailVerification,
-  onAuthStateChanged,
-  signOut,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// ── Firebase Config ──
-const app = initializeApp({
-  apiKey:            "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
-  authDomain:        "antithesis-al-muayyad.firebaseapp.com",
-  databaseURL:       "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:         "antithesis-al-muayyad",
-  storageBucket:     "antithesis-al-muayyad.firebasestorage.app",
+const firebaseConfig = {
+  apiKey: "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain: "antithesis-al-muayyad.firebaseapp.com",
+  databaseURL: "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "antithesis-al-muayyad",
+  storageBucket: "antithesis-al-muayyad.appspot.com",
   messagingSenderId: "1014116431079",
-  appId:             "1:1014116431079:web:5f490096bf6ecdf7011e42"
-});
+  appId: "1:1014116431079:web:5f490096bf6ecdf7011e42"
+};
+const db = getDatabase(initializeApp(firebaseConfig));
 
-const auth = getAuth(app);
-const db   = getDatabase(app);
+// ── Auth guard ──
+const nama     = sessionStorage.getItem('antithesis_member');
+const username = sessionStorage.getItem('antithesis_username');
+if (!nama) { window.location.href = 'login.html'; }
 
-// ── Helpers ──
-function showErr(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent   = msg;
-  el.style.display = 'block';
-}
-function hideErr(id) {
-  const el = document.getElementById(id);
-  if (el) el.style.display = 'none';
-}
-function showOk(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent   = msg;
-  el.style.display = 'block';
-}
-function firebaseErrMsg(code) {
-  const map = {
-    'auth/email-already-in-use':   'Email sudah terdaftar. Silakan masuk.',
-    'auth/invalid-email':          'Format email tidak valid.',
-    'auth/weak-password':          'Password minimal 6 karakter.',
-    'auth/user-not-found':         'Akun tidak ditemukan.',
-    'auth/wrong-password':         'Password salah.',
-    'auth/invalid-credential':     'Email atau password salah.',
-    'auth/too-many-requests':      'Terlalu banyak percobaan. Coba lagi nanti.',
-    'auth/user-disabled':          'Akun ini dinonaktifkan.',
-    'auth/network-request-failed': 'Periksa koneksi internet kamu.',
-  };
-  return map[code] || 'Terjadi kesalahan. Coba lagi.';
-}
+// ── Greeting ──
+document.getElementById('navNama').textContent  = nama;
+document.getElementById('heroNama').textContent = nama;
 
-// ── Cek nama di whitelist Firebase (case-insensitive) ──
-async function cekWhitelist(nama) {
-  const snap = await get(ref(db, 'antithesis/whitelist'));
-  if (!snap.exists()) return false;
-  const namaLower = nama.trim().toLowerCase();
-  return Object.values(snap.val()).some(item =>
-    (item.nama || item || '').toString().toLowerCase() === namaLower
-  );
-}
+const now = new Date();
+const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+document.getElementById('heroDate').textContent =
+  `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
 
-// ── Redirect jika sudah login & sudah verifikasi email ──
-let isProcessing = false;
-let justLoggedOut = false;
-onAuthStateChanged(auth, async user => {
-  if (justLoggedOut) return;
-  if (user && !isProcessing) {
-    if (!user.emailVerified) { await signOut(auth); return; }
-
-    // Cek banned
-    const akunSnap = await get(ref(db, 'antithesis/akun'));
-    if (akunSnap.exists()) {
-      const myAkun = Object.values(akunSnap.val()).find(a => a.email === user.email);
-      if (myAkun && myAkun.banned === true) { await signOut(auth); return; }
-    }
-
-    sessionStorage.setItem('antithesis_member', user.displayName || user.email);
-    sessionStorage.setItem('antithesis_username', user.email.split('@')[0]);
-    window.location.href = 'dashboard.html';
-  }
-});
-
-// ══════════════════════════
-//  TAB SWITCHING
-// ══════════════════════════
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b  => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-  });
-});
-
-// ══════════════════════════
-//  MASUK (LOGIN)
-// ══════════════════════════
-document.getElementById('btnLogin')?.addEventListener('click', async () => {
-  hideErr('loginErr');
-  const email = document.getElementById('loginUser').value.trim();
-  const pass  = document.getElementById('loginPass').value;
-
-  if (!email) return showErr('loginErr', 'Email wajib diisi.');
-  if (!pass)  return showErr('loginErr', 'Password wajib diisi.');
-
-  const btn = document.getElementById('btnLogin');
-  btn.textContent = 'Memproses...'; btn.disabled = true;
-
+// ── Logout ──
+document.getElementById('btnLogout').addEventListener('click', async () => {
   try {
-    isProcessing = true;
-    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+    await signOut(getAuth());
+  } catch(e) {}
+  sessionStorage.clear();
+  window.location.href = 'login.html';
+});
 
-    if (!cred.user.emailVerified) {
-      isProcessing = false;
-      await signOut(auth);
-      sessionStorage.setItem('pending_verif_email', email);
-      document.getElementById('btnResendVerif').style.display = 'block';
-      showErr('loginErr', '✕ Email belum diverifikasi. Cek inbox/spam lalu klik link verifikasi.');
-      btn.textContent = 'Masuk →'; btn.disabled = false;
-      return;
-    }
 
-    // Cek status banned di database
-    const akunSnap = await get(ref(db, 'antithesis/akun'));
-    let isBanned = false;
-    if (akunSnap.exists()) {
-      const allAkun = akunSnap.val();
-      const myAkun = Object.values(allAkun).find(a => a.email === email);
-      if (myAkun && myAkun.banned === true) isBanned = true;
-    }
-    if (isBanned) {
-      isProcessing = false;
-      await signOut(auth);
-      showErr('loginErr', '✕ Akun kamu telah dinonaktifkan. Hubungi admin.');
-      btn.textContent = 'Masuk →'; btn.disabled = false;
-      return;
-    }
 
-    sessionStorage.setItem('antithesis_member', cred.user.displayName || cred.user.email);
-    sessionStorage.setItem('antithesis_username', cred.user.email.split('@')[0]);
-    window.location.href = 'dashboard.html';
+// ── Hamburger ──
+document.getElementById('navHam').addEventListener('click', () =>
+  document.getElementById('navLinks').classList.toggle('open'));
 
-  } catch (e) {
-    isProcessing = false;
-    showErr('loginErr', firebaseErrMsg(e.code));
-    btn.textContent = 'Masuk →'; btn.disabled = false;
+// ── Pengumuman ──
+onValue(ref(db, 'antithesis/pengumuman'), snap => {
+  const txt = snap.val() || '';
+  const bar = document.getElementById('pgBar');
+  if (txt) { document.getElementById('pgText').textContent = txt; bar.classList.add('show'); }
+  else bar.classList.remove('show');
+});
+
+// ── Countdown ──
+let cdInterval = null;
+const bln = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+onValue(ref(db, 'antithesis/acara'), snap => {
+  const a = snap.val();
+  if (a && a.date) {
+    document.getElementById('countdownWrap').classList.add('visible');
+    document.getElementById('cdEvent').textContent = a.jenis || 'Acara Angkatan';
+    const loc = a.lokasi ? `📍 ${a.lokasi}` : '';
+    const tgl  = a.date   ? `📅 ${a.date}`   : '';
+    document.getElementById('cdLoc').innerHTML =
+      `<span>${tgl}</span>${loc ? ` &nbsp;·&nbsp; <span>${loc}</span>` : ''}`;
+    clearInterval(cdInterval);
+    cdInterval = setInterval(() => tick(new Date(a.date + (a.jam ? 'T'+a.jam : 'T00:00'))), 1000);
+  } else {
+    clearInterval(cdInterval);
+    document.getElementById('countdownWrap').classList.remove('visible');
   }
 });
 
-// ── Kirim ulang email verifikasi ──
-document.getElementById('btnResendVerif')?.addEventListener('click', async () => {
-  const email = sessionStorage.getItem('pending_verif_email') || '';
-  const pass  = document.getElementById('loginPass').value;
-  if (!email || !pass) return showErr('loginErr', 'Masukkan password dulu.');
-  try {
-    isProcessing = true;
-    const cred = await signInWithEmailAndPassword(auth, email, pass);
-    await sendEmailVerification(cred.user);
-    await signOut(auth);
-    isProcessing = false;
-    showOk('loginOk', '✦ Email verifikasi dikirim ulang! Cek inbox kamu.');
-  } catch (e) {
-    isProcessing = false;
-    showErr('loginErr', 'Gagal kirim ulang: ' + firebaseErrMsg(e.code));
-  }
-});
-
-// ── Toggle password (login) ──
-document.getElementById('toggleLoginPass')?.addEventListener('click', function() {
-  const inp = document.getElementById('loginPass');
-  inp.type         = inp.type === 'password' ? 'text' : 'password';
-  this.textContent = inp.type === 'password' ? '👁' : '🙈';
-});
-
-// ══════════════════════════
-//  DAFTAR — MULTI STEP
-// ══════════════════════════
-function goStep(n) {
-  [1, 2].forEach(i => {
-    const step = document.getElementById('daftarStep' + i);
-    if (step) step.style.display = i === n ? 'block' : 'none';
-    const dot = document.getElementById('stepDot' + i);
-    if (dot) {
-      dot.classList.remove('active', 'done');
-      if (i === n) dot.classList.add('active');
-      if (i < n)   dot.classList.add('done');
-    }
-  });
-  document.querySelectorAll('.step-line').forEach((l, idx) => {
-    l.classList.toggle('done', idx < n - 1);
-  });
+function tick(target) {
+  const diff = target - Date.now();
+  if (diff <= 0) { clearInterval(cdInterval); return; }
+  const h = Math.floor(diff / 86400000);
+  const j = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cdH').textContent = String(h).padStart(2,'0');
+  document.getElementById('cdJ').textContent = String(j).padStart(2,'0');
+  document.getElementById('cdM').textContent = String(m).padStart(2,'0');
+  document.getElementById('cdS').textContent = String(s).padStart(2,'0');
 }
 
-// STEP 1 → cek whitelist dulu
-document.getElementById('btnKirimKode')?.addEventListener('click', async () => {
-  hideErr('regErr1');
-  const nama  = document.getElementById('regNama').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
+// ── Stats ──
+onValue(ref(db, 'antithesis/akun'),  s => document.getElementById('statAnggota').textContent  = s.val() ? Object.keys(s.val()).length : 0);
+onValue(ref(db, 'antithesis/anggota'),   s => document.getElementById('statProfil').textContent   = s.val() ? Object.keys(s.val()).length : 0);
+onValue(ref(db, 'antithesis/requests'),  s => document.getElementById('statUsulan').textContent   = s.val() ? Object.keys(s.val()).length : 0);
+onValue(ref(db, 'antithesis/buku'),      s => document.getElementById('statKenangan').textContent = s.val() ? Object.keys(s.val()).length : 0);
 
-  if (!nama)                          return showErr('regErr1', 'Nama lengkap wajib diisi.');
-  if (!email || !email.includes('@')) return showErr('regErr1', 'Format email tidak valid.');
-
-  const btn = document.getElementById('btnKirimKode');
-  btn.textContent = 'Memeriksa...'; btn.disabled = true;
-
-  try {
-    const diizinkan = await cekWhitelist(nama);
-    if (!diizinkan) {
-      showErr('regErr1', '✕ Nama kamu tidak ada dalam daftar anggota. Hubungi admin.');
-      btn.textContent = 'Lanjut →'; btn.disabled = false;
-      return;
+// ── Profil Saya ──
+onValue(ref(db, 'antithesis/anggota'), snap => {
+  const all = snap.val() || {};
+  const myProfil = Object.values(all).find(a => a.username === username || (a.nama||'').toLowerCase() === nama.toLowerCase());
+  if (myProfil) {
+    document.getElementById('profilWrap').style.display = 'grid';
+    document.getElementById('noProfilWrap').style.display = 'none';
+    document.getElementById('profilNama').textContent = myProfil.nama || nama;
+    document.getElementById('profilKelas').textContent = myProfil.kelas ? 'Kelas ' + myProfil.kelas : '';
+    document.getElementById('profilSekolah').innerHTML = myProfil.sekolah
+      ? `<span class="badge badge-${myProfil.sekolah.toLowerCase()}">${myProfil.sekolah} Al Muayyad</span>` : '';
+    document.getElementById('profilMotto').textContent = myProfil.motto ? `"${myProfil.motto}"` : '';
+    if (myProfil.foto) {
+      document.getElementById('profilFoto').src = myProfil.foto;
+      document.getElementById('profilFoto').style.display = 'block';
+      document.getElementById('profilPh').style.display = 'none';
     }
-    sessionStorage.setItem('reg_nama',  nama);
-    sessionStorage.setItem('reg_email', email);
-    btn.textContent = 'Lanjut →'; btn.disabled = false;
-    goStep(2);
-  } catch (e) {
-    showErr('regErr1', 'Gagal memeriksa data. Cek koneksi kamu.');
-    btn.textContent = 'Lanjut →'; btn.disabled = false;
+  } else {
+    document.getElementById('profilWrap').style.display = 'none';
+    document.getElementById('noProfilWrap').style.display = 'block';
   }
 });
 
-// STEP 2 → Buat akun + kirim email verifikasi
-document.getElementById('btnDaftar')?.addEventListener('click', async () => {
-  hideErr('regErr3');
-  const pass  = document.getElementById('regPass').value;
-  const pass2 = document.getElementById('regPass2').value;
-  const nama  = sessionStorage.getItem('reg_nama')  || '';
-  const email = sessionStorage.getItem('reg_email') || '';
-
-  if (!pass)           return showErr('regErr3', 'Password wajib diisi.');
-  if (pass.length < 6) return showErr('regErr3', 'Password minimal 6 karakter.');
-  if (pass !== pass2)  return showErr('regErr3', 'Konfirmasi password tidak cocok.');
-
-  const btn = document.getElementById('btnDaftar');
-  btn.textContent = 'Membuat akun...'; btn.disabled = true;
-
-  try {
-    isProcessing = true;
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    await updateProfile(cred.user, { displayName: nama });
-    await sendEmailVerification(cred.user);
-    await set(ref(db, 'antithesis/akun/' + cred.user.uid), {
-      nama, email, createdAt: Date.now(), verified: false
-    });
-    await signOut(auth);
-    isProcessing = false;
-
-    document.getElementById('daftarStep2').innerHTML = `
-      <div style="text-align:center;padding:20px 0;">
-        <div style="font-size:3rem;margin-bottom:16px;">📧</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:10px;">
-          Cek <em style="color:var(--gold)">Email Kamu!</em>
-        </div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);line-height:1.8;margin-bottom:24px;">
-          Link verifikasi sudah dikirim ke<br>
-          <strong style="color:var(--cream);font-style:normal;">${email}</strong><br><br>
-          Klik link di email tersebut, lalu kembali ke sini untuk masuk.
-        </div>
-        <button onclick="document.querySelector('[data-tab=masuk]').click()" class="btn btn-primary">
-          Ke Halaman Masuk →
-        </button>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:.85rem;font-style:italic;color:var(--muted2);margin-top:14px;">
-          Tidak menerima email? Cek folder spam.
-        </div>
-      </div>`;
-
-  } catch (e) {
-    isProcessing = false;
-    showErr('regErr3', firebaseErrMsg(e.code));
-    btn.textContent = 'Selesai & Masuk →'; btn.disabled = false;
-  }
-});
-
-// ── Toggle password (daftar) ──
-['toggleRegPass', 'toggleRegPass2'].forEach(id => {
-  document.getElementById(id)?.addEventListener('click', function() {
-    const inp = this.previousElementSibling;
-    inp.type         = inp.type === 'password' ? 'text' : 'password';
-    this.textContent = inp.type === 'password' ? '👁' : '🙈';
-  });
-});
-
-// ══════════════════════════
-//  LUPA PASSWORD (RESET)
-// ══════════════════════════
-document.getElementById('btnOpenPass')?.addEventListener('click', () => {
-  document.getElementById('passModal').classList.add('show');
-});
-document.getElementById('btnCloseModal')?.addEventListener('click', () => {
-  document.getElementById('passModal').classList.remove('show');
-});
-
-document.getElementById('btnGantiPass')?.addEventListener('click', async () => {
-  hideErr('gpErr');
-  const email = document.getElementById('gpUser').value.trim();
-  if (!email || !email.includes('@')) return showErr('gpErr', 'Masukkan email yang valid.');
-
-  const btn = document.getElementById('btnGantiPass');
-  btn.textContent = 'Mengirim...'; btn.disabled = true;
-
-  try {
-    await sendPasswordResetEmail(auth, email);
-    document.getElementById('gpOk').style.display = 'block';
-    document.getElementById('gpOk').textContent   = '✦ Link reset dikirim ke ' + email;
-    btn.textContent = 'Terkirim!';
-  } catch (e) {
-    showErr('gpErr', firebaseErrMsg(e.code));
-    btn.textContent = 'Kirim Link Reset →'; btn.disabled = false;
-  }
-});
-
-// ── Tombol kembali ke step 1 ──
-document.getElementById('btnBackStep1')?.addEventListener('click', () => goStep(1));
+// ── Scroll reveal ──
+const obs = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) e.target.classList.add('visible');
+}), { threshold: 0.08 });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
