@@ -65,7 +65,7 @@ input, textarea, select { font-family: inherit; }
 }
 .nav-brand {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.72rem;           /* was .6rem ≈ 9.6px → now 11.5px */
+  font-size: 0.72rem;
   letter-spacing: .55em;
   text-transform: uppercase;
   color: var(--gold);
@@ -73,7 +73,7 @@ input, textarea, select { font-family: inherit; }
 }
 .nav-brand span {
   display: block;
-  font-size: 0.58rem;           /* was .38rem ≈ 6px → now 9.3px */
+  font-size: 0.58rem;
   letter-spacing: .4em;
   color: var(--muted);
   margin-top: 1px;
@@ -85,7 +85,7 @@ input, textarea, select { font-family: inherit; }
 }
 .nav-links a {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.65rem;           /* was .48rem ≈ 7.7px → now 10.4px */
+  font-size: 0.65rem;
   letter-spacing: .32em;
   text-transform: uppercase;
   color: var(--muted);
@@ -105,7 +105,7 @@ input, textarea, select { font-family: inherit; }
 }
 .nav-user-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.95rem;           /* was .9rem — fine, slight bump */
+  font-size: 0.95rem;
   font-style: italic;
   color: var(--cream);
 }
@@ -115,7 +115,7 @@ input, textarea, select { font-family: inherit; }
   border: 1px solid var(--border2);
   color: var(--muted);
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;            /* was .42rem ≈ 6.7px → now 9.6px */
+  font-size: 0.60rem;
   letter-spacing: .28em;
   text-transform: uppercase;
   padding: 8px 16px;
@@ -153,7 +153,7 @@ input, textarea, select { font-family: inherit; }
 }
 .page-hero-label {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.65rem;           /* was .48rem → now 10.4px */
+  font-size: 0.65rem;
   letter-spacing: .5em;
   color: var(--gold);
   text-transform: uppercase;
@@ -172,9 +172,7 @@ input, textarea, select { font-family: inherit; }
   line-height: 1.05;
   max-width: 700px;
 }
-.page-hero h1 em {
-  font-style: italic; color: var(--gold);
-}
+.page-hero h1 em { font-style: italic; color: var(--gold); }
 .page-hero-sub {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.15rem;
@@ -225,7 +223,7 @@ input, textarea, select { font-family: inherit; }
 .form-group { margin-bottom: 20px; }
 .form-label {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.65rem;           /* was .48rem → now 10.4px */
+  font-size: 0.65rem;
   letter-spacing: .38em;
   color: var(--gold);
   text-transform: uppercase;
@@ -257,7 +255,7 @@ input, textarea, select { font-family: inherit; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.68rem;           /* was .52rem ≈ 8.3px → now 10.9px */
+  font-size: 0.68rem;
   letter-spacing: .38em;
   text-transform: uppercase;
   font-weight: 600;
@@ -297,7 +295,7 @@ input, textarea, select { font-family: inherit; }
 ══════════════════════════ */
 .sec-label {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.62rem;           /* was .46rem → now 9.9px */
+  font-size: 0.62rem;
   letter-spacing: .5em;
   color: var(--gold);
   text-transform: uppercase;
@@ -333,7 +331,7 @@ input, textarea, select { font-family: inherit; }
 .badge {
   display: inline-block;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.58rem;           /* was .38rem ≈ 6px → now 9.3px */
+  font-size: 0.58rem;
   letter-spacing: .2em;
   text-transform: uppercase;
   padding: 3px 10px;
@@ -371,7 +369,7 @@ input, textarea, select { font-family: inherit; }
 .loading-overlay.hide { opacity: 0; pointer-events: none; }
 .loading-brand {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.78rem;           /* was .65rem → now 12.5px */
+  font-size: 0.78rem;
   letter-spacing: .6em;
   color: var(--gold);
   text-transform: uppercase;
@@ -417,14 +415,14 @@ footer {
 }
 .foot-brand {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.7rem;            /* was .58rem → now 11.2px */
+  font-size: 0.70rem;
   letter-spacing: .5em;
   color: var(--gold);
   text-transform: uppercase;
 }
 .foot-brand span {
   display: block;
-  font-size: 0.58rem;           /* was .38rem → now 9.3px */
+  font-size: 0.58rem;
   color: var(--muted);
   margin-top: 4px;
   letter-spacing: .3em;
@@ -441,7 +439,7 @@ footer {
 }
 .foot-links a {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;            /* was .42rem → now 9.6px */
+  font-size: 0.60rem;
   letter-spacing: .28em;
   color: var(--muted2);
   text-transform: uppercase;
@@ -497,7 +495,7 @@ footer {
 }
 .member-meta {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;            /* was .42rem → now 9.6px */
+  font-size: 0.60rem;
   letter-spacing: .22em;
   color: var(--muted);
   text-transform: uppercase;
@@ -505,7 +503,7 @@ footer {
 }
 .member-motto {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.92rem;           /* was .88rem — slight bump */
+  font-size: 0.92rem;
   font-style: italic;
   color: var(--muted);
   line-height: 1.6;
