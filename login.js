@@ -1,152 +1,244 @@
 // ══════════════════════════════════════════════
-//  login.js — Autentikasi ANTITHESIS
+//  ANTITHESIS — login.js
+//  Firebase Authentication (Email + Password)
 // ══════════════════════════════════════════════
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, get }             from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  onAuthStateChanged,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const firebaseConfig = {
-  databaseURL: "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
-  apiKey: "AIzaSyExample", projectId: "antithesis-al-muayyad",
-  appId: "1:1014116431079:web:5f490096bf6ecdf7011e42"
-};
-const db = getDatabase(initializeApp(firebaseConfig));
+// ── Firebase Config ──
+const app = initializeApp({
+  apiKey:            "AIzaSyDF7IAbfI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain:        "antithesis-al-muayyad.firebaseapp.com",
+  databaseURL:       "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "antithesis-al-muayyad",
+  storageBucket:     "antithesis-al-muayyad.firebasestorage.app",
+  messagingSenderId: "1014116431079",
+  appId:             "1:1014116431079:web:5f490096bf6ecdf7011e42"
+});
 
-// ── SHA-256 ──
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
+const auth = getAuth(app);
+const db   = getDatabase(app);
 
-// ── Session ──
-function setSession(nama, username) {
-  sessionStorage.setItem('antithesis_member', nama);
-  sessionStorage.setItem('antithesis_username', username);
-}
-if (sessionStorage.getItem('antithesis_member')) {
-  window.location.href = 'dashboard.html';
-}
-
-// ── Show/hide err ──
+// ── Helpers ──
 function showErr(id, msg) {
   const el = document.getElementById(id);
-  el.textContent = msg; el.style.display = 'block';
+  if (!el) return;
+  el.textContent    = msg;
+  el.style.display  = 'block';
+  el.style.color    = '';
+  el.style.background = '';
+  el.style.border   = '';
 }
-function hideErr(id) { document.getElementById(id).style.display = 'none'; }
+function hideErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+function showOk(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent   = msg;
+  el.style.display = 'block';
+}
+function firebaseErrMsg(code) {
+  const map = {
+    'auth/email-already-in-use':    'Email sudah terdaftar. Silakan masuk.',
+    'auth/invalid-email':           'Format email tidak valid.',
+    'auth/weak-password':           'Password minimal 6 karakter.',
+    'auth/user-not-found':          'Akun tidak ditemukan.',
+    'auth/wrong-password':          'Password salah.',
+    'auth/invalid-credential':      'Email atau password salah.',
+    'auth/too-many-requests':       'Terlalu banyak percobaan. Coba lagi nanti.',
+    'auth/user-disabled':           'Akun ini dinonaktifkan.',
+    'auth/network-request-failed':  'Periksa koneksi internet kamu.',
+  };
+  return map[code] || 'Terjadi kesalahan. Coba lagi.';
+}
 
-// ── TABS ──
+// ── Redirect jika sudah login ──
+onAuthStateChanged(auth, user => {
+  if (user && user.emailVerified) {
+    window.location.href = 'dashboard.html';
+  }
+});
+
+// ══════════════════════════
+//  TAB SWITCHING
+// ══════════════════════════
 document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', function () {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b  => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    this.classList.add('active');
-    document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
 });
 
-// ── PASSWORD TOGGLE ──
-function setupToggle(btnId, inputId) {
-  document.getElementById(btnId).addEventListener('click', () => {
-    const inp = document.getElementById(inputId);
-    inp.type = inp.type === 'password' ? 'text' : 'password';
+// ══════════════════════════
+//  MASUK (LOGIN)
+// ══════════════════════════
+document.getElementById('btnLogin')?.addEventListener('click', async () => {
+  hideErr('loginErr');
+  const email = document.getElementById('loginUser').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+
+  if (!email) return showErr('loginErr', 'Email wajib diisi.');
+  if (!pass)  return showErr('loginErr', 'Password wajib diisi.');
+
+  const btn = document.getElementById('btnLogin');
+  btn.textContent = 'Memproses...'; btn.disabled = true;
+
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    if (!cred.user.emailVerified) {
+      await auth.signOut();
+      showErr('loginErr', 'Email belum diverifikasi. Cek inbox kamu.');
+      return;
+    }
+    window.location.href = 'dashboard.html';
+  } catch (e) {
+    showErr('loginErr', firebaseErrMsg(e.code));
+  } finally {
+    btn.textContent = 'Masuk →'; btn.disabled = false;
+  }
+});
+
+// ── Toggle password (login) ──
+document.getElementById('toggleLoginPass')?.addEventListener('click', function() {
+  const inp = document.getElementById('loginPass');
+  inp.type        = inp.type === 'password' ? 'text' : 'password';
+  this.textContent = inp.type === 'password' ? '👁' : '🙈';
+});
+
+// ══════════════════════════
+//  DAFTAR — MULTI STEP
+// ══════════════════════════
+function goStep(n) {
+  [1, 2, 3].forEach(i => {
+    const step = document.getElementById('daftarStep' + i);
+    if (step) step.style.display = i === n ? 'block' : 'none';
+    const dot = document.getElementById('stepDot' + i);
+    if (dot) {
+      dot.classList.remove('active', 'done');
+      if (i === n) dot.classList.add('active');
+      if (i < n)  dot.classList.add('done');
+    }
+  });
+  document.querySelectorAll('.step-line').forEach((l, idx) => {
+    l.classList.toggle('done', idx < n - 1);
   });
 }
-setupToggle('toggleLoginPass', 'loginPass');
-setupToggle('toggleRegPass', 'regPass');
 
-// ── MASUK ──
-document.getElementById('btnLogin').addEventListener('click', async () => {
-  const username = document.getElementById('loginUser').value.trim().toLowerCase();
-  const pass     = document.getElementById('loginPass').value;
-  hideErr('loginErr');
-  if (!username || !pass) { showErr('loginErr', '✕  Lengkapi semua field'); return; }
+// STEP 1 → STEP 2 (validasi nama + email, lanjut ke password)
+document.getElementById('btnKirimKode')?.addEventListener('click', () => {
+  hideErr('regErr1');
+  const nama  = document.getElementById('regNama').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
 
-  const snap = await get(ref(db, 'antithesis/accounts/' + username));
-  if (!snap.exists()) { showErr('loginErr', '✕  Username tidak ditemukan'); return; }
+  if (!nama)                      return showErr('regErr1', 'Nama lengkap wajib diisi.');
+  if (!email || !email.includes('@')) return showErr('regErr1', 'Format email tidak valid.');
 
-  const data   = snap.val();
-  const hashed = await sha256(pass);
-  if (data.password !== hashed) { showErr('loginErr', '✕  Password salah'); return; }
+  // Simpan sementara di session
+  sessionStorage.setItem('reg_nama',  nama);
+  sessionStorage.setItem('reg_email', email);
 
-  setSession(data.nama, username);
-  window.location.href = 'dashboard.html';
+  goStep(2);
 });
 
-// Enter key on login
-['loginUser','loginPass'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('btnLogin').click();
+// STEP 2 → Buat akun Firebase + kirim verifikasi
+document.getElementById('btnDaftar')?.addEventListener('click', async () => {
+  hideErr('regErr3');
+  const pass  = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const nama  = sessionStorage.getItem('reg_nama')  || '';
+  const email = sessionStorage.getItem('reg_email') || '';
+
+  if (!pass)           return showErr('regErr3', 'Password wajib diisi.');
+  if (pass.length < 6) return showErr('regErr3', 'Password minimal 6 karakter.');
+  if (pass !== pass2)  return showErr('regErr3', 'Konfirmasi password tidak cocok.');
+
+  const btn = document.getElementById('btnDaftar');
+  btn.textContent = 'Membuat akun...'; btn.disabled = true;
+
+  try {
+    // Buat akun Firebase Auth
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+
+    // Set display name
+    await updateProfile(cred.user, { displayName: nama });
+
+    // Simpan data ke Realtime Database
+    await set(ref(db, 'antithesis/akun/' + cred.user.uid), {
+      nama,
+      email,
+      createdAt: Date.now(),
+      verified:  false
+    });
+
+    // Kirim email verifikasi (Firebase kirim otomatis)
+    await sendEmailVerification(cred.user);
+
+    // Logout dulu — harus verifikasi email sebelum bisa masuk
+    await auth.signOut();
+
+    showOk('regOk', '✦ Akun dibuat! Cek email ' + email + ' untuk verifikasi.');
+    btn.textContent = 'Selesai'; btn.disabled = true;
+
+    // Alihkan ke tab masuk setelah 3 detik
+    setTimeout(() => {
+      document.querySelector('[data-tab="masuk"]').click();
+      document.getElementById('loginUser').value = email;
+    }, 3000);
+
+  } catch (e) {
+    showErr('regErr3', firebaseErrMsg(e.code));
+    btn.textContent = 'Selesai & Masuk →'; btn.disabled = false;
+  }
+});
+
+// ── Toggle password (daftar) ──
+['toggleRegPass', 'toggleRegPass2'].forEach(id => {
+  document.getElementById(id)?.addEventListener('click', function() {
+    const inp = this.previousElementSibling;
+    inp.type         = inp.type === 'password' ? 'text' : 'password';
+    this.textContent = inp.type === 'password' ? '👁' : '🙈';
   });
 });
 
-// ── DAFTAR ──
-document.getElementById('btnDaftar').addEventListener('click', async () => {
-  const username = document.getElementById('regUser').value.trim().toLowerCase();
-  const nama     = document.getElementById('regNama').value.trim();
-  const pass     = document.getElementById('regPass').value;
-  hideErr('regErr');
-  document.getElementById('regOk').style.display = 'none';
-
-  if (!username || !nama || !pass) { showErr('regErr', '✕  Lengkapi semua field'); return; }
-  if (pass.length < 6)             { showErr('regErr', '✕  Password minimal 6 karakter'); return; }
-  if (!/^[a-z0-9_]+$/.test(username)) { showErr('regErr', '✕  Username hanya huruf kecil, angka, underscore'); return; }
-
-  // Cek whitelist
-  const wlSnap = await get(ref(db, 'antithesis/whitelist'));
-  const wl = wlSnap.val() || {};
-  const namaLower = nama.toLowerCase();
-  const found = Object.values(wl).some(v => {
-    const n = typeof v === 'string' ? v : (v.nama || '');
-    return n.toLowerCase() === namaLower;
-  });
-  if (!found) { showErr('regErr', '✕  Nama tidak ditemukan dalam daftar anggota'); return; }
-
-  // Cek username sudah ada
-  const existing = await get(ref(db, 'antithesis/accounts/' + username));
-  if (existing.exists()) { showErr('regErr', '✕  Username sudah dipakai'); return; }
-
-  const hashed = await sha256(pass);
-  await set(ref(db, 'antithesis/accounts/' + username), { nama, password: hashed });
-
-  document.getElementById('regOk').style.display = 'block';
-  document.getElementById('regUser').value = '';
-  document.getElementById('regNama').value = '';
-  document.getElementById('regPass').value = '';
-});
-
-// ── MODAL GANTI PASSWORD ──
-document.getElementById('btnOpenPass').addEventListener('click', () => {
+// ══════════════════════════
+//  LUPA PASSWORD (RESET)
+// ══════════════════════════
+document.getElementById('btnOpenPass')?.addEventListener('click', () => {
   document.getElementById('passModal').classList.add('show');
 });
-document.getElementById('btnCloseModal').addEventListener('click', () => {
+document.getElementById('btnCloseModal')?.addEventListener('click', () => {
   document.getElementById('passModal').classList.remove('show');
 });
-document.getElementById('passModal').addEventListener('click', function (e) {
-  if (e.target === this) this.classList.remove('show');
-});
 
-document.getElementById('btnGantiPass').addEventListener('click', async () => {
-  const username = document.getElementById('gpUser').value.trim().toLowerCase();
-  const oldPass  = document.getElementById('gpOld').value;
-  const newPass  = document.getElementById('gpNew').value;
+document.getElementById('btnGantiPass')?.addEventListener('click', async () => {
   hideErr('gpErr');
-  document.getElementById('gpOk').style.display = 'none';
+  const email = document.getElementById('gpUser').value.trim();
+  if (!email || !email.includes('@')) return showErr('gpErr', 'Masukkan email yang valid.');
 
-  if (!username || !oldPass || !newPass) { showErr('gpErr', '✕  Lengkapi semua field'); return; }
-  if (newPass.length < 6)               { showErr('gpErr', '✕  Password baru minimal 6 karakter'); return; }
+  const btn = document.getElementById('btnGantiPass');
+  btn.textContent = 'Mengirim...'; btn.disabled = true;
 
-  const snap = await get(ref(db, 'antithesis/accounts/' + username));
-  if (!snap.exists()) { showErr('gpErr', '✕  Username tidak ditemukan'); return; }
-
-  const data     = snap.val();
-  const oldHash  = await sha256(oldPass);
-  if (data.password !== oldHash) { showErr('gpErr', '✕  Password lama salah'); return; }
-
-  const newHash  = await sha256(newPass);
-  await set(ref(db, 'antithesis/accounts/' + username + '/password'), newHash);
-
-  document.getElementById('gpOk').style.display = 'block';
-  document.getElementById('gpUser').value = '';
-  document.getElementById('gpOld').value  = '';
-  document.getElementById('gpNew').value  = '';
+  try {
+    await sendPasswordResetEmail(auth, email);
+    document.getElementById('gpOk').style.display = 'block';
+    document.getElementById('gpOk').textContent   = '✦ Link reset dikirim ke ' + email;
+    btn.textContent = 'Terkirim!';
+  } catch (e) {
+    showErr('gpErr', firebaseErrMsg(e.code));
+    btn.textContent = 'Ganti Password →'; btn.disabled = false;
+  }
 });
