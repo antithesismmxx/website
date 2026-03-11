@@ -4,13 +4,16 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Verifikasi Email — ANTITHESIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"/>
 <style>
 body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .verify-wrap {
   width: 100%; max-width: 480px;
   margin: 24px;
-  background: var(--dark2);
+  background: var(--bg2);
   border: 1px solid var(--border2);
   position: relative;
   overflow: hidden;
@@ -27,14 +30,14 @@ body { min-height: 100vh; display: flex; flex-direction: column; align-items: ce
 }
 .verify-icon { font-size: 3rem; margin-bottom: 16px; }
 .verify-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'DM Serif Display', serif;
   font-size: 1.8rem; font-weight: 900;
-  color: var(--white);
+  color: var(--text);
 }
-.verify-title em { font-style: italic; color: var(--gold); }
+.verify-title em { font-style: italic; color: var(--green-dark); }
 .verify-body { padding: 28px 40px 36px; }
 .verify-msg {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 1rem; font-style: italic;
   color: var(--muted);
   line-height: 1.8;
@@ -43,13 +46,13 @@ body { min-height: 100vh; display: flex; flex-direction: column; align-items: ce
 }
 .verify-email {
   font-style: normal;
-  color: var(--cream);
+  color: var(--text2);
   font-weight: 600;
 }
 .verify-status {
   text-align: center;
   padding: 12px 20px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: .5rem;
   letter-spacing: .25em;
   text-transform: uppercase;
@@ -62,7 +65,7 @@ body { min-height: 100vh; display: flex; flex-direction: column; align-items: ce
 .verify-brand {
   text-align: center;
   margin-top: 28px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: .48rem;
   letter-spacing: .4em;
   color: var(--muted2);
