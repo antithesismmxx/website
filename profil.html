@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Profil Saya — ANTITHESIS</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.profil-hero{padding:72px 60px 60px;background:var(--dark2);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.profil-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 70% 50%,rgba(201,168,76,.05) 0%,transparent 65%);pointer-events:none;}
+.profil-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(201,168,76,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.02) 1px,transparent 1px);background-size:80px 80px;}
+
+.profil-card{background:var(--dark2);border:1px solid var(--border);padding:40px;margin-top:40px;position:relative;}
+.profil-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
+.profil-avatar-wrap{display:flex;align-items:center;gap:28px;margin-bottom:32px;flex-wrap:wrap;}
+.profil-avatar{width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);}
+.profil-avatar-ph{width:100px;height:100px;border-radius:50%;border:2px solid var(--border);background:var(--dark3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--muted2);}
+.profil-name{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--white);}
+.profil-meta{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-top:6px;}
+
+.profil-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.foto-preview-wrap{margin-top:8px;}
+.foto-preview{width:80px;height:80px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);display:none;}
+
+@media(max-width:960px){
+  .profil-hero{padding:48px 28px 40px;}
+  .profil-form-grid{grid-template-columns:1fr;}
+  .profil-card{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <a href="index.html" class="nav-brand">ANTITHESIS<span>Al Muayyad Surakarta · 2018–2020</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="anggota.html">Direktori</a></li>
+    <li><a href="polling.html">Polling</a></li>
+    <li><a href="galeri.html">Kenangan</a></li>
+    <li><a href="acara.html">Acara</a></li>
+    <li><a href="profil.html" class="active">Profil</a></li>
+    <li class="nav-mobile-logout"><button class="btn-logout" onclick="sessionStorage.clear();window.location.href='login.html'">Keluar</button></li>
+  </ul>
+  <div class="nav-user">
+    <span class="nav-user-name">Halo, <span id="navNama">—</span></span>
+    <button class="btn-logout" id="btnLogout">Keluar</button>
+  </div>
+  <button class="nav-hamburger" id="navHam"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page">
+  <div class="profil-hero">
+    <div class="profil-hero-bg"></div>
+    <div class="profil-hero-grid"></div>
+    <div class="container" style="position:relative;z-index:1;">
+      <div class="sec-label anim-up d1">Akun Kamu</div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;color:var(--white);line-height:1.05;" class="anim-up d2">
+        Profil <em style="color:var(--gold)">Saya</em>
+      </h1>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:var(--muted);margin-top:8px;" class="anim-up d3">
+        Lengkapi profilmu agar teman-teman bisa mengenalmu.
+      </p>
+    </div>
+  </div>
+
+  <div class="container section">
+
+    <!-- PROFIL DISPLAY -->
+    <div class="profil-card rv" id="profilDisplay" style="display:none;">
+      <div class="profil-avatar-wrap">
+        <img class="profil-avatar" id="dispFoto" src="" alt="" style="display:none;"/>
+        <div class="profil-avatar-ph" id="dispPh">👤</div>
+        <div>
+          <div class="profil-name" id="dispNama">—</div>
+          <div class="profil-meta" id="dispMeta"></div>
+        </div>
+      </div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:var(--muted);margin-bottom:24px;line-height:1.8;" id="dispMotto"></div>
+      <button class="btn btn-outline" id="btnEditProfil">✏️ Edit Profil</button>
+    </div>
+
+    <!-- FORM PROFIL -->
+    <div class="profil-card rv" id="profilForm">
+      <div class="sec-label" style="margin-bottom:20px;" id="formTitle">Isi Profil</div>
+
+      <div class="form-group">
+        <label class="form-label">Foto Profil (URL gambar, opsional)</label>
+        <input class="form-input" id="fFoto" type="url" placeholder="https://..."/>
+        <div class="foto-preview-wrap">
+          <img class="foto-preview" id="fFotoPreview" alt="preview"/>
+        </div>
+      </div>
+
+      <div class="profil-form-grid">
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <input class="form-input" id="fNama" type="text" placeholder="Nama lengkap..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kelas</label>
+          <select class="form-select" id="fKelas">
+            <option value="">Pilih kelas...</option>
+            <option>X</option><option>XI</option><option>XII</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sekolah</label>
+          <select class="form-select" id="fSekolah">
+            <option value="">Pilih sekolah...</option>
+            <option>SMA</option><option>MA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Domisili Sekarang</label>
+          <input class="form-input" id="fDomisili" type="text" placeholder="Kota domisili..."/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Motto / Quote (opsional)</label>
+        <input class="form-input" id="fMotto" type="text" placeholder="Motto hidupmu..."/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Cerita Singkat (opsional)</label>
+        <textarea class="form-textarea" id="fCerita" rows="3" placeholder="Ceritakan sedikit tentang dirimu..."></textarea>
+      </div>
+
+      <div class="form-err" id="profilErr" style="display:none;"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="btnSaveProfil">Simpan Profil →</button>
+        <button class="btn btn-ghost" id="btnCancelEdit" style="display:none;">Batal</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="foot-brand">ANTITHESIS<span>SMA & MA Al Muayyad Surakarta · 2018–2020</span></div>
+  <div class="foot-mid">Selamanya Bersama, Selamanya Bangga.</div>
+  <ul class="foot-links"><li><a href="#">Instagram</a></li><li><a href="#">WhatsApp</a></li></ul>
+</footer>
+
+<script type="module">
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getDatabase,ref,onValue,set,get}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const nama     = sessionStorage.getItem('antithesis_member');
+const username = sessionStorage.getItem('antithesis_username');
+if(!nama){window.location.href='login.html';}
+
+const app = getApps().length===0 ? initializeApp({
+  apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain:"antithesis-al-muayyad.firebaseapp.com",
+  databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"antithesis-al-muayyad",
+  storageBucket:"antithesis-al-muayyad.appspot.com",
+  messagingSenderId:"1014116431079",
+  appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"
+}) : getApps()[0];
+const db = getDatabase(app);
+
+document.getElementById('navNama').textContent = nama;
+document.getElementById('btnLogout').addEventListener('click',()=>{sessionStorage.clear();window.location.href='login.html';});
+document.getElementById('navHam').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+
+// ── Toast ──
+function toast(msg,err=false){
+  let t=document.getElementById('__toast');
+  if(!t){t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:#111;border:1px solid rgba(201,168,76,.35);font-family:Montserrat,sans-serif;font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;padding:12px 26px;z-index:9999;opacity:0;transition:all .4s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 36px rgba(0,0,0,.6);';document.body.appendChild(t);}
+  t.style.color=err?'#e74c3c':'#c9a84c';
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t.__tid);t.__tid=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)';},3200);
+}
+
+// ── Preview foto ──
+document.getElementById('fFoto').addEventListener('input',function(){
+  const prev=document.getElementById('fFotoPreview');
+  if(this.value){prev.src=this.value;prev.style.display='block';}
+  else prev.style.display='none';
+});
+
+// ── Load profil ──
+let myKey=null;
+onValue(ref(db,'antithesis/anggota'),snap=>{
+  const all=snap.val()||{};
+  const entry=Object.entries(all).find(([,a])=>
+    a.username===username||(a.nama||'').toLowerCase()===nama.toLowerCase()
+  );
+
+  if(entry){
+    myKey=entry[0];
+    const p=entry[1];
+    // Tampilkan display
+    document.getElementById('profilDisplay').style.display='block';
+    document.getElementById('profilForm').style.display='none';
+    document.getElementById('dispNama').textContent=p.nama||nama;
+    document.getElementById('dispMeta').textContent=
+      [p.kelas?'Kelas '+p.kelas:'',p.sekolah?p.sekolah+' Al Muayyad':'',p.domisili||''].filter(Boolean).join(' · ');
+    document.getElementById('dispMotto').textContent=p.motto?'"'+p.motto+'"':'';
+    if(p.foto){
+      document.getElementById('dispFoto').src=p.foto;
+      document.getElementById('dispFoto').style.display='block';
+      document.getElementById('dispPh').style.display='none';
+    }
+    // Isi form untuk edit
+    document.getElementById('fNama').value=p.nama||nama;
+    document.getElementById('fFoto').value=p.foto||'';
+    document.getElementById('fKelas').value=p.kelas||'';
+    document.getElementById('fSekolah').value=p.sekolah||'';
+    document.getElementById('fDomisili').value=p.domisili||'';
+    document.getElementById('fMotto').value=p.motto||'';
+    document.getElementById('fCerita').value=p.cerita||'';
+    document.getElementById('formTitle').textContent='Edit Profil';
+    document.getElementById('btnCancelEdit').style.display='inline-flex';
+  } else {
+    document.getElementById('profilDisplay').style.display='none';
+    document.getElementById('profilForm').style.display='block';
+    document.getElementById('fNama').value=nama;
+  }
+});
+
+// ── Edit profil ──
+document.getElementById('btnEditProfil').addEventListener('click',()=>{
+  document.getElementById('profilDisplay').style.display='none';
+  document.getElementById('profilForm').style.display='block';
+});
+document.getElementById('btnCancelEdit').addEventListener('click',()=>{
+  document.getElementById('profilDisplay').style.display='block';
+  document.getElementById('profilForm').style.display='none';
+});
+
+// ── Simpan profil ──
+document.getElementById('btnSaveProfil').addEventListener('click',async()=>{
+  const errEl=document.getElementById('profilErr');
+  errEl.style.display='none';
+  const fNama=document.getElementById('fNama').value.trim();
+  if(!fNama){errEl.textContent='✕ Nama wajib diisi.';errEl.style.display='block';return;}
+
+  const btn=document.getElementById('btnSaveProfil');
+  btn.textContent='Menyimpan...';btn.disabled=true;
+
+  const data={
+    nama:fNama,
+    foto:document.getElementById('fFoto').value.trim(),
+    kelas:document.getElementById('fKelas').value,
+    sekolah:document.getElementById('fSekolah').value,
+    domisili:document.getElementById('fDomisili').value.trim(),
+    motto:document.getElementById('fMotto').value.trim(),
+    cerita:document.getElementById('fCerita').value.trim(),
+    username:username,
+    updatedAt:Date.now()
+  };
+
+  const key = myKey || username || nama.replace(/\s+/g,'-').toLowerCase();
+  await set(ref(db,'antithesis/anggota/'+key),data);
+  toast('✦ Profil berhasil disimpan!');
+  btn.textContent='Simpan Profil →';btn.disabled=false;
+});
+
+// Scroll reveal
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
