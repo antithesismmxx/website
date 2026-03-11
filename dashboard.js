@@ -6,8 +6,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
+  apiKey: "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain: "antithesis-al-muayyad.firebaseapp.com",
   databaseURL: "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
-  apiKey: "AIzaSyExample", projectId: "antithesis-al-muayyad",
+  projectId: "antithesis-al-muayyad",
+  storageBucket: "antithesis-al-muayyad.appspot.com",
+  messagingSenderId: "1014116431079",
   appId: "1:1014116431079:web:5f490096bf6ecdf7011e42"
 };
 const db = getDatabase(initializeApp(firebaseConfig));
@@ -80,7 +84,7 @@ function tick(target) {
 }
 
 // ── Stats ──
-onValue(ref(db, 'antithesis/accounts'),  s => document.getElementById('statAnggota').textContent  = s.val() ? Object.keys(s.val()).length : 0);
+onValue(ref(db, 'antithesis/akun'),  s => document.getElementById('statAnggota').textContent  = s.val() ? Object.keys(s.val()).length : 0);
 onValue(ref(db, 'antithesis/anggota'),   s => document.getElementById('statProfil').textContent   = s.val() ? Object.keys(s.val()).length : 0);
 onValue(ref(db, 'antithesis/requests'),  s => document.getElementById('statUsulan').textContent   = s.val() ? Object.keys(s.val()).length : 0);
 onValue(ref(db, 'antithesis/buku'),      s => document.getElementById('statKenangan').textContent = s.val() ? Object.keys(s.val()).length : 0);
