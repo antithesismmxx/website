@@ -17,7 +17,7 @@ import {
 
 // ── Firebase Config ──
 const app = initializeApp({
-  apiKey:            "AIzaSyDF7IAbfI3acQXIHxxoea5cgPTumiUjSMg",
+  apiKey:            "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
   authDomain:        "antithesis-al-muayyad.firebaseapp.com",
   databaseURL:       "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId:         "antithesis-al-muayyad",
