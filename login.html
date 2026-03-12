@@ -8,40 +8,40 @@
 <style>
 body{min-height:100vh;display:flex;flex-direction:column;}
 .login-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
-.login-left{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:52px;background:var(--dark2);border-right:1px solid var(--border);}
+.login-left{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:52px;background:#0a0a0a;border-right:1px solid rgba(255,255,255,.08);}
 .login-left-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 30% 40%,rgba(240,165,0,.06) 0%,transparent 65%);}
 .login-left-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:24px 24px;}
 .login-left-glow{position:absolute;top:30%;left:20%;width:400px;height:400px;background:radial-gradient(circle,rgba(240,165,0,.07) 0%,transparent 65%);pointer-events:none;}
 .login-left-content{position:relative;z-index:1;}
-.login-left-brand{font-size:.72rem;font-weight:600;letter-spacing:.08em;color:var(--gray2);text-transform:uppercase;margin-bottom:36px;display:flex;align-items:center;gap:8px;}
-.login-left-brand::before{content:'✦';color:var(--gold);}
-.login-left-quote{font-size:clamp(1.5rem,2.5vw,2.2rem);font-weight:700;color:var(--white);line-height:1.2;letter-spacing:-.04em;margin-bottom:12px;font-family:-apple-system,'SF Pro Display','Inter',system-ui,sans-serif;}
-.login-left-quote .hl{background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.login-left-sub{font-size:.9rem;color:var(--gray3);font-weight:300;}
+.login-left-brand{font-size:.72rem;font-weight:600;letter-spacing:.08em;color:#a1a1a6;text-transform:uppercase;margin-bottom:36px;display:flex;align-items:center;gap:8px;}
+.login-left-brand::before{content:'✦';color:#f0a500;}
+.login-left-quote{font-size:clamp(1.5rem,2.5vw,2.2rem);font-weight:700;color:#ffffff;line-height:1.2;letter-spacing:-.04em;margin-bottom:12px;font-family:-apple-system,'SF Pro Display','Inter',system-ui,sans-serif;}
+.login-left-quote .hl{background:linear-gradient(135deg,#ffd878,#f0a500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.login-left-sub{font-size:.9rem;color:#6e6e73;font-weight:300;}
 .login-left-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px;}
-.pill{background:var(--surface);border:1px solid var(--border);border-radius:980px;padding:6px 14px;font-size:.72rem;font-weight:500;color:var(--gray3);}
-.login-right{display:flex;flex-direction:column;justify-content:center;padding:52px 60px;background:var(--black);}
+.pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:980px;padding:6px 14px;font-size:.72rem;font-weight:500;color:#6e6e73;}
+.login-right{display:flex;flex-direction:column;justify-content:center;padding:52px 60px;background:#000000;}
 .login-box{max-width:400px;width:100%;}
 .login-header{margin-bottom:32px;}
-.login-logo{font-size:.72rem;font-weight:600;letter-spacing:.08em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:6px;}
+.login-logo{font-size:.72rem;font-weight:600;letter-spacing:.08em;color:#f0a500;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:6px;}
 .login-logo::before{content:'✦';}
-.login-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:28px;background:var(--dark4);}
-.tab-btn{flex:1;font-size:.82rem;font-weight:500;color:var(--gray3);background:transparent;border:none;padding:9px 16px;border-radius:8px;transition:var(--trans);letter-spacing:.01em;cursor:pointer;}
-.tab-btn.active{background:var(--dark2);color:var(--off-white);box-shadow:0 1px 6px rgba(0,0,0,.5);}
+.login-tabs{display:flex;gap:0;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:3px;margin-bottom:28px;background:#111111;}
+.tab-btn{flex:1;font-size:.82rem;font-weight:500;color:#6e6e73;background:transparent;border:none;padding:9px 16px;border-radius:8px;transition:all .3s;letter-spacing:.01em;cursor:pointer;}
+.tab-btn.active{background:#1a1a1a;color:#f5f5f7;box-shadow:0 1px 6px rgba(0,0,0,.5);}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
-.login-title{font-size:1.7rem;font-weight:700;color:var(--white);letter-spacing:-.03em;margin-bottom:4px;}
-.login-sub{font-size:.88rem;color:var(--gray3);font-weight:300;margin-bottom:28px;}
+.login-title{font-size:1.7rem;font-weight:700;color:#ffffff;letter-spacing:-.03em;margin-bottom:4px;}
+.login-sub{font-size:.88rem;color:#6e6e73;font-weight:300;margin-bottom:28px;}
 .pass-wrap{position:relative;}
-.pass-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--gray3);font-size:.75rem;cursor:pointer;transition:color .25s;}
-.pass-toggle:hover{color:var(--off-white);}
-.login-link{text-align:center;margin-top:18px;font-size:.82rem;color:var(--gray3);}
-.login-link a{color:var(--gold);cursor:pointer;}
+.pass-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#6e6e73;font-size:.75rem;cursor:pointer;transition:color .25s;}
+.pass-toggle:hover{color:#f5f5f7;}
+.login-link{text-align:center;margin-top:18px;font-size:.82rem;color:#6e6e73;}
+.login-link a{color:#f0a500;cursor:pointer;}
 .pass-modal{position:fixed;inset:0;z-index:800;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(20px);}
 .pass-modal.show{display:flex;}
-.pass-modal-box{background:var(--dark3);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:400px;margin:24px;overflow:hidden;}
-.pass-modal-head{padding:24px 24px 16px;border-bottom:1px solid var(--border);}
-.pass-modal-title{font-size:1.2rem;font-weight:700;color:var(--white);letter-spacing:-.02em;}
+.pass-modal-box{background:#111111;border:1px solid rgba(255,255,255,.14);border-radius:20px;width:100%;max-width:400px;margin:24px;overflow:hidden;}
+.pass-modal-head{padding:24px 24px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.pass-modal-title{font-size:1.2rem;font-weight:700;color:#ffffff;letter-spacing:-.02em;}
 .pass-modal-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:14px;}
 @media(max-width:860px){
   .login-wrap{grid-template-columns:1fr;}
