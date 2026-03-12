@@ -95,7 +95,7 @@ body{min-height:100vh;display:flex;flex-direction:column;}
         </div>
         <div class="form-err" id="regErr"></div>
         <div class="form-ok" id="regOk">✦ Akun berhasil dibuat! Silakan masuk.</div>
-        <button class="btn btn-primary btn-full" id="btnDaftar" style="margin-top:4px;background:#0a84ff;color:#fff;border-radius:10px;">Daftar →</button>
+        <button class="btn btn-primary btn-full" id="btnDaftar" onclick="handleDaftar()" style="margin-top:4px;background:#0a84ff;color:#fff;border-radius:10px;">Daftar →</button>
       </div>
     </div>
   </div>
@@ -124,6 +124,42 @@ function showDaftar(){
 function showMasuk(){
   document.getElementById('tab-daftar').style.display='none';
   document.getElementById('tab-masuk').style.display='block';
+}
+async function handleDaftar(){
+  const username = document.getElementById('regUser').value.trim().toLowerCase();
+  const nama     = document.getElementById('regNama').value.trim();
+  const pass     = document.getElementById('regPass').value;
+  const errEl    = document.getElementById('regErr');
+  const okEl     = document.getElementById('regOk');
+  errEl.style.display='none';
+  okEl.style.display='none';
+  if(!username||!nama||!pass){errEl.textContent='✕ Lengkapi semua field';errEl.style.display='block';return;}
+  if(pass.length<6){errEl.textContent='✕ Password minimal 6 karakter';errEl.style.display='block';return;}
+  if(!/^[a-z0-9_]+$/.test(username)){errEl.textContent='✕ Username hanya huruf kecil, angka, underscore';errEl.style.display='block';return;}
+  // Gunakan fetch langsung ke Firebase REST API
+  const dbURL = 'https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app';
+  // Cek whitelist
+  const wlRes = await fetch(dbURL+'/antithesis/whitelist.json');
+  const wl = await wlRes.json() || {};
+  const namaLower = nama.toLowerCase();
+  const found = Object.values(wl).some(v=>{
+    const n = typeof v==='string'?v:(v.nama||'');
+    return n.toLowerCase()===namaLower;
+  });
+  if(!found){errEl.textContent='✕ Nama tidak ditemukan dalam daftar anggota';errEl.style.display='block';return;}
+  // Cek username
+  const chkRes = await fetch(dbURL+'/antithesis/accounts/'+username+'.json');
+  const existing = await chkRes.json();
+  if(existing){errEl.textContent='✕ Username sudah dipakai';errEl.style.display='block';return;}
+  // Hash password
+  const buf = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass));
+  const hashed = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  // Simpan
+  await fetch(dbURL+'/antithesis/accounts/'+username+'.json',{method:'PUT',body:JSON.stringify({nama,password:hashed})});
+  okEl.style.display='block';
+  document.getElementById('regUser').value='';
+  document.getElementById('regNama').value='';
+  document.getElementById('regPass').value='';
 }
 </script>
 <script type="module" src="login.js"></script>
