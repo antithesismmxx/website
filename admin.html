@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin Panel — ANTITHESIS</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+/* ── PIN SCREEN ── */
+.pin-screen{position:fixed;inset:0;z-index:9000;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;}
+.pin-screen.hide{display:none;}
+.pin-box{background:var(--dark2);border:1px solid var(--border2);width:100%;max-width:380px;margin:24px;}
+.pin-head{padding:36px 36px 20px;border-bottom:1px solid var(--border);text-align:center;}
+.pin-icon{font-size:2rem;margin-bottom:12px;}
+.pin-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--white);}
+.pin-title em{font-style:italic;color:var(--gold);}
+.pin-sub{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;color:var(--muted);margin-top:6px;}
+.pin-body{padding:28px 36px 36px;display:flex;flex-direction:column;gap:14px;}
+.pin-err{font-family:'Montserrat',sans-serif;font-size:.46rem;letter-spacing:.18em;color:#e74c3c;display:none;padding:8px 12px;background:rgba(231,76,60,.06);border:1px solid rgba(231,76,60,.15);text-transform:uppercase;}
+
+/* ── ADMIN LAYOUT ── */
+.admin-wrap{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 70px);}
+.admin-sidebar{background:var(--dark2);border-right:1px solid var(--border);padding:0;position:sticky;top:70px;height:calc(100vh - 70px);overflow-y:auto;}
+.sidebar-section{padding:24px 0 8px;}
+.sidebar-section-label{font-family:'Montserrat',sans-serif;font-size:.4rem;letter-spacing:.42em;color:var(--muted2);text-transform:uppercase;padding:0 24px;margin-bottom:6px;}
+.sidebar-link{display:flex;align-items:center;gap:12px;padding:12px 24px;font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:var(--trans);border:none;background:none;width:100%;text-align:left;position:relative;}
+.sidebar-link:hover{color:var(--cream);background:rgba(201,168,76,.04);}
+.sidebar-link.active{color:var(--gold);background:rgba(201,168,76,.07);}
+.sidebar-link.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold);}
+.sidebar-link-icon{font-size:1rem;flex-shrink:0;}
+.sidebar-divider{height:1px;background:var(--border);margin:8px 24px;}
+
+/* ── ADMIN MAIN ── */
+.admin-main{padding:40px 48px;background:var(--dark);}
+.admin-section{display:none;}
+.admin-section.active{display:block;}
+.admin-section-head{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+.admin-section-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--white);margin-bottom:6px;}
+.admin-section-title em{font-style:italic;color:var(--gold);}
+.admin-section-sub{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);}
+
+/* ── STAT CARDS ── */
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px;}
+.asc{background:var(--dark2);border:1px solid var(--border);padding:20px 24px;transition:border-color .3s;}
+.asc:hover{border-color:var(--border2);}
+.asc-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--white);}
+.asc-lbl{font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-top:3px;}
+
+/* ── PANELS ── */
+.ap{background:var(--dark2);border:1px solid var(--border);padding:28px;margin-bottom:20px;}
+.ap-title{font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.ap-title::before{content:'';display:block;width:20px;height:1px;background:var(--gold);opacity:.6;}
+.ap-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
+.ap-row .form-input,.ap-row .form-select{flex:1;min-width:160px;}
+
+/* ── TABLE ── */
+.admin-table{width:100%;border-collapse:collapse;margin-top:4px;}
+.admin-table th{font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-weight:500;}
+.admin-table td{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--cream);padding:12px 14px;border-bottom:1px solid rgba(201,168,76,.06);vertical-align:middle;}
+.admin-table tr:hover td{background:rgba(201,168,76,.02);}
+.admin-table tr:last-child td{border-bottom:none;}
+.td-muted{color:var(--muted)!important;font-style:italic;}
+
+/* ── ITEMS SCROLL LIST ── */
+.item-list{max-height:400px;overflow-y:auto;margin-top:8px;}
+.item-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(201,168,76,.06);gap:12px;transition:background .2s;}
+.item-row:last-child{border-bottom:none;}
+.item-row:hover{background:rgba(201,168,76,.03);}
+.item-row-left{flex:1;min-width:0;}
+.item-row-name{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream);}
+.item-row-meta{font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+.item-del{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:.85rem;padding:6px;transition:color .3s;flex-shrink:0;}
+.item-del:hover{color:#e74c3c;}
+
+/* ── MEMBER GRID ADMIN ── */
+.admin-member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:16px;}
+.amc{background:var(--dark3);border:1px solid var(--border);padding:18px;text-align:center;position:relative;transition:border-color .3s;}
+.amc:hover{border-color:var(--border2);}
+.amc-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);margin:0 auto 10px;}
+.amc-avatar-ph{width:64px;height:64px;border-radius:50%;border:1px solid var(--border);background:var(--dark2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 10px;color:var(--muted2);}
+.amc-name{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:4px;}
+.amc-meta{font-family:'Montserrat',sans-serif;font-size:.38rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.amc-del{width:100%;padding:7px;background:transparent;border:1px solid rgba(231,76,60,.2);color:rgba(231,76,60,.6);font-family:'Montserrat',sans-serif;font-size:.4rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:var(--trans);}
+.amc-del:hover{background:rgba(231,76,60,.08);border-color:rgba(231,76,60,.45);}
+
+/* ── KENANGAN / USULAN ── */
+.buku-entry-admin{background:var(--dark3);border:1px solid var(--border);padding:16px 18px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;}
+.bea-mood{font-size:1.2rem;flex-shrink:0;margin-top:2px;}
+.bea-body{flex:1;min-width:0;}
+.bea-msg{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--cream);line-height:1.7;}
+.bea-meta{font-family:'Montserrat',sans-serif;font-size:.4rem;letter-spacing:.18em;color:var(--muted2);text-transform:uppercase;margin-top:6px;}
+.bea-del{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:.85rem;padding:4px;transition:color .3s;flex-shrink:0;}
+.bea-del:hover{color:#e74c3c;}
+.search-sm{background:var(--dark3);border:1px solid var(--border);color:var(--white);font-family:'Cormorant Garamond',serif;font-size:.95rem;padding:10px 14px;outline:none;transition:border-color .3s;width:100%;margin-bottom:14px;}
+.search-sm:focus{border-color:rgba(201,168,76,.4);}
+.search-sm::placeholder{color:var(--muted2);}
+
+/* VOTE RESULT */
+.vote-bar-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+.vbr-type{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;width:110px;flex-shrink:0;}
+.vbr-wrap{flex:1;height:8px;background:rgba(201,168,76,.1);border-radius:4px;overflow:hidden;}
+.vbr-fill{height:100%;background:linear-gradient(to right,var(--gold),var(--gold-light));border-radius:4px;transition:width .8s ease;}
+.vbr-count{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--white);width:50px;text-align:right;flex-shrink:0;}
+.vbr-win .vbr-count{color:var(--gold);}
+
+/* CONFIRM MODAL */
+.confirm-modal{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(14px);}
+.confirm-modal.show{display:flex;}
+.confirm-box{background:var(--dark2);border:1px solid var(--border2);width:100%;max-width:360px;margin:24px;padding:32px;}
+.confirm-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:8px;}
+.confirm-sub{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--muted);margin-bottom:24px;line-height:1.7;}
+.confirm-actions{display:flex;gap:10px;}
+
+/* ACARA FORM */
+.acara-type-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.atp{border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;padding:10px 16px;cursor:pointer;transition:var(--trans);}
+.atp:hover{border-color:var(--border2);color:var(--cream);}
+.atp.active{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.acara-current{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.18);padding:14px 18px;margin-bottom:20px;display:none;}
+.acara-current.show{display:block;}
+.acara-current-label{font-family:'Montserrat',sans-serif;font-size:.44rem;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+.acara-current-val{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream);}
+
+/* PENGUMUMAN */
+.pg-current{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);padding:14px 18px;margin-bottom:14px;display:none;}
+.pg-current.show{display:block;}
+.pg-current-text{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--cream);font-style:italic;}
+
+@media(max-width:960px){
+  .admin-wrap{grid-template-columns:1fr;}
+  .admin-sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);}
+  .admin-sidebar{display:flex;flex-wrap:wrap;padding:8px;}
+  .sidebar-section{padding:4px;}
+  .sidebar-section-label{display:none;}
+  .sidebar-link{padding:8px 12px;font-size:.42rem;}
+  .admin-main{padding:24px 20px;}
+  .admin-stats{grid-template-columns:repeat(2,1fr);}
+  .admin-member-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ PIN SCREEN ══ -->
+<div class="pin-screen" id="pinScreen">
+  <div class="pin-box">
+    <div class="pin-head">
+      <div class="pin-icon">🔐</div>
+      <div class="pin-title">Admin <em>Panel</em></div>
+      <div class="pin-sub">Masukkan PIN untuk mengakses dasbor admin.</div>
+    </div>
+    <div class="pin-body">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">PIN Admin</label>
+        <input class="form-input" id="pinInput" type="password" placeholder="••••••"/>
+      </div>
+      <div class="pin-err" id="pinErr">✕ PIN salah</div>
+      <button class="btn btn-primary btn-full" id="btnPin">Masuk →</button>
+      <a href="index.html" class="btn btn-ghost btn-full" style="text-align:center;">← Kembali ke Beranda</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav class="nav" id="mainNav">
+  <a href="index.html" class="nav-brand">ANTITHESIS<span>Admin Panel · Al Muayyad Surakarta</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="dashboard.html">Portal Anggota</a></li>
+  </ul>
+  <div class="nav-user">
+    <span class="nav-user-name" style="font-size:.8rem;color:var(--gold);">🔐 Admin</span>
+    <button class="btn-logout" id="btnAdminLogout">Keluar</button>
+  </div>
+  <button class="nav-hamburger" id="navHam"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page">
+  <div class="admin-wrap">
+
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Utama</div>
+        <button class="sidebar-link active" data-section="overview"><span class="sidebar-link-icon">📊</span>Overview</button>
+        <button class="sidebar-link" data-section="pengumuman"><span class="sidebar-link-icon">📢</span>Pengumuman</button>
+        <button class="sidebar-link" data-section="acara"><span class="sidebar-link-icon">📅</span>Atur Acara</button>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Komunitas</div>
+        <button class="sidebar-link" data-section="whitelist"><span class="sidebar-link-icon">📋</span>Whitelist</button>
+        <button class="sidebar-link" data-section="accounts"><span class="sidebar-link-icon">👤</span>Akun</button>
+        <button class="sidebar-link" data-section="anggota"><span class="sidebar-link-icon">👥</span>Profil Anggota</button>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Konten</div>
+        <button class="sidebar-link" data-section="polling"><span class="sidebar-link-icon">🗳️</span>Polling & Usulan</button>
+        <button class="sidebar-link" data-section="kenangan"><span class="sidebar-link-icon">📖</span>Buku Kenangan</button>
+      </div>
+    </aside>
+
+    <!-- ══ MAIN CONTENT ══ -->
+    <main class="admin-main">
+
+      <!-- ── OVERVIEW ── -->
+      <div class="admin-section active" id="sec-overview">
+        <div class="admin-section-head">
+          <div class="admin-section-title">Selamat datang, <em>Admin</em></div>
+          <div class="admin-section-sub">Ringkasan keseluruhan portal ANTITHESIS.</div>
+        </div>
+        <div class="admin-stats">
+          <div class="asc"><div class="asc-num" id="ovAnggota">—</div><div class="asc-lbl">Akun Terdaftar</div></div>
+          <div class="asc"><div class="asc-num" id="ovProfil">—</div><div class="asc-lbl">Profil Terisi</div></div>
+          <div class="asc"><div class="asc-num" id="ovVotes">—</div><div class="asc-lbl">Total Suara</div></div>
+          <div class="asc"><div class="asc-num" id="ovKenangan">—</div><div class="asc-lbl">Pesan Kenangan</div></div>
+        </div>
+
+        <!-- Hasil vote overview -->
+        <div class="ap">
+          <div class="ap-title">Rekap Polling Acara</div>
+          <div id="ovVoteResult" style="margin-top:4px;"></div>
+        </div>
+
+        <!-- Acara aktif -->
+        <div class="ap">
+          <div class="ap-title">Status Acara</div>
+          <div id="ovAcara" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:1rem;">Memuat...</div>
+        </div>
+      </div>
+
+      <!-- ── PENGUMUMAN ── -->
+      <div class="admin-section" id="sec-pengumuman">
+        <div class="admin-section-head">
+          <div class="admin-section-title">Pengumuman <em>Komunitas</em></div>
+          <div class="admin-section-sub">Teks yang ditampilkan di beranda publik dan portal anggota.</div>
+        </div>
+        <div class="ap">
+          <div class="ap-title">Pengumuman Aktif</div>
+          <div class="pg-current" id="pgCurrentWrap">
+            <div class="pg-current-text" id="pgCurrentText"></div>
+          </div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label">Teks Pengumuman</label>
+            <textarea class="form-textarea" id="pgTextarea" rows="4" placeholder="Tulis pengumuman di sini..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" id="btnSavePg">Simpan Pengumuman →</button>
+            <button class="btn btn-ghost" id="btnClearPg">Hapus Pengumuman</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ACARA ── -->
+      <div class="admin-section" id="sec-acara">
+        <div class="admin-section-head">
+          <div class="admin-section-title">Atur <em>Acara</em></div>
+          <div class="admin-section-sub">Tetapkan acara untuk mengaktifkan countdown dan menutup voting.</div>
+        </div>
+        <div class="ap">
+          <div class="ap-title">Acara Aktif</div>
+          <div class="acara-current" id="acaraCurrentInfo">
+            <div class="acara-current-label">Sedang Berjalan</div>
+            <div class="acara-current-val" id="acaraCurrentVal"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jenis Acara</label>
+            <div class="acara-type-pills">
+              <button class="atp" data-jenis="HBH">🌙 HBH</button>
+              <button class="atp" data-jenis="Bukber">🍽️ Bukber</button>
+              <button class="atp" data-jenis="Temu Kangen">🤝 Temu Kangen</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Tanggal</label>
+              <input class="form-input" id="acaraDate" type="date"/>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Jam (opsional)</label>
+              <input class="form-input" id="acaraJam" type="time"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:14px;margin-bottom:14px;">
+            <label class="form-label">Lokasi</label>
+            <input class="form-input" id="acaraLokasi" type="text" placeholder="Nama tempat / kota..."/>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" id="btnSaveAcara">Tetapkan Acara →</button>
+            <button class="btn btn-ghost" id="btnClearAcara">Hapus / Reset Acara</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── WHITELIST ── -->
+      <div class="admin-section" id="sec-whitelist">
+        <div class="admin-section-head">
+          <div class="admin-section-title">Manajemen <em>Whitelist</em></div>
+          <div class="admin-section-sub">Daftar nama yang diizinkan mendaftar akun dan profil.</div>
+        </div>
+        <div class="ap">
+          <div class="ap-title">Tambah Nama</div>
+          <div class="ap-row" style="margin-bottom:0;">
+            <input class="form-input" id="wlInput" type="text" placeholder="Nama lengkap..."/>
+            <button class="btn btn-primary" id="btnAddWl" style="white-space:nowrap;">Tambah →</button>
+          </div>
+        </div>
+        <div class="ap">
+          <div class="ap-title">Daftar Whitelist (<span id="wlCount">0</span>)</div>
+          <div class="item-list" id="wlList"></div>
+        </div>
+      </div>
+
+      <!-- ── ACCOUNTS ── -->
+      <div class="admin-section" id="sec-accounts">
+        <div class="admin-section-head">
+          <div class="admin-section-title">Manajemen <em>Akun</em></div>
+          <div class="admin-section-sub">Kelola akun yang sudah terdaftar.</div>
+        </div>
+        <div class="ap">
+          <div class="ap-title">Semua Akun (<span id="accCount">0</span>)</div>
+          <div class="item-list">
+            <table class="admin-table" id="accTable">
+              <thead><tr><th>Username</th><th>Nama</th><th>Aksi</th></tr></thead>
+              <tbody id="accBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="ap">
+          <div class="ap-title">Reset Password</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Username</label><input class="form-input" id="rpUser" type="text" placeholder="username..."/></div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Password Baru</label><input class="form-input" id="rpPass" type="text" placeholder="password baru..."/></div>
+          </div>
+          <div class="form-err" id="rpErr" style="display:none;margin-top:10px;"></div>
+          <div class="form-ok" id="rpOk" style="display:none;margin-top:10px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:.95rem;"></div>
+          <button class="btn btn-outline" id="btnResetPass" style="margin-top:14px;">Reset Password →</button>
+        </div>
+      </div>
+
+      <!-- ── PROFIL ANGGOTA ── -->
+      <div class="admin-section" id="sec-anggota">
+        <div class="admin-section-head">
+          <div class="admin-section-title">Profil <em>Anggota</em></div>
+          <div class="admin-section-sub">Lihat dan hapus profil yang telah diisi anggota.</div>
+        </div>
+        <div class="ap">
+          <div class="ap-title">Semua Profil (<span id="anggotaCount">0</span>)</div>
+          <div class="admin-member-grid" id="anggotaGrid">
+            <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-text">Memuat...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── POLLING & USULAN ── -->
+      <div class="admin-section" id="sec-polling">
+        <div class="admin-section-head">
+          <div class="admin-section-title">Polling <em>& Usulan</em></div>
+          <div class="admin-section-sub">Rekap suara dan kelola usulan detail dari anggota.</div>
+        </div>
+        <!-- Rekap vote -->
+        <div class="ap">
+          <div class="ap-title">Rekap Suara (<span id="voteTotal">0</span> total)</div>
+          <div id="voteRecap" style="margin-top:8px;"></div>
+          <button class="btn btn-danger" id="btnClearVotes" style="margin-top:20px;">Reset Semua Suara</button>
+        </div>
+        <!-- Usulan -->
+        <div class="ap">
+          <div class="ap-title">Usulan Detail (<span id="reqCount">0</span>)</div>
+          <div class="item-list" id="reqList">
+            <div class="empty-state"><div class="empty-state-icon">💌</div><div class="empty-state-text">Belum ada usulan.</div></div>
+          </div>
+          <button class="btn btn-danger" id="btnClearReqs" style="margin-top:20px;">Hapus Semua Usulan</button>
+        </div>
+      </div>
+
+      <!-- ── BUKU KENANGAN ── -->
+      <div class="admin-section" id="sec-kenangan">
+        <div class="admin-section-head">
+          <div class="admin-section-title">Buku <em>Kenangan</em></div>
+          <div class="admin-section-sub">Moderasi pesan anonim dari anggota.</div>
+        </div>
+        <div class="ap">
+          <div class="ap-title">Semua Pesan (<span id="bukuCount">0</span>)</div>
+          <input type="text" class="search-sm" id="bukuSearch" placeholder="Cari pesan..."/>
+          <div id="bukuList">
+            <div class="empty-state"><div class="empty-state-icon">✨</div><div class="empty-state-text">Belum ada pesan.</div></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirmTitle">Konfirmasi Hapus</div>
+    <div class="confirm-sub" id="confirmSub">Tindakan ini tidak bisa dibatalkan.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-danger" id="confirmOk" style="flex:1;">Ya, Hapus</button>
+      <button class="btn btn-ghost" id="confirmCancel" style="flex:1;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getDatabase,ref,onValue,get,set,push,remove,update}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const db=getDatabase(initializeApp({
+  databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain:"antithesis-al-muayyad.firebaseapp.com",
+  projectId:"antithesis-al-muayyad",
+  storageBucket:"antithesis-al-muayyad.appspot.com",
+  messagingSenderId:"1014116431079",
+  appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"
+}));
+
+// ── SHA-256 ──
+async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+
+// ── Toast ──
+function toast(msg,type='ok'){
+  let t=document.getElementById('__toast');
+  if(!t){t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:#111;border:1px solid rgba(201,168,76,.35);color:#c9a84c;font-family:Montserrat,sans-serif;font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;padding:12px 26px;z-index:9999;opacity:0;transition:all .4s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 36px rgba(0,0,0,.6);';document.body.appendChild(t);}
+  t.style.color=type==='err'?'#e74c3c':'#c9a84c';
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t.__tid);t.__tid=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)';},3200);
+}
+
+// ── Confirm modal ──
+let confirmCallback=null;
+function confirm2(title,sub,cb){
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmSub').textContent=sub;
+  confirmCallback=cb;
+  document.getElementById('confirmModal').classList.add('show');
+}
+document.getElementById('confirmOk').addEventListener('click',()=>{
+  document.getElementById('confirmModal').classList.remove('show');
+  if(confirmCallback)confirmCallback();
+});
+document.getElementById('confirmCancel').addEventListener('click',()=>document.getElementById('confirmModal').classList.remove('show'));
+
+// ── PIN ──
+const ADMIN_PIN='300105';
+document.getElementById('btnPin').addEventListener('click',()=>{
+  const val=document.getElementById('pinInput').value;
+  if(val===ADMIN_PIN){document.getElementById('pinScreen').classList.add('hide');initData();}
+  else{document.getElementById('pinErr').style.display='block';}
+});
+document.getElementById('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btnPin').click();});
+
+// ── Nav ──
+document.getElementById('navHam').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+document.getElementById('btnAdminLogout').addEventListener('click',()=>{document.getElementById('pinScreen').classList.remove('hide');document.getElementById('pinInput').value='';});
+
+// ── Sidebar ──
+document.querySelectorAll('.sidebar-link[data-section]').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.sidebar-link').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('sec-'+this.dataset.section).classList.add('active');
+  });
+});
+
+// ══════════════════════
+// DATA INIT
+// ══════════════════════
+let whitelist={},accounts={},anggotaData={},voteData={},reqData={},bukuData={},acaraData=null;
+
+function initData(){
+  // Whitelist
+  onValue(ref(db,'antithesis/whitelist'),s=>{whitelist=s.val()||{};renderWhitelist();});
+  // Accounts
+  onValue(ref(db,'antithesis/accounts'),s=>{accounts=s.val()||{};renderAccounts();updateOverview();});
+  // Anggota
+  onValue(ref(db,'antithesis/anggota'),s=>{anggotaData=s.val()||{};renderAnggota();updateOverview();});
+  // Votes
+  onValue(ref(db,'antithesis/votes'),s=>{voteData=s.val()||{};renderVoteRecap();updateOverview();});
+  // Requests
+  onValue(ref(db,'antithesis/requests'),s=>{reqData=s.val()||{};renderReqs();});
+  // Buku
+  onValue(ref(db,'antithesis/buku'),s=>{bukuData=s.val()||{};renderBuku();updateOverview();});
+  // Acara
+  onValue(ref(db,'antithesis/acara'),s=>{acaraData=s.val();renderAcara();updateOverview();});
+  // Pengumuman
+  onValue(ref(db,'antithesis/pengumuman'),s=>{
+    const txt=s.val()||'';
+    document.getElementById('pgCurrentText').textContent=txt;
+    document.getElementById('pgCurrentWrap').classList.toggle('show',!!txt);
+    document.getElementById('pgTextarea').value=txt;
+  });
+}
+
+// ══════════════════════
+// OVERVIEW
+// ══════════════════════
+function updateOverview(){
+  document.getElementById('ovAnggota').textContent=Object.keys(accounts).length;
+  document.getElementById('ovProfil').textContent=Object.keys(anggotaData).length;
+  document.getElementById('ovVotes').textContent=Object.keys(voteData).length;
+  document.getElementById('ovKenangan').textContent=Object.keys(bukuData).length;
+  // Acara status
+  const ov=document.getElementById('ovAcara');
+  if(acaraData&&acaraData.date){
+    ov.innerHTML=`<span style="color:var(--gold);">✦ Aktif:</span> <span style="color:var(--cream);">${acaraData.jenis||acaraData.type||'—'} · ${acaraData.date}${acaraData.jam?' · '+acaraData.jam:''}${acaraData.lokasi?' · '+acaraData.lokasi:''}</span>`;
+  }else{ov.textContent='Tidak ada acara aktif.';}
+  // Vote overview
+  renderVoteRecapEl('ovVoteResult');
+}
+
+function renderVoteRecapEl(targetId){
+  const tally={HBH:0,Bukber:0,'Temu Kangen':0};
+  Object.values(voteData).forEach(v=>{if(v&&tally[v]!==undefined)tally[v]++;});
+  const total=Object.values(tally).reduce((a,b)=>a+b,0);
+  const maxV=Math.max(...Object.values(tally),1);
+  const winType=total>0?Object.entries(tally).sort((a,b)=>b[1]-a[1])[0][0]:null;
+  const icons={HBH:'🌙',Bukber:'🍽️','Temu Kangen':'🤝'};
+  const el=document.getElementById(targetId);
+  if(el)el.innerHTML=Object.entries(tally).map(([type,n])=>{
+    const pct=Math.round(n/maxV*100);
+    const isWin=type===winType&&n>0;
+    return`<div class="vote-bar-row${isWin?' vbr-win':''}">
+      <div class="vbr-type">${icons[type]||''} ${type}</div>
+      <div class="vbr-wrap"><div class="vbr-fill" style="width:${pct}%"></div></div>
+      <div class="vbr-count">${n}${isWin?' 🏆':''}</div>
+    </div>`;
+  }).join('')+(total===0?'<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;color:var(--muted);">Belum ada suara.</div>':'');
+}
+
+// ══════════════════════
+// PENGUMUMAN
+// ══════════════════════
+document.getElementById('btnSavePg').addEventListener('click',()=>{
+  const txt=document.getElementById('pgTextarea').value.trim();
+  set(ref(db,'antithesis/pengumuman'),txt).then(()=>toast('✦ Pengumuman disimpan!'));
+});
+document.getElementById('btnClearPg').addEventListener('click',()=>{
+  confirm2('Hapus Pengumuman','Pengumuman akan dihapus dari semua halaman.',()=>{
+    remove(ref(db,'antithesis/pengumuman')).then(()=>{document.getElementById('pgTextarea').value='';toast('Pengumuman dihapus.');});
+  });
+});
+
+// ══════════════════════
+// ACARA
+// ══════════════════════
+let selAcaraJenis=null;
+document.querySelectorAll('.atp').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.atp').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');selAcaraJenis=this.dataset.jenis;
+}));
+function renderAcara(){
+  const info=document.getElementById('acaraCurrentInfo');
+  const val=document.getElementById('acaraCurrentVal');
+  if(acaraData&&acaraData.date){
+    info.classList.add('show');
+    val.textContent=`${acaraData.jenis||acaraData.type||'—'} · ${acaraData.date}${acaraData.jam?' · '+acaraData.jam:''}${acaraData.lokasi?' · '+acaraData.lokasi:''}`;
+    // Pre-fill form
+    const jenis=acaraData.jenis||acaraData.type||'';
+    document.querySelectorAll('.atp').forEach(b=>{b.classList.toggle('active',b.dataset.jenis===jenis);if(b.dataset.jenis===jenis)selAcaraJenis=jenis;});
+    document.getElementById('acaraDate').value=acaraData.date||'';
+    document.getElementById('acaraJam').value=acaraData.jam||'';
+    document.getElementById('acaraLokasi').value=acaraData.lokasi||'';
+  }else{info.classList.remove('show');}
+}
+document.getElementById('btnSaveAcara').addEventListener('click',()=>{
+  if(!selAcaraJenis){toast('✕ Pilih jenis acara','err');return;}
+  const date=document.getElementById('acaraDate').value;
+  if(!date){toast('✕ Pilih tanggal acara','err');return;}
+  const data={jenis:selAcaraJenis,date,jam:document.getElementById('acaraJam').value,lokasi:document.getElementById('acaraLokasi').value.trim()};
+  set(ref(db,'antithesis/acara'),data).then(()=>toast('✦ Acara berhasil disimpan!'));
+});
+document.getElementById('btnClearAcara').addEventListener('click',()=>{
+  confirm2('Hapus Acara','Countdown akan berhenti dan voting akan dibuka kembali.',()=>{
+    remove(ref(db,'antithesis/acara')).then(()=>toast('Acara dihapus.'));
+  });
+});
+
+// ══════════════════════
+// WHITELIST
+// ══════════════════════
+function renderWhitelist(){
+  const entries=Object.entries(whitelist);
+  document.getElementById('wlCount').textContent=entries.length;
+  const list=document.getElementById('wlList');
+  if(!entries.length){list.innerHTML='<div class="empty-state" style="padding:24px;"><div class="empty-state-text">Whitelist kosong.</div></div>';return;}
+  list.innerHTML=entries.map(([k,v])=>{
+    const nama=typeof v==='string'?v:(v.nama||'');
+    return`<div class="item-row"><div class="item-row-left"><div class="item-row-name">${nama}</div></div>
+      <button class="item-del" onclick="hapusWl('${k}')" title="Hapus">🗑</button></div>`;
+  }).join('');
+}
+window.hapusWl=function(k){
+  confirm2('Hapus dari Whitelist','Anggota ini tidak bisa lagi mendaftar baru.',()=>{
+    remove(ref(db,'antithesis/whitelist/'+k)).then(()=>toast('Dihapus dari whitelist.'));
+  });
+};
+document.getElementById('btnAddWl').addEventListener('click',()=>{
+  const val=document.getElementById('wlInput').value.trim();
+  if(!val){toast('✕ Isi nama dulu','err');return;}
+  push(ref(db,'antithesis/whitelist'),val);
+  document.getElementById('wlInput').value='';
+  toast('✦ Nama ditambahkan ke whitelist!');
+});
+document.getElementById('wlInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btnAddWl').click();});
+
+// ══════════════════════
+// ACCOUNTS
+// ══════════════════════
+function renderAccounts(){
+  const entries=Object.entries(accounts);
+  document.getElementById('accCount').textContent=entries.length;
+  const tbody=document.getElementById('accBody');
+  if(!entries.length){tbody.innerHTML='<tr><td colspan="3" class="td-muted">Belum ada akun.</td></tr>';return;}
+  tbody.innerHTML=entries.map(([uname,data])=>`
+    <tr>
+      <td><span style="font-family:'Montserrat',sans-serif;font-size:.9rem;">@${uname}</span></td>
+      <td>${data.nama||'—'}</td>
+      <td><button class="btn btn-danger" style="padding:6px 12px;font-size:.42rem;" onclick="hapusAkun('${uname}')">Hapus</button></td>
+    </tr>`).join('');
+}
+window.hapusAkun=function(uname){
+  confirm2('Hapus Akun','Akun @'+uname+' akan dihapus permanen.',()=>{
+    remove(ref(db,'antithesis/accounts/'+uname)).then(()=>toast('Akun @'+uname+' dihapus.'));
+  });
+};
+document.getElementById('btnResetPass').addEventListener('click',async()=>{
+  const uname=document.getElementById('rpUser').value.trim().toLowerCase();
+  const pass=document.getElementById('rpPass').value.trim();
+  const errEl=document.getElementById('rpErr');const okEl=document.getElementById('rpOk');
+  errEl.style.display='none';okEl.style.display='none';
+  if(!uname||!pass){errEl.textContent='✕ Lengkapi semua field';errEl.style.display='block';return;}
+  if(pass.length<6){errEl.textContent='✕ Password min 6 karakter';errEl.style.display='block';return;}
+  const snap=await get(ref(db,'antithesis/accounts/'+uname));
+  if(!snap.exists()){errEl.textContent='✕ Username tidak ditemukan';errEl.style.display='block';return;}
+  const hash=await sha256(pass);
+  await set(ref(db,'antithesis/accounts/'+uname+'/password'),hash);
+  okEl.textContent='✦ Password @'+uname+' berhasil direset!';okEl.style.display='block';
+  document.getElementById('rpUser').value='';document.getElementById('rpPass').value='';
+});
+
+// ══════════════════════
+// ANGGOTA
+// ══════════════════════
+function renderAnggota(){
+  const entries=Object.entries(anggotaData);
+  document.getElementById('anggotaCount').textContent=entries.length;
+  const grid=document.getElementById('anggotaGrid');
+  if(!entries.length){grid.innerHTML='<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">Belum ada profil.</div></div>';return;}
+  grid.innerHTML=entries.map(([k,a])=>{
+    const avatar=a.foto?`<img class="amc-avatar" src="${a.foto}" alt=""/>`:`<div class="amc-avatar-ph">👤</div>`;
+    return`<div class="amc">${avatar}
+      <div class="amc-name">${a.nama||'—'}</div>
+      <div class="amc-meta">${a.kelas?a.kelas+' · ':''}${a.sekolah||''}</div>
+      <button class="amc-del" onclick="hapusProfil('${k}','${(a.nama||'').replace(/'/g,'')}')">🗑 Hapus</button>
+    </div>`;
+  }).join('');
+}
+window.hapusProfil=function(k,nama){
+  confirm2('Hapus Profil',`Profil "${nama}" akan dihapus dari direktori.`,()=>{
+    remove(ref(db,'antithesis/anggota/'+k)).then(()=>toast('Profil dihapus.'));
+  });
+};
+
+// ══════════════════════
+// POLLING & USULAN
+// ══════════════════════
+function renderVoteRecap(){
+  renderVoteRecapEl('voteRecap');
+  document.getElementById('voteTotal').textContent=Object.keys(voteData).length;
+}
+document.getElementById('btnClearVotes').addEventListener('click',()=>{
+  confirm2('Reset Semua Suara','Seluruh data voting akan dihapus. Tidak bisa dibatalkan.',()=>{
+    remove(ref(db,'antithesis/votes')).then(()=>toast('Suara direset.'));
+  });
+});
+
+function renderReqs(){
+  const entries=Object.entries(reqData);
+  document.getElementById('reqCount').textContent=entries.length;
+  const list=document.getElementById('reqList');
+  const bln=['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const icons={HBH:'🌙',Bukber:'🍽️','Temu Kangen':'🤝'};
+  if(!entries.length){list.innerHTML='<div class="empty-state"><div class="empty-state-icon">💌</div><div class="empty-state-text">Belum ada usulan.</div></div>';return;}
+  list.innerHTML=entries.map(([k,r])=>`
+    <div class="item-row">
+      <div class="item-row-left">
+        <div class="item-row-name">${icons[r.type]||'📅'} ${r.type} · 📍 ${r.lokasi}</div>
+        <div class="item-row-meta">📅 ${r.tgl} ${bln[+r.bulan]||''} ${r.tahun} &nbsp;·&nbsp; @${r.submitter||'?'}${r.catatan?' · "'+r.catatan+'"':''}</div>
+      </div>
+      <button class="item-del" onclick="hapusReq('${k}')" title="Hapus">🗑</button>
+    </div>`).join('');
+}
+window.hapusReq=function(k){
+  confirm2('Hapus Usulan','Usulan ini akan dihapus permanen.',()=>{
+    remove(ref(db,'antithesis/requests/'+k)).then(()=>toast('Usulan dihapus.'));
+  });
+};
+document.getElementById('btnClearReqs').addEventListener('click',()=>{
+  confirm2('Hapus Semua Usulan','Seluruh usulan detail akan dihapus.',()=>{
+    remove(ref(db,'antithesis/requests')).then(()=>toast('Semua usulan dihapus.'));
+  });
+});
+
+// ══════════════════════
+// BUKU KENANGAN
+// ══════════════════════
+let bukuSearch='';
+document.getElementById('bukuSearch').addEventListener('input',function(){bukuSearch=this.value.toLowerCase();renderBuku();});
+function renderBuku(){
+  const entries=Object.entries(bukuData);
+  document.getElementById('bukuCount').textContent=entries.length;
+  const filtered=entries.filter(([,d])=>!bukuSearch||(d.msg||'').toLowerCase().includes(bukuSearch));
+  const list=document.getElementById('bukuList');
+  if(!filtered.length){list.innerHTML='<div class="empty-state"><div class="empty-state-text">'+(!entries.length?'Belum ada pesan.':'Tidak ditemukan.')+'</div></div>';return;}
+  list.innerHTML=filtered.map(([k,d])=>`
+    <div class="buku-entry-admin">
+      <div class="bea-mood">${d.mood||'💛'}</div>
+      <div class="bea-body">
+        <div class="bea-msg">${escHtml(d.msg)}</div>
+        <div class="bea-meta">Anonim &nbsp;·&nbsp; ${d.waktu||'—'}</div>
+      </div>
+      <button class="bea-del" onclick="hapusBuku('${k}')" title="Hapus">🗑</button>
+    </div>`).join('');
+}
+window.hapusBuku=function(k){
+  confirm2('Hapus Pesan','Pesan ini akan dihapus permanen.',()=>{
+    remove(ref(db,'antithesis/buku/'+k)).then(()=>toast('Pesan dihapus.'));
+  });
+};
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
