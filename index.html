@@ -6,133 +6,259 @@
 <title>ANTITHESIS — SMA & MA Al Muayyad Surakarta</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 60px 80px;overflow:hidden;}
-.hero-bg{position:absolute;inset:0;z-index:0;background:#080808;}
-.hero-bg-glow{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 80% 20%,rgba(0,50,120,.14),transparent),radial-gradient(ellipse 40% 60% at 10% 80%,rgba(40,20,80,.12),transparent);}
-.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:100px 100px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);}
-.hero-content{position:relative;z-index:1;max-width:720px;}
-.hero-eyebrow{font-family:var(--font);font-size:.65rem;font-weight:500;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:24px;display:flex;align-items:center;gap:14px;}
-.hero-eyebrow::before{content:'';display:block;width:32px;height:.5px;background:rgba(255,255,255,.22);}
-.hero h1{font-family:var(--font-serif);font-size:clamp(4rem,9vw,8rem);font-weight:400;line-height:.92;color:var(--white);letter-spacing:-.03em;}
-.hero h1 em{font-style:italic;color:rgba(245,245,247,.38);display:block;font-size:.85em;}
-.hero-tagline{font-family:var(--font);font-size:clamp(.95rem,1.8vw,1.1rem);color:rgba(245,245,247,.42);margin-top:32px;line-height:1.85;max-width:420px;}
-.hero-actions{display:flex;gap:12px;margin-top:44px;flex-wrap:wrap;}
-.hero-actions .btn{padding:12px 24px;}
-.hero-stats{position:absolute;right:64px;bottom:80px;display:flex;flex-direction:column;gap:32px;text-align:right;z-index:1;}
-.stat-num{font-family:var(--font-serif);font-size:2.8rem;font-weight:400;line-height:1;color:rgba(245,245,247,.5);letter-spacing:-.03em;}
-.stat-lbl{font-size:.58rem;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,245,247,.22);margin-top:4px;}
-.hero-scroll{position:absolute;bottom:36px;left:60px;display:flex;align-items:center;gap:10px;font-size:.58rem;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.18);z-index:1;animation:bobScroll 2.5s ease-in-out infinite;}
-.hero-scroll::before{content:'↓';font-size:.75rem;color:rgba(255,255,255,.3);}
-@keyframes bobScroll{0%,100%{transform:translateY(0);}50%{transform:translateY(7px);}}
+/* ── HERO ── */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 80px;overflow:hidden;}
+.hero-media{position:absolute;inset:0;z-index:0;}
+.hero-media-bg{
+  width:100%;height:100%;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.15) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.92) 100%),
+    linear-gradient(135deg,#0d1117 0%,#0a0f1e 40%,#080c18 100%);
+}
+.hero-media-dots{
+  position:absolute;inset:0;
+  background-image:radial-gradient(rgba(240,165,0,.15) 1px, transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(240,165,0,.08) 0%,transparent 65%);pointer-events:none;}
+.hero-content{position:relative;z-index:1;max-width:900px;padding:0 44px;}
+.hero-eyebrow{font-size:.75rem;font-weight:600;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:inline-flex;align-items:center;gap:8px;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.2);padding:6px 14px;border-radius:980px;}
+.hero-eyebrow::before{content:'✦';font-size:.6rem;}
+.hero h1{
+  font-size:clamp(3.5rem,10vw,9rem);
+  font-weight:700;
+  line-height:1;
+  letter-spacing:-.05em;
+  color:var(--white);
+  margin-bottom:0;
+  white-space:nowrap;
+  font-family:-apple-system,'SF Pro Display','Inter',system-ui,sans-serif;
+}
+.hero-sub{font-size:clamp(1rem,1.8vw,1.25rem);color:var(--gray2);margin-top:20px;line-height:1.6;max-width:560px;font-weight:300;}
+.hero-actions{display:flex;gap:12px;margin-top:36px;flex-wrap:wrap;}
+.hero-stats-row{position:relative;z-index:1;display:flex;gap:0;padding:0 44px;margin-top:0;}
+.hero-stat{flex:1;border-top:1px solid rgba(255,255,255,.1);padding:28px 0;display:flex;flex-direction:column;gap:4px;}
+.hero-stat:not(:last-child){border-right:1px solid rgba(255,255,255,.06);}
+.hero-stat-num{font-size:2.4rem;font-weight:700;letter-spacing:-.04em;color:var(--white);}
+.hero-stat-lbl{font-size:.75rem;font-weight:400;color:var(--gray3);}
+.hero-stat:first-child{padding-right:32px;}
+.hero-stat:not(:first-child){padding-left:32px;}
 
-.about-band{background:var(--bg2);border-top:.5px solid var(--border2);border-bottom:.5px solid var(--border2);padding:80px 0;}
-.about-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
-.about-quote{font-family:var(--font-serif);font-size:clamp(1.4rem,2.5vw,2rem);font-weight:400;font-style:italic;color:rgba(245,245,247,.5);line-height:1.55;letter-spacing:-.02em;}
-.about-text p{font-size:.92rem;color:var(--muted);line-height:1.85;margin-bottom:14px;}
-.about-text p:last-child{margin-bottom:0;}
+/* ── MARQUEE STRIP ── */
+.marquee-strip{background:rgba(240,165,0,.06);border-top:1px solid rgba(240,165,0,.12);border-bottom:1px solid rgba(240,165,0,.12);padding:12px 0;overflow:hidden;white-space:nowrap;}
+.marquee-inner{display:inline-flex;animation:marquee 30s linear infinite;}
+.marquee-item{font-size:.72rem;font-weight:600;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;padding:0 40px;opacity:.7;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-.pg-section{padding:80px 0;border-bottom:.5px solid var(--border2);text-align:center;}
-.pg-card{background:var(--bg2);border:.5px solid rgba(201,168,76,.15);max-width:640px;margin:28px auto 0;padding:28px 32px;display:none;}
+/* ── FEATURES GRID ── */
+.features{padding:100px 44px;}
+.features-intro{max-width:600px;margin-bottom:56px;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);}
+.feat{background:var(--dark);padding:36px 32px;transition:var(--trans);cursor:pointer;text-decoration:none;display:block;}
+.feat:hover{background:var(--dark3);}
+.feat-icon{font-size:2rem;margin-bottom:16px;}
+.feat-name{font-size:1rem;font-weight:600;color:var(--off-white);margin-bottom:6px;letter-spacing:-.01em;}
+.feat-desc{font-size:.85rem;color:var(--gray3);line-height:1.6;}
+.feat-arrow{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;font-weight:500;color:var(--gold);margin-top:14px;transition:gap .25s;}
+.feat:hover .feat-arrow{gap:8px;}
+
+/* ── TENTANG ── */
+.tentang{padding:100px 44px;background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.tentang-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1100px;margin:0 auto;}
+.tentang-quote{font-size:clamp(1.5rem,3vw,2.4rem);font-weight:600;color:var(--white);line-height:1.3;letter-spacing:-.03em;}
+.tentang-quote .hl{background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tentang-text p{font-size:.95rem;color:var(--gray2);line-height:1.8;margin-bottom:14px;font-weight:300;}
+
+/* ── PENGUMUMAN ── */
+.pg-section{padding:80px 44px;text-align:center;}
+.pg-card{max-width:720px;margin:32px auto 0;background:var(--dark3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;text-align:left;position:relative;display:none;}
 .pg-card.show{display:block;}
-.pg-text{font-family:var(--font-serif);font-size:1.1rem;font-style:italic;color:var(--text2);line-height:1.75;}
+.pg-card-tag{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:600;letter-spacing:.06em;color:var(--gold);text-transform:uppercase;background:var(--gold-dim);border:1px solid rgba(240,165,0,.2);padding:5px 12px;border-radius:980px;margin-bottom:14px;}
+.pg-text{font-size:1rem;color:var(--off-white);line-height:1.7;font-weight:300;}
 
-.motto-section{padding:100px 0;text-align:center;position:relative;overflow:hidden;}
-.motto-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(201,168,76,.04),transparent);pointer-events:none;}
-.motto-text{font-family:var(--font-serif);font-size:clamp(2rem,5vw,4.5rem);font-weight:400;color:rgba(245,245,247,.18);line-height:1.2;letter-spacing:-.03em;position:relative;}
-.motto-text span{color:rgba(245,245,247,.6);}
-.motto-sub{font-size:.62rem;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--muted2);margin-top:28px;}
-
-.cta-section{background:var(--bg2);border-top:.5px solid var(--border2);padding:80px 0;}
-.cta-head{text-align:center;margin-bottom:48px;}
-.cta-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:.5px;background:var(--border2);border:.5px solid var(--border2);max-width:900px;margin:0 auto;}
-.cta-card{background:var(--bg2);padding:32px 24px;text-align:center;transition:background .2s;display:block;}
-.cta-card:hover{background:var(--bg3);}
-.cta-icon{font-size:1.5rem;margin-bottom:14px;opacity:.6;}
-.cta-name{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--white);margin-bottom:6px;}
-.cta-desc{font-size:.8rem;color:var(--muted);line-height:1.5;}
+/* ── MOTTO ── */
+.motto-section{padding:120px 44px;text-align:center;border-top:1px solid var(--border);position:relative;overflow:hidden;}
+.motto-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(240,165,0,.06) 0%,transparent 65%);pointer-events:none;}
+.motto-text{font-size:clamp(2rem,5vw,4rem);font-weight:700;letter-spacing:-.04em;color:var(--white);line-height:1.15;max-width:800px;margin:0 auto 20px;}
+.motto-text .hl{background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.motto-sub{font-size:.78rem;font-weight:500;letter-spacing:.1em;color:var(--gray3);text-transform:uppercase;}
 
 @media(max-width:960px){
-  .hero{padding:100px 24px 72px;}
-  .hero-stats,.hero-scroll{display:none;}
-  .about-band{padding:60px 0;}
-  .about-inner{grid-template-columns:1fr;gap:32px;}
-  .cta-cards{grid-template-columns:1fr 1fr;}
-  .pg-section,.motto-section{padding:60px 0;}
+  .hero{padding:0 0 48px;}
+  .hero-content{padding:0 20px;}
+  .hero-stats-row{padding:0 20px;flex-wrap:wrap;}
+  .hero-stat{flex:1 0 40%;}
+  .features{padding:64px 20px;}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .tentang{padding:64px 20px;}
+  .tentang-grid{grid-template-columns:1fr;gap:36px;}
+  .pg-section{padding:64px 20px;}
+  .motto-section{padding:80px 20px;}
 }
+@media(max-width:580px){.features-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
+
 <nav class="nav" id="mainNav">
-  <a href="index.html" class="nav-brand">ANTITHESIS<span>Al Muayyad Surakarta · 2018–2020</span></a>
+  <div class="nav-brand">ANTITHESIS</div>
   <ul class="nav-links" id="navLinks">
     <li><a href="#tentang">Tentang</a></li>
     <li><a href="#pengumuman">Pengumuman</a></li>
-    <li><a href="login.html" class="btn btn-primary btn-sm" style="margin-left:6px;">Masuk →</a></li>
+
   </ul>
-  <button class="nav-hamburger" id="navHam"><span></span><span></span><span></span></button>
+  <div style="display:flex;align-items:center;gap:10px;"><a href="login.html" class="btn btn-primary" style="padding:7px 18px;border-radius:980px;font-size:.78rem;">Masuk Portal</a><button class="nav-hamburger" id="navHam"><span></span><span></span><span></span></button></div>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div><div class="hero-bg-glow"></div><div class="hero-grid"></div>
+  <div class="hero-media">
+    <div class="hero-media-bg"></div>
+    <div class="hero-media-dots"></div>
+    <div class="hero-glow"></div>
+  </div>
   <div class="hero-content">
     <div class="hero-eyebrow anim-up d1">Angkatan 2018–2020</div>
-    <h1 class="anim-up d2">ANTI<em>THESIS</em></h1>
-    <p class="hero-tagline anim-up d3">Satu angkatan, satu kenangan, satu nama.<br>Portal resmi komunitas SMA & MA Al Muayyad Surakarta.</p>
+    <h1 class="anim-up d2">ANTITHESIS</h1>
+    <p class="hero-sub anim-up d3">Portal resmi reuni dan komunikasi anggota SMA & MA Al Muayyad Surakarta angkatan ANTITHESIS.</p>
     <div class="hero-actions anim-up d4">
-      <a href="login.html" class="btn btn-primary">Masuk ke Portal</a>
-      <a href="#tentang" class="btn btn-outline">Tentang Kami</a>
+
+
     </div>
   </div>
-  <div class="hero-stats anim-in d3">
-    <div><div class="stat-num" id="statAnggota">—</div><div class="stat-lbl">Anggota</div></div>
-    <div><div class="stat-num">2020</div><div class="stat-lbl">Lulus</div></div>
-    <div><div class="stat-num">∞</div><div class="stat-lbl">Kenangan</div></div>
+  <div class="hero-stats-row anim-in d4">
+    <div class="hero-stat">
+      <div class="hero-stat-num" id="statAnggota">—</div>
+      <div class="hero-stat-lbl">Anggota Terdaftar</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" id="statProfil">—</div>
+      <div class="hero-stat-lbl">Profil Terisi</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">2020</div>
+      <div class="hero-stat-lbl">Tahun Lulus</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">1</div>
+      <div class="hero-stat-lbl">Komunitas</div>
+    </div>
   </div>
-  <div class="hero-scroll">Gulir ke bawah</div>
 </section>
 
-<div class="notif-bar" id="pgBar"><span class="notif-bar-icon">✦</span><span class="notif-bar-text" id="pgText"></span></div>
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span class="marquee-item">ANTITHESIS</span>
+    <span class="marquee-item">Al Muayyad Surakarta</span>
+    <span class="marquee-item">2018 – 2020</span>
+    <span class="marquee-item">Selamanya Bersama</span>
+    <span class="marquee-item">Selamanya Bangga</span>
+    <span class="marquee-item">ANTITHESIS</span>
+    <span class="marquee-item">Al Muayyad Surakarta</span>
+    <span class="marquee-item">2018 – 2020</span>
+    <span class="marquee-item">Selamanya Bersama</span>
+    <span class="marquee-item">Selamanya Bangga</span>
+    <span class="marquee-item">ANTITHESIS</span>
+    <span class="marquee-item">Al Muayyad Surakarta</span>
+    <span class="marquee-item">2018 – 2020</span>
+    <span class="marquee-item">Selamanya Bersama</span>
+    <span class="marquee-item">Selamanya Bangga</span>
+  </div>
+</div>
 
-<section class="about-band" id="tentang">
-  <div class="container">
-    <div class="about-inner">
-      <div class="rv"><div class="about-quote">"Kami bukan sekadar angkatan — kami adalah ikatan yang tidak lekang oleh waktu."</div></div>
-      <div class="rv d2">
-        <div class="sec-label" style="margin-bottom:16px;">Tentang Kami</div>
-        <div class="about-text">
-          <p>ANTITHESIS adalah nama yang kami pilih bersama — bukan karena kami berlawanan, melainkan karena kami percaya perbedaan adalah kekuatan. Lahir dari lorong-lorong Al Muayyad, kami tumbuh menjadi lebih dari sekadar teman sekelas.</p>
-          <p>Portal ini adalah ruang digital kami: tempat berbagi kabar, mengusulkan acara, dan menjaga kenangan tetap hidup — meski jarak memisahkan langkah kami.</p>
-        </div>
+<!-- NOTIF -->
+<div class="notif-bar" id="pgBar">
+  <span class="notif-bar-icon">📢</span>
+  <span class="notif-bar-text" id="pgText"></span>
+</div>
+
+<!-- FEATURES GRID -->
+<section class="features" id="portal">
+  <div class="features-intro rv">
+    <div class="sec-label">Portal Anggota</div>
+    <h2 class="sec-h">Semua yang kamu butuhkan,<br>dalam satu tempat.</h2>
+    <p style="font-size:.95rem;color:var(--gray2);margin-top:12px;font-weight:300;">Akses direktori, polling, kenangan, dan info acara — khusus untuk anggota ANTITHESIS.</p>
+  </div>
+  <div class="features-grid rv d1">
+    <a href="dashboard.html" class="feat">
+      <div class="feat-icon">🏠</div>
+      <div class="feat-name">Dashboard</div>
+      <div class="feat-desc">Beranda personal, countdown acara, dan ringkasan komunitas.</div>
+      <div class="feat-arrow">Buka <span>→</span></div>
+    </a>
+    <a href="anggota.html" class="feat">
+      <div class="feat-icon">👥</div>
+      <div class="feat-name">Direktori Anggota</div>
+      <div class="feat-desc">Temukan dan kenali kembali profil semua teman angkatan.</div>
+      <div class="feat-arrow">Lihat <span>→</span></div>
+    </a>
+    <a href="polling.html" class="feat">
+      <div class="feat-icon">🗳️</div>
+      <div class="feat-name">Polling Acara</div>
+      <div class="feat-desc">Vote jenis acara angkatan dan kirim usulan detail.</div>
+      <div class="feat-arrow">Vote <span>→</span></div>
+    </a>
+    <a href="galeri.html" class="feat">
+      <div class="feat-icon">📖</div>
+      <div class="feat-name">Buku Kenangan</div>
+      <div class="feat-desc">Tulis pesan anonim dan baca kenangan dari seluruh angkatan.</div>
+      <div class="feat-arrow">Baca <span>→</span></div>
+    </a>
+    <a href="acara.html" class="feat">
+      <div class="feat-icon">📅</div>
+      <div class="feat-name">Info Acara</div>
+      <div class="feat-desc">Detail acara resmi yang telah ditetapkan beserta countdown.</div>
+      <div class="feat-arrow">Detail <span>→</span></div>
+    </a>
+    <a href="login.html" class="feat" style="background:var(--gold-dim);border-left:2px solid var(--gold);">
+      <div class="feat-icon">🔐</div>
+      <div class="feat-name">Masuk Portal</div>
+      <div class="feat-desc">Login atau daftar akun baru menggunakan nama lengkapmu.</div>
+      <div class="feat-arrow" style="color:var(--gold);">Mulai <span>→</span></div>
+    </a>
+  </div>
+</section>
+
+<!-- TENTANG -->
+<section class="tentang" id="tentang">
+  <div class="tentang-grid">
+    <div class="rv">
+      <div class="tentang-quote">"Kami bukan sekadar angkatan — kami adalah <span class="hl">ikatan yang tidak lekang</span> oleh waktu."</div>
+    </div>
+    <div class="rv d2">
+      <div class="sec-label">Tentang ANTITHESIS</div>
+      <div class="tentang-text">
+        <p>ANTITHESIS adalah nama yang kami pilih bersama — bukan karena kami berlawanan, melainkan karena kami percaya perbedaan adalah kekuatan. Lahir dari lorong-lorong Al Muayyad, kami tumbuh menjadi lebih dari sekadar teman sekelas.</p>
+        <p>Portal ini adalah ruang digital kami: tempat berbagi kabar, mengusulkan acara, dan menjaga kenangan tetap hidup — meski jarak memisahkan langkah kami.</p>
       </div>
+      <a href="login.html" class="btn btn-outline" style="margin-top:20px;">Bergabung Sekarang →</a>
     </div>
   </div>
 </section>
 
+<!-- PENGUMUMAN -->
 <section class="pg-section" id="pengumuman">
-  <div class="container">
-    <div class="rv"><div class="sec-label">Info Terkini</div><div class="sec-h" style="margin-top:4px;">Pengumuman <em>Komunitas</em></div></div>
-    <div class="pg-card rv d2" id="pgCard"><p class="pg-text" id="pgCardText"></p></div>
-    <div id="pgEmpty" class="rv d2" style="max-width:480px;margin:28px auto 0;"><div class="empty-state"><div class="empty-state-icon">📢</div><div class="empty-state-text">Belum ada pengumuman terbaru.</div></div></div>
+  <div class="rv">
+    <div class="sec-label" style="justify-content:center;display:block;">Info Terkini</div>
+    <h2 class="sec-h">Pengumuman <em>Komunitas</em></h2>
+  </div>
+  <div class="pg-card rv d2" id="pgCard">
+    <div class="pg-card-tag">📢 Pengumuman</div>
+    <p class="pg-text" id="pgCardText"></p>
+  </div>
+  <div id="pgEmpty" class="rv d2">
+    <div class="empty-state"><div class="empty-state-icon">📢</div><div class="empty-state-text">Belum ada pengumuman saat ini.</div></div>
   </div>
 </section>
 
+<!-- MOTTO -->
 <section class="motto-section rv">
-  <div class="container">
-    <div class="motto-text">Selamanya <span>Bersama</span>,<br>Selamanya <span>Bangga</span>.</div>
-    <div class="motto-sub">ANTITHESIS · SMA & MA Al Muayyad Surakarta · 2018–2020</div>
-  </div>
-</section>
-
-<section class="cta-section" id="portal">
-  <div class="container">
-    <div class="cta-head rv"><div class="sec-label">Portal Anggota</div><div class="sec-h" style="margin-top:4px;">Akses <em>Komunitas</em></div><p style="font-size:.9rem;color:var(--muted);margin-top:10px;">Masuk portal untuk mengakses semua fitur eksklusif angkatan.</p></div>
-    <div class="cta-cards rv d1">
-      <a href="dashboard.html" class="cta-card"><div class="cta-icon">⌂</div><div class="cta-name">Dashboard</div><div class="cta-desc">Beranda & countdown</div></a>
-      <a href="anggota.html"   class="cta-card"><div class="cta-icon">◎</div><div class="cta-name">Direktori</div><div class="cta-desc">Profil semua anggota</div></a>
-      <a href="polling.html"   class="cta-card"><div class="cta-icon">◈</div><div class="cta-name">Polling</div><div class="cta-desc">Vote acara angkatan</div></a>
-      <a href="acara.html"     class="cta-card"><div class="cta-icon">◷</div><div class="cta-name">Acara</div><div class="cta-desc">Info acara ditetapkan</div></a>
-    </div>
-  </div>
+  <div class="motto-glow"></div>
+  <div class="motto-text">Selamanya <span class="hl">Bersama</span>,<br>Selamanya <span class="hl">Bangga</span>.</div>
+  <div class="motto-sub">ANTITHESIS · SMA & MA Al Muayyad Surakarta · 2018–2020</div>
 </section>
 
 <footer>
@@ -144,9 +270,14 @@
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import{getDatabase,ref,onValue,get}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-const db=getDatabase(initializeApp({apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",authDomain:"antithesis-al-muayyad.firebaseapp.com",databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"antithesis-al-muayyad",storageBucket:"antithesis-al-muayyad.appspot.com",messagingSenderId:"1014116431079",appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"}));
-onValue(ref(db,'antithesis/pengumuman'),s=>{const t=s.val()||'';if(t){document.getElementById('pgText').textContent=t;document.getElementById('pgCardText').textContent=t;document.getElementById('pgBar').classList.add('show');document.getElementById('pgCard').classList.add('show');document.getElementById('pgEmpty').style.display='none';}else{document.getElementById('pgBar').classList.remove('show');document.getElementById('pgCard').classList.remove('show');document.getElementById('pgEmpty').style.display='';}});
-get(ref(db,'antithesis/anggota')).then(s=>{document.getElementById('statAnggota').textContent=s.val()?Object.keys(s.val()).length:'0';});
+const db=getDatabase(initializeApp({databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",authDomain:"antithesis-al-muayyad.firebaseapp.com",projectId:"antithesis-al-muayyad",storageBucket:"antithesis-al-muayyad.appspot.com",messagingSenderId:"1014116431079",appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"}));
+onValue(ref(db,'antithesis/pengumuman'),s=>{
+  const t=s.val()||'';
+  if(t){document.getElementById('pgText').textContent=t;document.getElementById('pgCardText').textContent=t;document.getElementById('pgBar').classList.add('show');document.getElementById('pgCard').classList.add('show');document.getElementById('pgEmpty').style.display='none';}
+  else{document.getElementById('pgBar').classList.remove('show');document.getElementById('pgCard').classList.remove('show');document.getElementById('pgEmpty').style.display='';}
+});
+get(ref(db,'antithesis/accounts')).then(s=>document.getElementById('statAnggota').textContent=s.val()?Object.keys(s.val()).length:0);
+get(ref(db,'antithesis/anggota')).then(s=>document.getElementById('statProfil').textContent=s.val()?Object.keys(s.val()).length:0);
 document.getElementById('navHam').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
 document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
