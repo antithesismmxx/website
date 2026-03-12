@@ -4,52 +4,74 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Buku Kenangan — ANTITHESIS</title>
+>
+>
+>
+
+
+
 <link rel="stylesheet" href="style.css"/>
 <style>
-.galeri-layout{display:grid;grid-template-columns:1fr 1.4fr;gap:48px;padding:60px 0;}
-.buku-form-panel{background:var(--dark3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;position:sticky;top:72px;}
-.buku-form-title{font-size:1.2rem;font-weight:700;color:var(--white);letter-spacing:-.02em;margin-bottom:4px;}
-.buku-form-sub{font-size:.85rem;color:var(--gray3);font-weight:300;margin-bottom:22px;line-height:1.5;}
-.buku-textarea{width:100%;background:var(--dark4);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--off-white);font-size:.95rem;padding:14px 16px;outline:none;resize:none;min-height:130px;transition:border-color .25s;line-height:1.6;}
-.buku-textarea:focus{border-color:rgba(240,165,0,.4);}
-.buku-textarea::placeholder{color:var(--gray4);}
-.mood-row{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.mood-label{font-size:.72rem;font-weight:600;letter-spacing:.04em;color:var(--gray3);text-transform:uppercase;}
-.mood-btn{background:var(--surface);border:1px solid var(--border);border-radius:980px;color:var(--gray3);font-size:.75rem;font-weight:500;padding:7px 14px;cursor:pointer;transition:var(--trans);display:flex;align-items:center;gap:5px;}
-.mood-btn:hover{border-color:var(--border2);color:var(--off-white);}
-.mood-btn.active{background:var(--gold-dim);border-color:rgba(240,165,0,.3);color:var(--gold);}
-.anon-note{font-size:.75rem;color:var(--gray4);margin-top:10px;}
-.entries-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.entries-count{font-size:2rem;font-weight:700;letter-spacing:-.04em;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
-.entries-list{display:flex;flex-direction:column;gap:10px;max-height:680px;overflow-y:auto;padding-right:4px;}
-.buku-entry{background:var(--dark3);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;transition:border-color .25s;}
+/* LAYOUT */
+.galeri-layout{display:grid;grid-template-columns:1fr 1.3fr;gap:60px;padding:60px 0;}
+
+/* FORM */
+.buku-form-panel{background:var(--dark2);border:1px solid var(--border);padding:36px;}
+.buku-form-title{font-family:'New York','Georgia',serif;font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+.buku-form-title em{font-style:italic;color:var(--black);}
+.buku-form-sub{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.95rem;font-style:italic;color:var(--muted);margin-bottom:28px;line-height:1.7;}
+.buku-textarea{width:100%;background:var(--dark2);border:1px solid var(--border);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:1.1rem;padding:16px 18px;outline:none;resize:none;min-height:140px;transition:border-color .3s;line-height:1.7;}
+.buku-textarea:focus{border-color:rgba(0,0,0,.45);}
+.buku-textarea::placeholder{color:var(--muted);}
+.mood-row{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.mood-label{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.46rem;letter-spacing:.32em;color:var(--black);text-transform:uppercase;white-space:nowrap;}
+.mood-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;padding:9px 14px;cursor:pointer;transition:var(--trans);display:flex;align-items:center;gap:6px;}
+.mood-btn:hover{border-color:var(--border2);color:var(--text2);}
+.mood-btn.active{border-color:var(--blue);color:var(--black);background:var(--gold-dim);}
+.mood-btn .emoji{font-size:.9rem;}
+.anon-note{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.85rem;font-style:italic;color:var(--muted);margin-top:12px;}
+
+/* ENTRIES */
+.entries-panel{position:relative;}
+.entries-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.entries-count{font-family:'New York','Georgia',serif;font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.entries-list{max-height:680px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-right:4px;}
+.buku-entry{background:var(--dark2);border:1px solid var(--border);padding:20px 22px;position:relative;overflow:hidden;transition:border-color .3s;}
+.buku-entry::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);opacity:.5;}
 .buku-entry:hover{border-color:var(--border2);}
-.entry-mood{font-size:1.2rem;margin-bottom:8px;}
-.entry-msg{font-size:.92rem;color:var(--off-white);line-height:1.7;}
-.entry-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
-.entry-anon{font-size:.72rem;color:var(--gray4);}
-.entry-waktu{font-size:.72rem;color:var(--gray4);}
-.mood-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-.mood-stat{display:flex;align-items:center;gap:8px;background:var(--dark3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 14px;}
-.mood-stat-emoji{font-size:.95rem;}
-.mood-stat-num{font-size:1rem;font-weight:700;color:var(--white);}
-.mood-stat-lbl{font-size:.68rem;color:var(--gray3);}
+.entry-mood{font-size:1.3rem;margin-bottom:8px;}
+.entry-msg{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:1.05rem;color:var(--text2);line-height:1.75;}
+.entry-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
+.entry-waktu{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.42rem;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;}
+.entry-anon{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.82rem;font-style:italic;color:var(--muted);}
+
+/* STATS BAR */
+.mood-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;}
+.mood-stat{display:flex;align-items:center;gap:8px;background:var(--dark2);border:1px solid var(--border);padding:10px 14px;}
+.mood-stat-emoji{font-size:1rem;}
+.mood-stat-num{font-family:'New York','Georgia',serif;font-size:1.1rem;font-weight:700;color:var(--text);}
+.mood-stat-lbl{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.38rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;}
+
 @media(max-width:960px){
-  .galeri-layout{grid-template-columns:1fr;gap:28px;padding:40px 0;}
-  .buku-form-panel{position:static;}
+  .galeri-layout{grid-template-columns:1fr;gap:36px;padding:40px 0;}
+  .buku-form-panel{padding:24px 20px;}
   .entries-list{max-height:500px;}
 }
 </style>
 </head>
 <body>
+
 <nav class="nav" id="mainNav">
-  <a href="index.html" class="nav-brand">ANTITHESIS <span>· Al Muayyad Surakarta · 2018–2020</span></a>
+  <a href="index.html" class="nav-brand">ANTITHESIS<span>Al Muayyad Surakarta · 2018–2020</span></a>
   <ul class="nav-links" id="navLinks">
     <li><a href="dashboard.html">Dashboard</a></li>
     <li><a href="anggota.html">Direktori</a></li>
     <li><a href="polling.html">Polling</a></li>
     <li><a href="galeri.html" class="active">Kenangan</a></li>
     <li><a href="acara.html">Acara</a></li>
+    <li><a href="profil.html">Profil</a></li>
+
+    <li class="nav-mobile-logout"><button class="btn-logout" onclick="sessionStorage.clear();window.location.href='login.html'">Keluar</button></li>
   </ul>
   <div class="nav-user">
     <span class="nav-user-name">Halo, <span id="navNama">—</span></span>
@@ -57,33 +79,36 @@
   </div>
   <button class="nav-hamburger" id="navHam"><span></span><span></span><span></span></button>
 </nav>
+
 <div class="page">
   <div class="page-hero">
     <div class="page-hero-label">Kenangan Bersama</div>
-    <div class="page-hero-deco">📖</div>
+    <div class="page-hero-deco" style="font-size:5rem;">📖</div>
     <h1>Buku <em>Kenangan</em></h1>
     <p class="page-hero-sub">Tulis cerita, pesan, atau kenangan — anonim dan abadi.</p>
   </div>
+
   <div class="container">
     <div class="galeri-layout">
-      <!-- FORM -->
+      <!-- FORM KIRI -->
       <div class="rv">
         <div class="buku-form-panel">
-          <div class="buku-form-title">Tulis Kenanganmu</div>
+          <div class="buku-form-title">Tulis <em>Kenanganmu</em></div>
           <div class="buku-form-sub">Pesanmu anonim — tidak ada nama yang ditampilkan.</div>
           <textarea class="buku-textarea" id="bukuMsg" placeholder="Tulis kenangan, pesan, atau kesan kamu..."></textarea>
           <div class="mood-row">
-            <span class="mood-label">Mood</span>
-            <button class="mood-btn active" data-mood="🌟">🌟 Bangga</button>
-            <button class="mood-btn" data-mood="🥹">🥹 Haru</button>
-            <button class="mood-btn" data-mood="😄">😄 Bahagia</button>
-            <button class="mood-btn" data-mood="💛">💛 Rindu</button>
+            <span class="mood-label">Mood :</span>
+            <button class="mood-btn active" data-mood="🌟"><span class="emoji">🌟</span>Bangga</button>
+            <button class="mood-btn" data-mood="🥹"><span class="emoji">🥹</span>Haru</button>
+            <button class="mood-btn" data-mood="😄"><span class="emoji">😄</span>Bahagia</button>
+            <button class="mood-btn" data-mood="💛"><span class="emoji">💛</span>Rindu</button>
           </div>
-          <div class="anon-note">✦ Semua pesan bersifat anonim</div>
-          <button class="btn btn-primary btn-full" id="btnBuku" style="margin-top:18px;border-radius:var(--radius-sm);">Kirim Pesan Anonim →</button>
+          <div class="anon-note">✦ Semua pesan bersifat anonim — hanya tanggal yang ditampilkan.</div>
+          <button class="btn btn-primary btn-full" id="btnBuku" style="margin-top:20px;">Kirim Pesan Anonim →</button>
         </div>
       </div>
-      <!-- LIST -->
+
+      <!-- LIST KANAN -->
       <div class="rv d2">
         <div class="entries-head">
           <div>
@@ -91,7 +116,9 @@
             <div class="entries-count" id="bukuCount">0</div>
           </div>
         </div>
+        <!-- MOOD STATS -->
         <div class="mood-stats" id="moodStats"></div>
+        <!-- LIST -->
         <div class="entries-list" id="bukuList">
           <div class="empty-state"><div class="empty-state-icon">✨</div><div class="empty-state-text">Belum ada pesan. Jadilah yang pertama!</div></div>
         </div>
@@ -99,44 +126,116 @@
     </div>
   </div>
 </div>
+
 <footer>
   <div class="foot-brand">ANTITHESIS<span>SMA & MA Al Muayyad Surakarta · 2018–2020</span></div>
   <div class="foot-mid">Selamanya Bersama, Selamanya Bangga.</div>
   <ul class="foot-links"><li><a href="#">Instagram</a></li><li><a href="#">WhatsApp</a></li></ul>
 </footer>
+
 <script type="module">
 import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import{getDatabase,ref,onValue,push}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// ── Auth guard dulu sebelum init Firebase ──
 const nama=sessionStorage.getItem('antithesis_member');
 const username=sessionStorage.getItem('antithesis_username');
 if(!nama||!username){window.location.href='login.html';}
-const app=getApps().length===0?initializeApp({databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",authDomain:"antithesis-al-muayyad.firebaseapp.com",projectId:"antithesis-al-muayyad",storageBucket:"antithesis-al-muayyad.appspot.com",messagingSenderId:"1014116431079",appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"}):getApps()[0];
+
+// ── Init Firebase (cegah dobel init) ──
+const firebaseConfig={
+  databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain:"antithesis-al-muayyad.firebaseapp.com",
+  projectId:"antithesis-al-muayyad",
+  storageBucket:"antithesis-al-muayyad.appspot.com",
+  messagingSenderId:"1014116431079",
+  appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"
+};
+const app=getApps().length===0?initializeApp(firebaseConfig):getApps()[0];
 const db=getDatabase(app);
+
+// ── Nav ──
 document.getElementById('navNama').textContent=nama;
 document.getElementById('btnLogout').addEventListener('click',()=>{sessionStorage.clear();window.location.href='login.html';});
 document.getElementById('navHam').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
-function toast(msg,err=false){let t=document.getElementById('__toast');if(!t){t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:980px;font-size:.78rem;font-weight:500;padding:10px 22px;z-index:9999;opacity:0;transition:all .35s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.5);';document.body.appendChild(t);}
-t.style.color=err?'#ff3b30':'#f0a500';t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';clearTimeout(t.__tid);t.__tid=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(12px)';},3200);}
+
+// ── Toast ──
+function toast(msg,err=false){
+  let t=document.getElementById('__toast');
+  if(!t){t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--dark2);border:1px solid rgba(0,0,0,.35);font-family:Montserrat,sans-serif;font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;padding:12px 26px;z-index:9999;opacity:0;transition:all .4s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 36px rgba(0,0,0,.6);';document.body.appendChild(t);}
+  t.style.color=err?'#e74c3c':'#c9a84c';
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t.__tid);t.__tid=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)';},3400);
+}
+
+// ── Mood ──
 let selMood='🌟';
-document.querySelectorAll('.mood-btn').forEach(b=>b.addEventListener('click',function(){document.querySelectorAll('.mood-btn').forEach(x=>x.classList.remove('active'));this.classList.add('active');selMood=this.dataset.mood;}));
+document.querySelectorAll('.mood-btn').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.mood-btn').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');selMood=this.dataset.mood;
+}));
+
+// ── Kirim pesan ──
 document.getElementById('btnBuku').addEventListener('click',()=>{
   const msg=document.getElementById('bukuMsg').value.trim();
-  if(!msg){document.getElementById('bukuMsg').style.borderColor='rgba(240,165,0,.5)';document.getElementById('bukuMsg').focus();toast('Tulis pesanmu dulu!',true);return;}
+  if(!msg){
+    document.getElementById('bukuMsg').style.borderColor='rgba(0,0,0,.5)';
+    document.getElementById('bukuMsg').focus();
+    toast('✕ Tulis pesanmu dulu!',true);
+    return;
+  }
   const waktu=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
   push(ref(db,'antithesis/buku'),{mood:selMood,msg,waktu})
-    .then(()=>{document.getElementById('bukuMsg').value='';document.getElementById('bukuMsg').style.borderColor='';toast('✦ Pesanmu berhasil dikirim!');})
-    .catch(()=>toast('Gagal kirim. Coba lagi.',true));
+    .then(()=>{
+      document.getElementById('bukuMsg').value='';
+      document.getElementById('bukuMsg').style.borderColor='';
+      toast('✦ Pesanmu berhasil dikirim!');
+    })
+    .catch(e=>{
+      console.error('Gagal kirim buku:',e);
+      toast('✕ Gagal kirim pesan. Coba lagi.',true);
+    });
 });
-onValue(ref(db,'antithesis/buku'),snap=>{
-  const raw=snap.val()||{};const data=Object.values(raw).reverse();
+
+// ── Load & render kenangan ──
+const bukuRef=ref(db,'antithesis/buku');
+onValue(bukuRef,snap=>{
+  const raw=snap.val()||{};
+  const data=Object.values(raw).reverse();
   document.getElementById('bukuCount').textContent=data.length;
-  const mc={};data.forEach(d=>{mc[d.mood]=(mc[d.mood]||0)+1;});
-  const ml={'🌟':'Bangga','🥹':'Haru','😄':'Bahagia','💛':'Rindu'};
-  document.getElementById('moodStats').innerHTML=Object.entries(mc).map(([e,n])=>`<div class="mood-stat"><span class="mood-stat-emoji">${e}</span><div><div class="mood-stat-num">${n}</div><div class="mood-stat-lbl">${ml[e]||e}</div></div></div>`).join('');
+
+  // Mood stats
+  const moodCount={};
+  data.forEach(d=>{moodCount[d.mood]=(moodCount[d.mood]||0)+1;});
+  const moodLabels={'🌟':'Bangga','🥹':'Haru','😄':'Bahagia','💛':'Rindu'};
+  document.getElementById('moodStats').innerHTML=Object.entries(moodCount).map(([emoji,n])=>
+    `<div class="mood-stat"><span class="mood-stat-emoji">${emoji}</span><div><div class="mood-stat-num">${n}</div><div class="mood-stat-lbl">${moodLabels[emoji]||emoji}</div></div></div>`
+  ).join('');
+
+  // Entries
   const list=document.getElementById('bukuList');
-  if(!data.length){list.innerHTML='<div class="empty-state"><div class="empty-state-icon">✨</div><div class="empty-state-text">Belum ada pesan. Jadilah yang pertama!</div></div>';return;}
-  list.innerHTML=data.map(d=>`<div class="buku-entry"><div class="entry-mood">${d.mood||'💛'}</div><div class="entry-msg">${d.msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div class="entry-foot"><span class="entry-anon">Anonim</span><span class="entry-waktu">${d.waktu||''}</span></div></div>`).join('');
-},err=>{document.getElementById('bukuList').innerHTML='<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Gagal memuat. Periksa koneksi.</div></div>';});
+  if(!data.length){
+    list.innerHTML='<div class="empty-state"><div class="empty-state-icon">✨</div><div class="empty-state-text">Belum ada pesan. Jadilah yang pertama!</div></div>';
+    return;
+  }
+  list.innerHTML=data.map(d=>`
+    <div class="buku-entry">
+      <div class="entry-mood">${d.mood||'💛'}</div>
+      <div class="entry-msg">${escHtml(d.msg)}</div>
+      <div class="entry-foot">
+        <span class="entry-anon">Anonim</span>
+        <span class="entry-waktu">${d.waktu||''}</span>
+      </div>
+    </div>`).join('');
+},err=>{
+  console.error('Firebase buku error:',err);
+  document.getElementById('bukuList').innerHTML='<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Gagal memuat data. Periksa koneksi.</div></div>';
+});
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── Scroll reveal ──
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
 document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
 </script>

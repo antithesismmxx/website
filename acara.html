@@ -4,47 +4,53 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Info Acara — ANTITHESIS</title>
+>
+>
+>
+
+
+
 <link rel="stylesheet" href="style.css"/>
 <style>
 /* HERO ACARA */
 .acara-hero{padding:72px 60px 60px;background:var(--dark2);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.acara-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 70% 50%,rgba(201,168,76,.06) 0%,transparent 65%);pointer-events:none;}
-.acara-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(201,168,76,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.025) 1px,transparent 1px);background-size:70px 70px;}
+.acara-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 70% 50%,rgba(0,0,0,.06) 0%,transparent 65%);pointer-events:none;}
+.acara-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.025) 1px,transparent 1px);background-size:70px 70px;}
 .acara-hero-content{position:relative;z-index:1;}
 
 /* COUNTDOWN HERO */
 .cd-hero{margin-top:44px;display:flex;gap:32px;flex-wrap:wrap;}
 .cd-unit{text-align:center;}
-.cd-num{font-family:'Playfair Display',serif;font-size:4rem;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.cd-lbl{font-family:'Montserrat',sans-serif;font-size:.42rem;letter-spacing:.32em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
-.cd-sep{font-family:'Playfair Display',serif;font-size:3.5rem;color:rgba(201,168,76,.25);align-self:flex-start;padding-top:6px;}
+.cd-num{font-family:'New York','Georgia',serif;font-size:4rem;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cd-lbl{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.42rem;letter-spacing:.32em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+.cd-sep{font-family:'New York','Georgia',serif;font-size:3.5rem;color:rgba(0,0,0,.25);align-self:flex-start;padding-top:6px;}
 
 /* DETAIL CARD */
 .acara-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:40px;}
-.detail-card{background:var(--dark3);border:1px solid var(--border);padding:24px 28px;position:relative;overflow:hidden;}
+.detail-card{background:var(--dark2);border:1px solid var(--border);padding:24px 28px;position:relative;overflow:hidden;}
 .detail-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:0;transition:opacity .3s;}
 .detail-card:hover::before{opacity:1;}
 .detail-icon{font-size:1.6rem;margin-bottom:12px;}
-.detail-label{font-family:'Montserrat',sans-serif;font-size:.44rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
-.detail-value{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--white);}
-.detail-sub{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:var(--muted);margin-top:4px;}
+.detail-label{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.44rem;letter-spacing:.3em;color:var(--black);text-transform:uppercase;margin-bottom:6px;}
+.detail-value{font-family:'New York','Georgia',serif;font-size:1.3rem;font-weight:700;color:var(--text);}
+.detail-sub{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.9rem;font-style:italic;color:var(--muted);margin-top:4px;}
 
 /* HASIL VOTING */
 .hasil-section{padding:60px 0;border-top:1px solid var(--border);}
 .hasil-bars{display:flex;flex-direction:column;gap:16px;margin-top:32px;max-width:600px;}
 .hb-row{display:flex;align-items:center;gap:16px;}
-.hb-type{font-family:'Montserrat',sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;width:100px;flex-shrink:0;}
-.hb-bar-wrap{flex:1;height:8px;background:rgba(201,168,76,.1);border-radius:4px;overflow:hidden;}
+.hb-type{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.5rem;letter-spacing:.25em;color:var(--black);text-transform:uppercase;width:100px;flex-shrink:0;}
+.hb-bar-wrap{flex:1;height:8px;background:rgba(0,0,0,.1);border-radius:4px;overflow:hidden;}
 .hb-bar{height:100%;background:linear-gradient(to right,var(--gold),var(--gold-light));border-radius:4px;transition:width 1s ease;}
-.hb-count{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--white);width:60px;text-align:right;flex-shrink:0;}
-.hb-win{color:var(--gold);}
-.winner-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid var(--border2);padding:8px 16px;margin-top:16px;font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;}
+.hb-count{font-family:'New York','Georgia',serif;font-size:1.1rem;font-weight:700;color:var(--text);width:60px;text-align:right;flex-shrink:0;}
+.hb-win{color:var(--black);}
+.winner-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid var(--border2);padding:8px 16px;margin-top:16px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:.48rem;letter-spacing:.25em;color:var(--black);text-transform:uppercase;}
 
 /* NO ACARA STATE */
 .no-acara{padding:80px 0;text-align:center;}
 .no-acara-icon{font-size:4rem;margin-bottom:20px;opacity:.35;}
-.no-acara-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--white);margin-bottom:10px;}
-.no-acara-sub{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--muted);}
+.no-acara-title{font-family:'New York','Georgia',serif;font-size:2rem;font-weight:700;color:var(--text);margin-bottom:10px;}
+.no-acara-sub{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:1.1rem;font-style:italic;color:var(--muted);}
 
 @media(max-width:960px){
   .acara-hero{padding:48px 28px 40px;}
@@ -56,13 +62,16 @@
 <body>
 
 <nav class="nav" id="mainNav">
-  <a href="index.html" class="nav-brand">ANTITHESIS <span>· Al Muayyad Surakarta · 2018–2020</span></a>
+  <a href="index.html" class="nav-brand">ANTITHESIS<span>Al Muayyad Surakarta · 2018–2020</span></a>
   <ul class="nav-links" id="navLinks">
     <li><a href="dashboard.html">Dashboard</a></li>
     <li><a href="anggota.html">Direktori</a></li>
     <li><a href="polling.html">Polling</a></li>
     <li><a href="galeri.html">Kenangan</a></li>
     <li><a href="acara.html" class="active">Acara</a></li>
+    <li><a href="profil.html">Profil</a></li>
+
+    <li class="nav-mobile-logout"><button class="btn-logout" onclick="sessionStorage.clear();window.location.href='login.html'">Keluar</button></li>
   </ul>
   <div class="nav-user">
     <span class="nav-user-name">Halo, <span id="navNama">—</span></span>
@@ -96,10 +105,10 @@
       <div class="acara-hero-content">
         <div class="container">
           <div class="sec-label anim-up d1">Acara Ditetapkan</div>
-          <h1 style="font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5vw,4.5rem);font-weight:900;color:var(--white);line-height:1.05;" class="anim-up d2">
-            <span style="font-style:italic;color:var(--gold);" id="acaraJenis">—</span>
+          <h1 style="font-family:'New York','Georgia',serif;font-size:clamp(2.4rem,5vw,4.5rem);font-weight:900;color:var(--text);line-height:1.05;" class="anim-up d2">
+            <span style="font-style:italic;color:var(--black);" id="acaraJenis">—</span>
           </h1>
-          <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--muted);margin-top:8px;" class="anim-up d3" id="acaraSub">Acara angkatan ANTITHESIS</p>
+          <p style="font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;font-size:1.1rem;font-style:italic;color:var(--muted);margin-top:8px;" class="anim-up d3" id="acaraSub">Acara angkatan ANTITHESIS</p>
 
           <!-- COUNTDOWN -->
           <div class="cd-hero anim-up d3" id="cdHero">
@@ -155,7 +164,15 @@
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-const db=getDatabase(initializeApp({databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",projectId:"antithesis-al-muayyad",appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"}));
+const db=getDatabase(initializeApp({
+  apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain:"antithesis-al-muayyad.firebaseapp.com",
+  databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"antithesis-al-muayyad",
+  storageBucket:"antithesis-al-muayyad.appspot.com",
+  messagingSenderId:"1014116431079",
+  appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"
+}));
 const nama=sessionStorage.getItem('antithesis_member');
 if(!nama){window.location.href='login.html';}
 document.getElementById('navNama').textContent=nama;
