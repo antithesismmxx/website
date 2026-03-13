@@ -44,14 +44,17 @@ function setLoading(loading) {
   btn.style.opacity = loading ? '0.6' : '1';
   btn.textContent = loading ? 'Memproses...' : 'Daftar →';
 }
-function friendlyError(code) {
+function friendlyError(err) {
+  if (typeof err === 'string') return '✕  ' + err;
+  const code = err?.code || '';
   const map = {
     'auth/email-already-in-use':  '✕  Email sudah digunakan akun lain',
     'auth/invalid-email':          '✕  Format email tidak valid',
     'auth/weak-password':          '✕  Password terlalu lemah (min 8 karakter)',
     'auth/network-request-failed': '✕  Gagal terhubung ke server',
+    'auth/too-many-requests':      '✕  Terlalu banyak percobaan. Coba lagi nanti',
   };
-  return map[code] || '✕  Terjadi kesalahan: ' + code;
+  return map[code] || ('✕  ' + (err?.message || 'Terjadi kesalahan, coba lagi'));
 }
 function setupToggle(btnId, inputId) {
   const btn = document.getElementById(btnId);
@@ -155,7 +158,7 @@ async function doDaftar() {
     window.location.href = `verify.html?hint=${hint}&reason=newreg`;
 
   } catch (err) {
-    showErr(friendlyError(err.code));
+    showErr(friendlyError(err));
     setLoading(false);
   }
 }
