@@ -1,486 +1,291 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Masuk — ANTITHESIS</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Masuk — ANTITHESIS</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+/* ── Layout dua kolom ── */
+.login-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
+@media(max-width:768px){.login-page{grid-template-columns:1fr;}}
 
-    :root {
-      --gold:       #c9a84c;
-      --gold-light: #e2c47a;
-      --gold-dim:   rgba(201,168,76,.18);
-      --gold-border:rgba(201,168,76,.35);
-      --bg:         #080808;
-      --surface:    #0f0f0f;
-      --surface2:   #161616;
-      --text:       #d4c5a0;
-      --text-muted: #6b6248;
-      --err:        #e74c3c;
-      --ok:         #2ecc71;
-      --radius:     3px;
-    }
+/* ── Kolom kiri ── */
+.login-left{
+  position:relative;
+  background:radial-gradient(ellipse at 30% 60%,rgba(201,168,76,.08) 0%,transparent 70%),#0a0a0a;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  padding:36px 48px 48px;
+  overflow:hidden;
+}
+@media(max-width:768px){.login-left{display:none;}}
+.login-left-logo{
+  display:flex;align-items:center;gap:10px;
+  text-decoration:none;
+}
+.login-left-logo svg{width:28px;height:28px;opacity:.7;}
+.login-left-back{
+  font-size:.72rem;letter-spacing:.15em;color:var(--muted);
+  text-decoration:none;transition:color .2s;
+}
+.login-left-back:hover{color:var(--white);}
+.login-left-quote{
+  font-family:var(--font-serif);font-size:2.4rem;font-weight:400;
+  line-height:1.25;color:var(--white);max-width:380px;
+}
+.login-left-quote em{font-style:italic;color:#c9a84c;}
+.login-left-quote .highlight{color:#c9a84c;font-style:normal;}
 
-    html, body {
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Montserrat', sans-serif;
-    }
+/* ── Kolom kanan ── */
+.login-right{
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:48px 40px;
+}
+@media(max-width:480px){.login-right{padding:32px 20px;}}
 
-    /* ── Background ornament ── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background:
-        radial-gradient(ellipse 60% 40% at 50% 0%,   rgba(201,168,76,.07) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 60% at 100% 100%, rgba(201,168,76,.04) 0%, transparent 70%);
-      pointer-events: none;
-    }
+.login-box{width:100%;max-width:400px;}
+.login-title{font-size:1.9rem;font-weight:700;color:var(--white);margin-bottom:6px;}
+.login-sub{font-size:.9rem;color:var(--muted);margin-bottom:32px;}
 
-    /* ── Layout ── */
-    .page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 16px;
-    }
+/* ── Field ── */
+.field-group{margin-bottom:18px;}
+.field-label{display:block;font-size:.78rem;font-weight:500;color:var(--muted);margin-bottom:7px;}
+.field-input-wrap{position:relative;}
+.field-input{
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:.5px solid rgba(255,255,255,.1);
+  color:var(--white);
+  font-family:var(--font);font-size:.92rem;
+  padding:11px 14px;
+  border-radius:var(--r);
+  outline:none;
+  transition:border-color .15s;
+}
+.field-input:focus{border-color:var(--blue);}
+.field-input::placeholder{color:var(--muted2);}
+.field-input.has-toggle{padding-right:44px;}
 
-    .card {
-      width: 100%;
-      max-width: 420px;
-      background: var(--surface);
-      border: 1px solid var(--gold-border);
-      padding: 48px 40px 44px;
-      position: relative;
-    }
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(201,168,76,.03) 0%, transparent 60%);
-      pointer-events: none;
-    }
+.btn-toggle-pass{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:var(--muted2);font-size:.9rem;line-height:1;
+  padding:4px;transition:color .15s;
+}
+.btn-toggle-pass:hover{color:var(--white);}
 
-    /* ── Header ── */
-    .logo {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-    .logo-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.55rem;
-      font-weight: 700;
-      letter-spacing: .35em;
-      color: var(--gold);
-      text-transform: uppercase;
-      display: block;
-    }
-    .logo-sub {
-      font-size: .52rem;
-      letter-spacing: .32em;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-top: 6px;
-      display: block;
-    }
-    .logo-line {
-      width: 48px;
-      height: 1px;
-      background: var(--gold-border);
-      margin: 14px auto 0;
-    }
+/* ── Remember + Lupa ── */
+.login-extras{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:22px;margin-top:-4px;
+}
+.remember-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.remember-wrap input{accent-color:var(--blue);width:14px;height:14px;cursor:pointer;}
+.remember-wrap span{font-size:.78rem;color:var(--muted);}
+.link-forgot{font-size:.78rem;color:var(--blue);text-decoration:none;transition:opacity .15s;}
+.link-forgot:hover{opacity:.75;}
 
-    /* ── Section title ── */
-    .section-title {
-      font-family: 'Cinzel', serif;
-      font-size: .68rem;
-      letter-spacing: .28em;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 22px;
-    }
+/* ── Error msg ── */
+.msg-err{
+  font-size:.78rem;color:#ff6b6b;
+  background:rgba(255,69,58,.06);border:.5px solid rgba(255,69,58,.2);
+  padding:10px 14px;border-radius:var(--r);
+  margin-bottom:14px;display:none;
+}
+.msg-ok{
+  font-size:.78rem;color:rgba(48,209,88,.9);
+  background:rgba(48,209,88,.06);border:.5px solid rgba(48,209,88,.18);
+  padding:10px 14px;border-radius:var(--r);
+  margin-bottom:14px;display:none;
+}
 
-    /* ── Form ── */
-    .field { margin-bottom: 16px; }
+/* ── Tombol utama ── */
+.btn-login{
+  width:100%;
+  background:var(--blue);color:#fff;
+  font-family:var(--font);font-size:.92rem;font-weight:500;
+  padding:12px;
+  border:none;border-radius:var(--r);
+  cursor:pointer;
+  transition:background .15s,opacity .15s;
+}
+.btn-login:hover:not(:disabled){background:var(--blue2);}
+.btn-login:disabled{opacity:.45;cursor:not-allowed;}
 
-    label {
-      display: block;
-      font-size: .5rem;
-      letter-spacing: .26em;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 7px;
-    }
+/* ── Footer form ── */
+.login-footer{
+  margin-top:22px;text-align:center;
+  font-size:.82rem;color:var(--muted);
+}
+.login-footer a,.login-footer button.link-btn{
+  color:var(--blue);text-decoration:none;
+  background:none;border:none;cursor:pointer;
+  font-size:.82rem;font-family:var(--font);
+  transition:opacity .15s;
+}
+.login-footer a:hover,.login-footer button.link-btn:hover{opacity:.75;}
+.login-footer-sep{display:block;margin-top:8px;}
 
-    .input-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--gold-border);
-      color: var(--text);
-      font-family: 'Montserrat', sans-serif;
-      font-size: .72rem;
-      padding: 11px 14px;
-      outline: none;
-      border-radius: var(--radius);
-      transition: border-color .25s;
-      -webkit-appearance: none;
-    }
-    input:focus { border-color: var(--gold); }
-    input::placeholder { color: var(--text-muted); }
-
-    .btn-eye {
-      position: absolute;
-      right: 10px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: .85rem;
-      color: var(--text-muted);
-      padding: 4px;
-      line-height: 1;
-      user-select: none;
-    }
-    .btn-eye:hover { color: var(--gold); }
-
-    /* ── Messages ── */
-    .msg {
-      font-size: .54rem;
-      letter-spacing: .1em;
-      padding: 10px 14px;
-      margin-top: 4px;
-      display: none;
-      border-radius: var(--radius);
-    }
-    .msg-err { color: var(--err); background: rgba(231,76,60,.08); border: 1px solid rgba(231,76,60,.25); }
-    .msg-ok  { color: var(--ok);  background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.25); }
-
-    /* ── Buttons ── */
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 13px 20px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: .55rem;
-      font-weight: 600;
-      letter-spacing: .28em;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: var(--radius);
-      transition: all .25s;
-      border: none;
-      margin-top: 22px;
-    }
-    .btn-primary {
-      background: var(--gold);
-      color: #080808;
-    }
-    .btn-primary:hover:not(:disabled) {
-      background: var(--gold-light);
-      box-shadow: 0 0 24px rgba(201,168,76,.3);
-    }
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--gold-border);
-      color: var(--gold);
-      margin-top: 10px;
-    }
-    .btn-ghost:hover:not(:disabled) {
-      border-color: var(--gold);
-      background: var(--gold-dim);
-    }
-    .btn:disabled { cursor: not-allowed; }
-
-    /* ── Divider ── */
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 28px 0 24px;
-    }
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--gold-border);
-    }
-    .divider span {
-      font-size: .45rem;
-      letter-spacing: .22em;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    /* ── Link text ── */
-    .link-text {
-      font-size: .5rem;
-      letter-spacing: .15em;
-      color: var(--text-muted);
-      text-align: center;
-      margin-top: 18px;
-    }
-    .link-text a, .link-text button {
-      color: var(--gold);
-      text-decoration: none;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'Montserrat', sans-serif;
-      font-size: inherit;
-      letter-spacing: inherit;
-    }
-    .link-text a:hover, .link-text button:hover { color: var(--gold-light); }
-
-    /* ══════════════════════════════════════════
-       MODAL GANTI PASSWORD
-    ══════════════════════════════════════════ */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.82);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .3s;
-    }
-    .modal-overlay.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .modal {
-      width: 100%;
-      max-width: 400px;
-      background: var(--surface);
-      border: 1px solid var(--gold-border);
-      padding: 40px 36px 36px;
-      position: relative;
-      transform: translateY(16px);
-      transition: transform .3s;
-    }
-    .modal-overlay.show .modal { transform: translateY(0); }
-
-    .modal-close {
-      position: absolute;
-      top: 14px; right: 18px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      cursor: pointer;
-      line-height: 1;
-      transition: color .2s;
-    }
-    .modal-close:hover { color: var(--gold); }
-
-    /* ── Responsive ── */
-    @media (max-width: 480px) {
-      .card { padding: 36px 24px 32px; }
-      .modal { padding: 32px 20px 28px; }
-    }
-  </style>
+/* ── Modal Ganti Password ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px 16px;z-index:200;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal-box{
+  width:100%;max-width:400px;
+  background:var(--bg2);
+  border:.5px solid var(--border2);
+  border-radius:var(--r-xl);
+  position:relative;overflow:hidden;
+  transform:translateY(12px);transition:transform .25s;
+}
+.modal-overlay.show .modal-box{transform:translateY(0);}
+.modal-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:.5px;
+  background:linear-gradient(to right,transparent,rgba(201,168,76,.35),transparent);
+}
+.modal-head{
+  padding:28px 28px 16px;
+  border-bottom:.5px solid var(--border2);
+}
+.modal-head-title{
+  font-family:var(--font-serif);font-size:1.3rem;font-weight:400;color:var(--white);
+}
+.modal-body{padding:20px 28px 28px;}
+.modal-close{
+  position:absolute;top:14px;right:18px;
+  background:none;border:none;cursor:pointer;
+  color:var(--muted2);font-size:1rem;line-height:1;
+  transition:color .15s;
+}
+.modal-close:hover{color:var(--white);}
+</style>
 </head>
 <body>
 
-<div class="page">
-  <div class="card">
+<!-- ── Navbar ── -->
+<header class="nav">
+  <a href="index.html" class="nav-brand">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="19" stroke="currentColor" stroke-width="1.2" opacity=".4"/>
+      <path d="M20 8 L28 28 H12 Z" stroke="currentColor" stroke-width="1.4" fill="none" opacity=".7"/>
+    </svg>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html" class="nav-link">← Beranda</a>
+  </nav>
+</header>
 
-    <!-- Logo -->
-    <div class="logo">
-      <span class="logo-title">Antithesis</span>
-      <span class="logo-sub">Al Muayyad Surakarta</span>
-      <div class="logo-line"></div>
+<!-- ── Main ── -->
+<div class="login-page">
+
+  <!-- Kiri: Quote -->
+  <div class="login-left">
+    <div><!-- spacer top --></div>
+    <div class="login-left-quote">
+      Masuk dan sapa kembali mereka yang<br>
+      pernah <span class="highlight">mengisi hari-harimu.</span>
     </div>
-<<<<<<< HEAD
-
-    <!-- Form Masuk -->
-    <p class="section-title">Masuk</p>
-
-    <div class="field">
-      <label for="loginEmail">Email</label>
-      <input type="email" id="loginEmail" placeholder="nama@email.com" autocomplete="email" />
-    </div>
-
-    <div class="field">
-      <label for="loginPass">Password</label>
-      <div class="input-wrap">
-        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
-        <button class="btn-eye" id="toggleLoginPass" tabindex="-1" type="button">👁</button>
-=======
+    <div><!-- spacer bottom --></div>
   </div>
+
+  <!-- Kanan: Form -->
   <div class="login-right">
-    <div class="login-box anim-up d1">
-      <!-- MASUK -->
-      <div id="tab-masuk">
-        <div class="login-title">Welcome</div>
-        <div class="login-sub">Masuk dengan username dan password.</div>
-        <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="loginUser" type="text" placeholder="username..."/></div>
-        <div class="form-group"><label class="form-label">Password</label>
-          <div class="pass-wrap"><input class="form-input" id="loginPass" type="password" placeholder="••••••••"/><button class="pass-toggle" id="toggleLoginPass" type="button">👁</button></div>
-        </div>
-        <div class="form-err" id="loginErr"></div>
-        <button class="btn btn-primary btn-full" id="btnLogin" onclick="handleMasuk()" style="margin-top:4px;background:#0a84ff;color:#fff;border-radius:10px;">Masuk →</button>
-        <div class="login-link" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;text-align:center;">
-          <a id="btnOpenPass" style="color:#0a84ff;font-size:.82rem;cursor:pointer;transition:color .25s;" onmouseover="this.style.color='#5ac8fa'" onmouseout="this.style.color='#0a84ff'">Lupa password?</a>
-          <a onclick="showDaftar()" style="color:#a1a1a6;font-size:.82rem;cursor:pointer;transition:color .25s;" onmouseover="this.style.color='#f5f5f7'" onmouseout="this.style.color='#a1a1a6'">Belum punya akun? <span style="color:#0a84ff;">Daftar di sini</span></a>
+    <div class="login-box">
+
+      <h1 class="login-title">Welcome</h1>
+      <p class="login-sub">Masuk dengan email dan password.</p>
+
+      <!-- Email -->
+      <div class="field-group">
+        <label class="field-label" for="loginEmail">Email</label>
+        <input class="field-input" type="email" id="loginEmail"
+               placeholder="nama@email.com" autocomplete="email"/>
+      </div>
+
+      <!-- Password -->
+      <div class="field-group">
+        <label class="field-label" for="loginPass">Password</label>
+        <div class="field-input-wrap">
+          <input class="field-input has-toggle" type="password" id="loginPass"
+                 placeholder="••••••••" autocomplete="current-password"/>
+          <button class="btn-toggle-pass" id="toggleLoginPass" tabindex="-1" type="button">👁</button>
         </div>
       </div>
-      <!-- DAFTAR (tersembunyi, muncul saat klik link) -->
-      <div id="tab-daftar" style="display:none;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
-          <button onclick="showMasuk()" style="background:none;border:none;color:#6e6e73;font-size:.82rem;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px;" onmouseover="this.style.color='#f5f5f7'" onmouseout="this.style.color='#6e6e73'">← Kembali</button>
-        </div>
-        <div class="login-title">Buat Akun</div>
-        <div class="login-sub">Gunakan nama lengkap sesuai daftar anggota.</div>
-        <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="regUser" type="text" placeholder="pilih username unik..."/></div>
-        <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" id="regNama" type="text" placeholder="sesuai daftar anggota..."/></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="regEmail" type="email" placeholder="email aktifmu..."/></div>
-        <div class="form-group"><label class="form-label">Password</label>
-          <div class="pass-wrap"><input class="form-input" id="regPass" type="password" placeholder="minimal 6 karakter..."/><button class="pass-toggle" id="toggleRegPass" type="button">👁</button></div>
-        </div>
-        <div class="form-err" id="regErr"></div>
-        <div class="form-ok" id="regOk">✦ Akun berhasil dibuat! Silakan masuk.</div>
-        <button class="btn btn-primary btn-full" id="btnDaftar" onclick="handleDaftar()" style="margin-top:4px;background:#0a84ff;color:#fff;border-radius:10px;">Daftar →</button>
->>>>>>> f479bbb094d4c58392af4053f1da1c3ccdbfe247
+
+      <!-- Extras -->
+      <div class="login-extras">
+        <label class="remember-wrap">
+          <input type="checkbox" id="rememberMe"/>
+          <span>Ingat saya</span>
+        </label>
+        <a href="#" class="link-forgot" id="btnOpenPass">Lupa password?</a>
       </div>
+
+      <!-- Error -->
+      <div class="msg-err" id="loginErr"></div>
+
+      <!-- Tombol -->
+      <button class="btn-login" id="btnLogin">Masuk →</button>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <span class="login-footer-sep">
+          Belum punya akun? <a href="register.html">Daftar di sini</a>
+        </span>
+      </div>
+
     </div>
-
-    <div class="msg msg-err" id="loginErr"></div>
-
-    <button class="btn btn-primary" id="btnLogin">Masuk</button>
-
-    <div class="divider"><span>atau</span></div>
-
-    <button class="btn btn-ghost" id="btnToRegister">Daftar Akun Baru</button>
-
-    <div class="link-text" style="margin-top:20px;">
-      <button id="btnOpenPass">Ganti Password</button>
-    </div>
-
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     MODAL GANTI PASSWORD
-══════════════════════════════════════════ -->
+<!-- ── Modal Ganti / Reset Password ── -->
 <div class="modal-overlay" id="passModal">
-  <div class="modal">
-    <button class="modal-close" id="btnCloseModal" title="Tutup">✕</button>
-
-    <p class="section-title">Ganti Password</p>
-
-    <div class="field">
-      <label for="gpEmail">Email</label>
-      <input type="email" id="gpEmail" placeholder="nama@email.com" autocomplete="email" />
+  <div class="modal-box">
+    <button class="modal-close" id="btnCloseModal">✕</button>
+    <div class="modal-head">
+      <div class="modal-head-title">Ganti Password</div>
     </div>
+    <div class="modal-body">
 
-    <div class="field">
-      <label for="gpOld">Password Lama</label>
-      <div class="input-wrap">
-        <input type="password" id="gpOld" placeholder="••••••••" autocomplete="current-password" />
-        <button class="btn-eye" id="toggleGpOld" tabindex="-1" type="button">👁</button>
+      <div class="field-group">
+        <label class="field-label" for="gpEmail">Email</label>
+        <input class="field-input" type="email" id="gpEmail"
+               placeholder="nama@email.com" autocomplete="email"/>
       </div>
-    </div>
 
-    <div class="field">
-      <label for="gpNew">Password Baru</label>
-      <div class="input-wrap">
-        <input type="password" id="gpNew" placeholder="Min. 6 karakter" autocomplete="new-password" />
-        <button class="btn-eye" id="toggleGpNew" tabindex="-1" type="button">👁</button>
+      <div class="field-group">
+        <label class="field-label" for="gpOld">Password Lama</label>
+        <div class="field-input-wrap">
+          <input class="field-input has-toggle" type="password" id="gpOld"
+                 placeholder="••••••••" autocomplete="current-password"/>
+          <button class="btn-toggle-pass" id="toggleGpOld" tabindex="-1" type="button">👁</button>
+        </div>
       </div>
+
+      <div class="field-group">
+        <label class="field-label" for="gpNew">Password Baru</label>
+        <div class="field-input-wrap">
+          <input class="field-input has-toggle" type="password" id="gpNew"
+                 placeholder="Min. 6 karakter" autocomplete="new-password"/>
+          <button class="btn-toggle-pass" id="toggleGpNew" tabindex="-1" type="button">👁</button>
+        </div>
+      </div>
+
+      <div class="msg-err" id="gpErr"></div>
+      <div class="msg-ok"  id="gpOk"></div>
+
+      <button class="btn-login" id="btnGantiPass">Simpan Password Baru</button>
     </div>
-
-    <div class="msg msg-err" id="gpErr"></div>
-    <div class="msg msg-ok"  id="gpOk"></div>
-
-    <button class="btn btn-primary" id="btnGantiPass">Simpan Password Baru</button>
   </div>
 </div>
 
-<<<<<<< HEAD
-=======
-<script>
-function showDaftar(){
-  document.getElementById('tab-masuk').style.display='none';
-  document.getElementById('tab-daftar').style.display='block';
-}
-function showMasuk(){
-  document.getElementById('tab-daftar').style.display='none';
-  document.getElementById('tab-masuk').style.display='block';
-}
-async function handleMasuk(){
-  const username = document.getElementById('loginUser').value.trim().toLowerCase();
-  const pass     = document.getElementById('loginPass').value;
-  const errEl    = document.getElementById('loginErr');
-  errEl.style.display='none';
-  if(!username||!pass){errEl.textContent='✕ Lengkapi username dan password';errEl.style.display='block';return;}
-  const dbURL='https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app';
-  const res = await fetch(dbURL+'/antithesis/accounts/'+username+'.json');
-  const data = await res.json();
-  if(!data){errEl.textContent='✕ Username tidak ditemukan';errEl.style.display='block';return;}
-  const buf = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass));
-  const hashed = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  if(data.password!==hashed){errEl.textContent='✕ Password salah';errEl.style.display='block';return;}
-  sessionStorage.setItem('antithesis_member',data.nama);
-  sessionStorage.setItem('antithesis_username',username);
-  window.location.href='dashboard.html';
-}
-async function handleDaftar(){
-  const username = document.getElementById('regUser').value.trim().toLowerCase();
-  const nama     = document.getElementById('regNama').value.trim();
-  const pass     = document.getElementById('regPass').value;
-  const errEl    = document.getElementById('regErr');
-  const okEl     = document.getElementById('regOk');
-  errEl.style.display='none';
-  okEl.style.display='none';
-  if(!username||!nama||!pass){errEl.textContent='✕ Lengkapi semua field';errEl.style.display='block';return;}
-  if(pass.length<6){errEl.textContent='✕ Password minimal 6 karakter';errEl.style.display='block';return;}
-  if(!/^[a-z0-9_]+$/.test(username)){errEl.textContent='✕ Username hanya huruf kecil, angka, underscore';errEl.style.display='block';return;}
-  // Gunakan fetch langsung ke Firebase REST API
-  const dbURL = 'https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app';
-  // Cek whitelist
-  const wlRes = await fetch(dbURL+'/antithesis/whitelist.json');
-  const wl = await wlRes.json() || {};
-  const namaLower = nama.toLowerCase();
-  const found = Object.values(wl).some(v=>{
-    const n = typeof v==='string'?v:(v.nama||'');
-    return n.toLowerCase()===namaLower;
-  });
-  if(!found){errEl.textContent='✕ Nama tidak ditemukan dalam daftar anggota';errEl.style.display='block';return;}
-  // Cek username
-  const chkRes = await fetch(dbURL+'/antithesis/accounts/'+username+'.json');
-  const existing = await chkRes.json();
-  if(existing){errEl.textContent='✕ Username sudah dipakai';errEl.style.display='block';return;}
-  // Hash password
-  const buf = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass));
-  const hashed = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  // Simpan
-  const email=document.getElementById('regEmail').value.trim();
-  if(!email||!email.includes('@')){errEl.textContent='✕ Format email tidak valid';errEl.style.display='block';return;}
-  await fetch(dbURL+'/antithesis/accounts/'+username+'.json',{method:'PUT',body:JSON.stringify({nama,email,password:hashed})});
-  okEl.style.display='block';
-  document.getElementById('regUser').value='';
-  document.getElementById('regNama').value='';
-  document.getElementById('regPass').value='';
-  document.getElementById('regEmail').value='';
-}
-</script>
->>>>>>> f479bbb094d4c58392af4053f1da1c3ccdbfe247
 <script type="module" src="login.js"></script>
 </body>
 </html>
