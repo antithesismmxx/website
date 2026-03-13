@@ -306,6 +306,7 @@
       <span class="logo-sub">Al Muayyad Surakarta</span>
       <div class="logo-line"></div>
     </div>
+<<<<<<< HEAD
 
     <!-- Form Masuk -->
     <p class="section-title">Masuk</p>
@@ -320,6 +321,42 @@
       <div class="input-wrap">
         <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
         <button class="btn-eye" id="toggleLoginPass" tabindex="-1" type="button">👁</button>
+=======
+  </div>
+  <div class="login-right">
+    <div class="login-box anim-up d1">
+      <!-- MASUK -->
+      <div id="tab-masuk">
+        <div class="login-title">Welcome</div>
+        <div class="login-sub">Masuk dengan username dan password.</div>
+        <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="loginUser" type="text" placeholder="username..."/></div>
+        <div class="form-group"><label class="form-label">Password</label>
+          <div class="pass-wrap"><input class="form-input" id="loginPass" type="password" placeholder="••••••••"/><button class="pass-toggle" id="toggleLoginPass" type="button">👁</button></div>
+        </div>
+        <div class="form-err" id="loginErr"></div>
+        <button class="btn btn-primary btn-full" id="btnLogin" onclick="handleMasuk()" style="margin-top:4px;background:#0a84ff;color:#fff;border-radius:10px;">Masuk →</button>
+        <div class="login-link" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;text-align:center;">
+          <a id="btnOpenPass" style="color:#0a84ff;font-size:.82rem;cursor:pointer;transition:color .25s;" onmouseover="this.style.color='#5ac8fa'" onmouseout="this.style.color='#0a84ff'">Lupa password?</a>
+          <a onclick="showDaftar()" style="color:#a1a1a6;font-size:.82rem;cursor:pointer;transition:color .25s;" onmouseover="this.style.color='#f5f5f7'" onmouseout="this.style.color='#a1a1a6'">Belum punya akun? <span style="color:#0a84ff;">Daftar di sini</span></a>
+        </div>
+      </div>
+      <!-- DAFTAR (tersembunyi, muncul saat klik link) -->
+      <div id="tab-daftar" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+          <button onclick="showMasuk()" style="background:none;border:none;color:#6e6e73;font-size:.82rem;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px;" onmouseover="this.style.color='#f5f5f7'" onmouseout="this.style.color='#6e6e73'">← Kembali</button>
+        </div>
+        <div class="login-title">Buat Akun</div>
+        <div class="login-sub">Gunakan nama lengkap sesuai daftar anggota.</div>
+        <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="regUser" type="text" placeholder="pilih username unik..."/></div>
+        <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" id="regNama" type="text" placeholder="sesuai daftar anggota..."/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="regEmail" type="email" placeholder="email aktifmu..."/></div>
+        <div class="form-group"><label class="form-label">Password</label>
+          <div class="pass-wrap"><input class="form-input" id="regPass" type="password" placeholder="minimal 6 karakter..."/><button class="pass-toggle" id="toggleRegPass" type="button">👁</button></div>
+        </div>
+        <div class="form-err" id="regErr"></div>
+        <div class="form-ok" id="regOk">✦ Akun berhasil dibuat! Silakan masuk.</div>
+        <button class="btn btn-primary btn-full" id="btnDaftar" onclick="handleDaftar()" style="margin-top:4px;background:#0a84ff;color:#fff;border-radius:10px;">Daftar →</button>
+>>>>>>> f479bbb094d4c58392af4053f1da1c3ccdbfe247
       </div>
     </div>
 
@@ -375,6 +412,75 @@
   </div>
 </div>
 
+<<<<<<< HEAD
+=======
+<script>
+function showDaftar(){
+  document.getElementById('tab-masuk').style.display='none';
+  document.getElementById('tab-daftar').style.display='block';
+}
+function showMasuk(){
+  document.getElementById('tab-daftar').style.display='none';
+  document.getElementById('tab-masuk').style.display='block';
+}
+async function handleMasuk(){
+  const username = document.getElementById('loginUser').value.trim().toLowerCase();
+  const pass     = document.getElementById('loginPass').value;
+  const errEl    = document.getElementById('loginErr');
+  errEl.style.display='none';
+  if(!username||!pass){errEl.textContent='✕ Lengkapi username dan password';errEl.style.display='block';return;}
+  const dbURL='https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app';
+  const res = await fetch(dbURL+'/antithesis/accounts/'+username+'.json');
+  const data = await res.json();
+  if(!data){errEl.textContent='✕ Username tidak ditemukan';errEl.style.display='block';return;}
+  const buf = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass));
+  const hashed = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(data.password!==hashed){errEl.textContent='✕ Password salah';errEl.style.display='block';return;}
+  sessionStorage.setItem('antithesis_member',data.nama);
+  sessionStorage.setItem('antithesis_username',username);
+  window.location.href='dashboard.html';
+}
+async function handleDaftar(){
+  const username = document.getElementById('regUser').value.trim().toLowerCase();
+  const nama     = document.getElementById('regNama').value.trim();
+  const pass     = document.getElementById('regPass').value;
+  const errEl    = document.getElementById('regErr');
+  const okEl     = document.getElementById('regOk');
+  errEl.style.display='none';
+  okEl.style.display='none';
+  if(!username||!nama||!pass){errEl.textContent='✕ Lengkapi semua field';errEl.style.display='block';return;}
+  if(pass.length<6){errEl.textContent='✕ Password minimal 6 karakter';errEl.style.display='block';return;}
+  if(!/^[a-z0-9_]+$/.test(username)){errEl.textContent='✕ Username hanya huruf kecil, angka, underscore';errEl.style.display='block';return;}
+  // Gunakan fetch langsung ke Firebase REST API
+  const dbURL = 'https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app';
+  // Cek whitelist
+  const wlRes = await fetch(dbURL+'/antithesis/whitelist.json');
+  const wl = await wlRes.json() || {};
+  const namaLower = nama.toLowerCase();
+  const found = Object.values(wl).some(v=>{
+    const n = typeof v==='string'?v:(v.nama||'');
+    return n.toLowerCase()===namaLower;
+  });
+  if(!found){errEl.textContent='✕ Nama tidak ditemukan dalam daftar anggota';errEl.style.display='block';return;}
+  // Cek username
+  const chkRes = await fetch(dbURL+'/antithesis/accounts/'+username+'.json');
+  const existing = await chkRes.json();
+  if(existing){errEl.textContent='✕ Username sudah dipakai';errEl.style.display='block';return;}
+  // Hash password
+  const buf = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass));
+  const hashed = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  // Simpan
+  const email=document.getElementById('regEmail').value.trim();
+  if(!email||!email.includes('@')){errEl.textContent='✕ Format email tidak valid';errEl.style.display='block';return;}
+  await fetch(dbURL+'/antithesis/accounts/'+username+'.json',{method:'PUT',body:JSON.stringify({nama,email,password:hashed})});
+  okEl.style.display='block';
+  document.getElementById('regUser').value='';
+  document.getElementById('regNama').value='';
+  document.getElementById('regPass').value='';
+  document.getElementById('regEmail').value='';
+}
+</script>
+>>>>>>> f479bbb094d4c58392af4053f1da1c3ccdbfe247
 <script type="module" src="login.js"></script>
 </body>
 </html>
