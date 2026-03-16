@@ -6,38 +6,97 @@
 <title>Verifikasi Email — ANTITHESIS</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);}
-.verify-wrap{width:100%;max-width:440px;margin:24px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r-xl);position:relative;overflow:hidden;}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);padding:16px;}
+.verify-wrap{width:100%;max-width:460px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r-xl);position:relative;overflow:hidden;}
 .verify-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:.5px;background:linear-gradient(to right,transparent,rgba(201,168,76,.35),transparent);}
-.verify-head{padding:36px 36px 20px;border-bottom:.5px solid var(--border2);text-align:center;}
-.verify-icon{font-size:2.5rem;margin-bottom:14px;}
+
+/* Head */
+.verify-head{padding:36px 36px 24px;border-bottom:.5px solid var(--border2);text-align:center;}
+.verify-icon{font-size:2.8rem;margin-bottom:14px;display:block;}
 .verify-title{font-family:var(--font-serif);font-size:1.7rem;font-weight:400;color:var(--white);letter-spacing:-.025em;}
 .verify-title em{font-style:italic;color:var(--text3);}
-.verify-body{padding:24px 36px 32px;}
-.verify-msg{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:20px;text-align:center;}
-.verify-email{font-style:normal;color:var(--text2);font-weight:600;}
-.verify-status{text-align:center;padding:10px 16px;font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;display:none;border-radius:var(--r);}
+
+/* Body */
+.verify-body{padding:28px 36px 32px;}
+
+/* Info konteks */
+.verify-context{
+  background:rgba(201,168,76,.06);
+  border:.5px solid rgba(201,168,76,.2);
+  border-radius:var(--r);
+  padding:14px 16px;
+  margin-bottom:22px;
+}
+.verify-context-step{
+  display:flex;align-items:flex-start;gap:12px;
+  font-size:.84rem;color:rgba(201,168,76,.85);
+  line-height:1.6;
+}
+.verify-context-step + .verify-context-step{margin-top:10px;padding-top:10px;border-top:.5px solid rgba(201,168,76,.12);}
+.step-num{
+  min-width:22px;height:22px;border-radius:50%;
+  background:rgba(201,168,76,.15);border:.5px solid rgba(201,168,76,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:700;color:#c9a84c;
+  margin-top:1px;flex-shrink:0;
+}
+
+/* Email badge */
+.email-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.04);border:.5px solid rgba(255,255,255,.1);
+  border-radius:var(--r);padding:10px 14px;
+  font-size:.88rem;color:var(--white);font-weight:500;
+  margin-bottom:20px;width:100%;
+}
+.email-badge-icon{opacity:.5;font-size:.9rem;}
+.email-badge-label{font-size:.65rem;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:2px;}
+
+/* Pesan biasa */
+.verify-msg{font-size:.9rem;color:var(--muted);line-height:1.75;margin-bottom:20px;text-align:center;}
+
+/* Status */
+.verify-status{text-align:center;padding:10px 16px;font-size:.75rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px;display:none;border-radius:var(--r);}
 .verify-status.ok{background:rgba(48,209,88,.06);border:.5px solid rgba(48,209,88,.18);color:rgba(48,209,88,.9);}
 .verify-status.err{background:rgba(255,69,58,.06);border:.5px solid rgba(255,69,58,.18);color:#ff6b6b;}
 .verify-status.show{display:block;}
-.verify-brand{text-align:center;margin-top:24px;font-size:.6rem;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--muted2);}
+
+/* Input */
 .dark-input-wrap{position:relative;margin-bottom:10px;}
-.dark-input{width:100%;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);color:var(--white);font-family:var(--font);font-size:.9rem;padding:11px 14px;border-radius:var(--r);outline:none;transition:border-color .15s;}
+.dark-input{width:100%;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);color:var(--white);font-family:var(--font);font-size:.9rem;padding:11px 14px;border-radius:var(--r);outline:none;transition:border-color .15s;box-sizing:border-box;}
 .dark-input:focus{border-color:var(--blue);}
 .dark-input::placeholder{color:var(--muted2);}
-.btn-vf{width:100%;background:var(--blue);color:#fff;font-family:var(--font);font-size:.88rem;font-weight:500;padding:11px;border:none;border-radius:var(--r);cursor:pointer;transition:background .15s;margin-top:4px;}
+
+/* Tombol */
+.btn-vf{width:100%;background:var(--blue);color:#fff;font-family:var(--font);font-size:.88rem;font-weight:500;padding:12px;border:none;border-radius:var(--r);cursor:pointer;transition:background .15s;margin-top:4px;display:block;text-align:center;text-decoration:none;}
 .btn-vf:hover{background:var(--blue2);}
 .btn-vf:disabled{opacity:.35;cursor:not-allowed;}
+.btn-vf-outline{width:100%;background:transparent;color:var(--muted);font-family:var(--font);font-size:.85rem;font-weight:400;padding:11px;border:.5px solid var(--border2);border-radius:var(--r);cursor:pointer;transition:all .15s;margin-top:8px;display:block;text-align:center;text-decoration:none;}
+.btn-vf-outline:hover{border-color:var(--muted2);color:var(--white);}
+
+/* Divider */
+.verify-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted2);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;}
+.verify-divider::before,.verify-divider::after{content:'';flex:1;height:.5px;background:var(--border2);}
+
+/* Brand */
+.verify-brand{text-align:center;margin-top:24px;font-size:.58rem;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--muted2);}
+
+@media(max-width:480px){
+  .verify-body{padding:20px 20px 24px;}
+  .verify-head{padding:28px 20px 20px;}
+}
 </style>
 </head>
 <body>
 <div class="verify-wrap">
   <div class="verify-head">
-    <div class="verify-icon" id="vIcon">📧</div>
+    <span class="verify-icon" id="vIcon">📧</span>
     <div class="verify-title" id="vTitle">Verifikasi <em>Email</em></div>
   </div>
   <div class="verify-body">
-    <div class="verify-msg" id="vMsg">Memuat...</div>
+    <div id="vContent">
+      <div class="verify-msg">Memuat...</div>
+    </div>
     <div class="verify-status" id="vStatus"></div>
     <div id="vActions"></div>
     <div class="verify-brand">ANTITHESIS · Al Muayyad Surakarta · 2018–2020</div>
@@ -45,56 +104,181 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;just
 </div>
 
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import{getAuth,applyActionCode,checkActionCode,sendEmailVerification,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import{getDatabase,ref,get}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-const app=initializeApp({apiKey:"AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",authDomain:"antithesis-al-muayyad.firebaseapp.com",databaseURL:"https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"antithesis-al-muayyad",storageBucket:"antithesis-al-muayyad.firebasestorage.app",messagingSenderId:"1014116431079",appId:"1:1014116431079:web:5f490096bf6ecdf7011e42"});
-const db=getDatabase(app);
-const auth=getAuth(app);
-const params=new URLSearchParams(window.location.search);
-const mode=params.get('mode');const oobCode=params.get('oobCode');
-const icon=document.getElementById('vIcon'),title=document.getElementById('vTitle'),msg=document.getElementById('vMsg'),status=document.getElementById('vStatus'),actions=document.getElementById('vActions');
-function showStatus(type,txt){status.textContent=txt;status.className='verify-status '+type+' show';}
-function btnLogin(){return`<a href="login.html" class="btn-vf" style="display:block;text-align:center;text-decoration:none;background:var(--blue);color:#fff;border-radius:var(--r);padding:11px;font-family:var(--font);font-size:.88rem;font-weight:500;margin-top:8px;">Ke Halaman Masuk →</a>`;}
-function inputForm(email=''){return`<div style="margin-bottom:12px;"><div class="dark-input-wrap"><input class="dark-input" id="reEmail" type="email" placeholder="Email kamu..." value="${email}"/></div><div class="dark-input-wrap"><input class="dark-input" id="rePass" type="password" placeholder="Password kamu..."/></div></div><button class="btn-vf" id="btnResend">Kirim Ulang Verifikasi →</button><div style="margin-top:8px;">${btnLogin()}</div>`;}
-const errMap={'auth/invalid-credential':'Email atau password salah.','auth/user-not-found':'Akun tidak ditemukan.','auth/wrong-password':'Password salah.','auth/too-many-requests':'Terlalu banyak percobaan.'};
-function bindResend(){
-  setTimeout(()=>{
-    document.getElementById('btnResend')?.addEventListener('click',async()=>{
-      const email=document.getElementById('reEmail').value.trim();const pass=document.getElementById('rePass').value;const btn=document.getElementById('btnResend');
-      if(!email||!pass){showStatus('err','Isi email dan password dulu');return;}
-      btn.textContent='Mengirim...';btn.disabled=true;
-      try{const cred=await signInWithEmailAndPassword(auth,email,pass);if(cred.user.emailVerified){showStatus('ok','Email sudah terverifikasi! Silakan masuk.');actions.innerHTML=btnLogin();}else{await sendEmailVerification(cred.user);await signOut(auth);icon.textContent='📧';title.innerHTML='Email <em>Terkirim!</em>';msg.innerHTML=`Link verifikasi baru dikirim ke<br><span class="verify-email">${email}</span><br><br>Cek inbox atau folder spam.`;showStatus('ok','Email verifikasi baru berhasil dikirim!');actions.innerHTML=btnLogin();}}
-      catch(err){showStatus('err',errMap[err.code]||'Gagal. Coba lagi.');btn.textContent='Kirim Ulang Verifikasi →';btn.disabled=false;}
-    });
-  },100);
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, applyActionCode, checkActionCode,
+  sendEmailVerification, signInWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const app  = initializeApp({
+  apiKey:            "AIzaSyDF7IAbFI3acQXIHxxoea5cgPTumiUjSMg",
+  authDomain:        "antithesis-al-muayyad.firebaseapp.com",
+  databaseURL:       "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "antithesis-al-muayyad",
+  storageBucket:     "antithesis-al-muayyad.appspot.com",
+  messagingSenderId: "1014116431079",
+  appId:             "1:1014116431079:web:5f490096bf6ecdf7011e42"
+});
+const auth = getAuth(app);
+
+const params  = new URLSearchParams(window.location.search);
+const mode    = params.get('mode');
+const oobCode = params.get('oobCode');
+const reason  = params.get('reason'); // 'newreg' = baru daftar
+
+// Ambil email hint dari URL
+let emailHint = '';
+try {
+  const hint = params.get('hint');
+  if (hint) emailHint = atob(hint + '=='.slice((hint.length * 3) % 4 === 0 ? 4 : (hint.length * 3) % 4));
+} catch(e) {}
+
+const icon    = document.getElementById('vIcon');
+const title   = document.getElementById('vTitle');
+const content = document.getElementById('vContent');
+const status  = document.getElementById('vStatus');
+const actions = document.getElementById('vActions');
+
+function showStatus(type, txt) {
+  status.textContent = txt;
+  status.className = 'verify-status ' + type + ' show';
 }
-if(mode==='verifyEmail'&&oobCode){
-  msg.textContent='Sedang memverifikasi email kamu...';
-  try{const info=await checkActionCode(auth,oobCode);const email=info.data.email||'';await applyActionCode(auth,oobCode);
-  // Ambil data akun dari DB lalu set session dan redirect ke dashboard
-  const user=auth.currentUser;
-  if(user){
-    const snap=await get(ref(db,'antithesis/akun/'+user.uid));
-    const data=snap.val()||{};
-    const nama=data.nama||user.displayName||email.split('@')[0];
-    const username=data.username||user.displayName||email.split('@')[0];
-    sessionStorage.setItem('antithesis_member',nama);
-    sessionStorage.setItem('antithesis_username',username);
-    sessionStorage.setItem('antithesis_uid',user.uid);
-    icon.textContent='✅';title.innerHTML='Email <em>Terverifikasi!</em>';
-    msg.innerHTML=`Selamat datang, <span class="verify-email">${nama}</span>!<br><br>Mengalihkan ke dashboard...`;
-    showStatus('ok','✦ Verifikasi berhasil! Mengalihkan...');
-    setTimeout(()=>{window.location.href='dashboard.html';},2000);
-  }else{
-    // Fallback: user tidak ter-auth otomatis, minta login manual
-    icon.textContent='✅';title.innerHTML='Email <em>Terverifikasi!</em>';
-    msg.innerHTML=`Email <span class="verify-email">${email}</span> berhasil diverifikasi.<br><br>Kamu sekarang bisa masuk ke portal ANTITHESIS.`;
-    showStatus('ok','✦ Verifikasi berhasil!');actions.innerHTML=btnLogin();
-  }}
-  catch(e){icon.textContent='⚠️';title.innerHTML='Link <em>Kadaluarsa</em>';msg.innerHTML='Link verifikasi sudah tidak berlaku. Masukkan email & password untuk mendapatkan link baru.';showStatus('err','Link tidak valid atau sudah expired');actions.innerHTML=inputForm('');bindResend();}
-}else if(mode==='resetPassword'&&oobCode){window.location.href='login.html?mode=resetPassword&oobCode='+oobCode;}
-else{icon.textContent='📧';title.innerHTML='Verifikasi <em>Email</em>';msg.innerHTML='Belum menerima email verifikasi? Masukkan email dan password untuk mengirim ulang.';actions.innerHTML=inputForm('');bindResend();}
+
+function btnLogin() {
+  return `<a href="login.html" class="btn-vf-outline">← Ke Halaman Masuk</a>`;
+}
+
+function emailBadge(email) {
+  if (!email) return '';
+  return `<div class="email-badge">
+    <span class="email-badge-icon">✉</span>
+    <div>
+      <span class="email-badge-label">Email terdaftar</span>
+      <span>${email}</span>
+    </div>
+  </div>`;
+}
+
+function resendForm(email = '') {
+  return `
+    <div class="dark-input-wrap">
+      <input class="dark-input" id="reEmail" type="email" placeholder="Email kamu..." value="${email}" autocomplete="email"/>
+    </div>
+    <div class="dark-input-wrap">
+      <input class="dark-input" id="rePass" type="password" placeholder="Password kamu..." autocomplete="current-password"/>
+    </div>
+    <button class="btn-vf" id="btnResend">Kirim Ulang Verifikasi →</button>
+    <div class="verify-divider">atau</div>
+    ${btnLogin()}
+  `;
+}
+
+function bindResend() {
+  setTimeout(() => {
+    document.getElementById('btnResend')?.addEventListener('click', async () => {
+      const email = document.getElementById('reEmail').value.trim();
+      const pass  = document.getElementById('rePass').value;
+      const btn   = document.getElementById('btnResend');
+      if (!email || !pass) { showStatus('err', 'Isi email dan password dulu'); return; }
+      btn.textContent = 'Mengirim...'; btn.disabled = true;
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, pass);
+        if (cred.user.emailVerified) {
+          showStatus('ok', 'Email sudah terverifikasi! Silakan masuk.');
+          actions.innerHTML = `<a href="login.html" class="btn-vf">Masuk Sekarang →</a>`;
+        } else {
+          await sendEmailVerification(cred.user);
+          await signOut(auth);
+          icon.textContent = '✅';
+          title.innerHTML  = 'Email <em>Terkirim!</em>';
+          content.innerHTML = `
+            ${emailBadge(email)}
+            <p class="verify-msg">Link verifikasi baru telah dikirim.<br>Cek <strong style="color:var(--white)">inbox</strong> atau folder <strong style="color:var(--white)">spam</strong> kamu.</p>
+          `;
+          showStatus('ok', '✦ Email verifikasi berhasil dikirim!');
+          actions.innerHTML = btnLogin();
+        }
+      } catch(err) {
+        const errMap = {
+          'auth/invalid-credential': 'Email atau password salah.',
+          'auth/user-not-found':     'Akun tidak ditemukan.',
+          'auth/wrong-password':     'Password salah.',
+          'auth/too-many-requests':  'Terlalu banyak percobaan, tunggu sebentar.',
+        };
+        showStatus('err', errMap[err.code] || 'Gagal mengirim, coba lagi.');
+        btn.textContent = 'Kirim Ulang Verifikasi →'; btn.disabled = false;
+      }
+    });
+  }, 100);
+}
+
+// ════════════════════════════════
+//  ROUTING UTAMA
+// ════════════════════════════════
+
+if (mode === 'verifyEmail' && oobCode) {
+  // ── Klik link verifikasi dari email ──
+  content.innerHTML = `<p class="verify-msg">Sedang memverifikasi email kamu...</p>`;
+  try {
+    const info  = await checkActionCode(auth, oobCode);
+    const email = info.data.email || emailHint;
+    await applyActionCode(auth, oobCode);
+    icon.textContent = '✅';
+    title.innerHTML  = 'Email <em>Terverifikasi!</em>';
+    content.innerHTML = `
+      ${emailBadge(email)}
+      <p class="verify-msg">Email kamu berhasil diverifikasi.<br>Sekarang kamu bisa masuk ke portal ANTITHESIS.</p>
+    `;
+    showStatus('ok', '✦ Verifikasi berhasil!');
+    actions.innerHTML = `<a href="login.html" class="btn-vf">Masuk Sekarang →</a>`;
+  } catch(e) {
+    icon.textContent = '⚠️';
+    title.innerHTML  = 'Link <em>Tidak Valid</em>';
+    content.innerHTML = `
+      <p class="verify-msg" style="margin-bottom:16px;">Link verifikasi sudah <strong style="color:var(--white)">kadaluarsa</strong> atau tidak valid.<br>Kirim ulang link verifikasi dengan memasukkan email dan password kamu.</p>
+      ${resendForm(emailHint)}
+    `;
+    bindResend();
+  }
+
+} else if (reason === 'newreg') {
+  // ── Baru selesai registrasi ──
+  icon.textContent = '📬';
+  title.innerHTML  = 'Cek <em>Email Kamu</em>';
+  content.innerHTML = `
+    ${emailHint ? emailBadge(emailHint) : ''}
+    <div class="verify-context">
+      <div class="verify-context-step">
+        <div class="step-num">1</div>
+        <div>Akun kamu berhasil dibuat. Kami telah mengirim <strong>link verifikasi</strong> ke email di atas.</div>
+      </div>
+      <div class="verify-context-step">
+        <div class="step-num">2</div>
+        <div>Buka emailmu, cari pesan dari <strong>ANTITHESIS</strong>, lalu klik link <em>"Verify Email"</em> di dalamnya.</div>
+      </div>
+      <div class="verify-context-step">
+        <div class="step-num">3</div>
+        <div>Setelah terverifikasi, kamu bisa langsung masuk ke portal.</div>
+      </div>
+    </div>
+    <p class="verify-msg" style="font-size:.8rem;margin-bottom:4px;">Tidak menemukan emailnya? Cek folder <strong style="color:var(--white)">Spam</strong> atau kirim ulang di bawah.</p>
+  `;
+  actions.innerHTML = `
+    <div class="verify-divider">kirim ulang</div>
+    ${resendForm(emailHint)}
+  `;
+  bindResend();
+
+} else {
+  // ── Akses langsung / dari login ──
+  icon.textContent = '📧';
+  title.innerHTML  = 'Verifikasi <em>Email</em>';
+  content.innerHTML = `
+    <p class="verify-msg" style="margin-bottom:16px;">Email kamu belum diverifikasi. Masukkan email dan password untuk mengirim ulang link verifikasi.</p>
+    ${resendForm(emailHint)}
+  `;
+  bindResend();
+}
 </script>
 </body>
 </html>
