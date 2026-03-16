@@ -6,9 +6,11 @@
 <title>Daftar Akun — ANTITHESIS</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
+/* ── Layout dua kolom ── */
 .login-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
 @media(max-width:768px){.login-page{grid-template-columns:1fr;}}
 
+/* ── Kolom kiri ── */
 .login-left{
   position:relative;
   background:radial-gradient(ellipse at 30% 60%,rgba(201,168,76,.08) 0%,transparent 70%),#0a0a0a;
@@ -24,6 +26,7 @@
 }
 .login-left-quote .highlight{color:#c9a84c;font-style:normal;}
 
+/* ── Kolom kanan ── */
 .login-right{
   background:var(--bg);
   display:flex;flex-direction:column;
@@ -34,11 +37,11 @@
 
 .login-box{width:100%;max-width:400px;}
 .login-title{font-size:1.9rem;font-weight:700;color:var(--white);margin-bottom:6px;}
-.login-sub{font-size:.9rem;color:var(--muted);margin-bottom:24px;}
+.login-sub{font-size:.9rem;color:var(--muted);margin-bottom:32px;}
 
-.field-group{margin-bottom:16px;}
+/* ── Field ── */
+.field-group{margin-bottom:18px;}
 .field-label{display:block;font-size:.78rem;font-weight:500;color:var(--muted);margin-bottom:7px;}
-.field-hint{font-size:.7rem;color:var(--muted2);margin-top:5px;font-style:italic;}
 .field-input-wrap{position:relative;}
 .field-input{
   width:100%;
@@ -63,6 +66,7 @@
 }
 .btn-toggle-pass:hover{color:var(--white);}
 
+/* ── Error msg ── */
 .msg-err{
   font-size:.78rem;color:#ff6b6b;
   background:rgba(255,69,58,.06);border:.5px solid rgba(255,69,58,.2);
@@ -70,6 +74,7 @@
   margin-bottom:14px;display:none;
 }
 
+/* ── Tombol utama ── */
 .btn-login{
   width:100%;
   background:var(--blue);color:#fff;
@@ -82,24 +87,30 @@
 .btn-login:hover:not(:disabled){background:var(--blue2);}
 .btn-login:disabled{opacity:.45;cursor:not-allowed;}
 
+/* ── Footer form ── */
 .login-footer{
   margin-top:22px;text-align:center;
   font-size:.82rem;color:var(--muted);
 }
-.login-footer a{color:var(--blue);text-decoration:none;transition:opacity .15s;}
+.login-footer a{
+  color:var(--blue);text-decoration:none;
+  transition:opacity .15s;
+}
 .login-footer a:hover{opacity:.75;}
 .login-footer-sep{display:block;margin-top:8px;}
 
+/* ── Info box ── */
 .info-box{
-  font-size:.76rem;color:rgba(201,168,76,.8);
+  font-size:.78rem;color:rgba(201,168,76,.8);
   background:rgba(201,168,76,.05);border:.5px solid rgba(201,168,76,.2);
   padding:10px 14px;border-radius:var(--r);
-  margin-bottom:20px;line-height:1.7;
+  margin-bottom:20px;line-height:1.6;
 }
 </style>
 </head>
 <body>
 
+<!-- ── Navbar ── -->
 <header class="nav">
   <a href="index.html" class="nav-brand">
     <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -112,17 +123,20 @@
   </nav>
 </header>
 
+<!-- ── Main ── -->
 <div class="login-page">
 
+  <!-- Kiri: Quote -->
   <div class="login-left">
-    <div></div>
+    <div><!-- spacer top --></div>
     <div class="login-left-quote">
       Bergabunglah dan jadilah bagian dari<br>
       kenangan yang <span class="highlight">tidak terlupakan.</span>
     </div>
-    <div></div>
+    <div><!-- spacer bottom --></div>
   </div>
 
+  <!-- Kanan: Form -->
   <div class="login-right">
     <div class="login-box">
 
@@ -130,7 +144,7 @@
       <p class="login-sub">Gunakan nama lengkap sesuai daftar anggota.</p>
 
       <div class="info-box">
-        ✦ Hanya anggota ANTITHESIS yang terdaftar yang dapat membuat akun. Setelah daftar, cek email untuk verifikasi.
+        ✦ Hanya anggota ANTITHESIS yang terdaftar yang dapat membuat akun.
       </div>
 
       <!-- Nama Lengkap -->
@@ -138,7 +152,6 @@
         <label class="field-label" for="regNama">Nama Lengkap</label>
         <input class="field-input" type="text" id="regNama"
                placeholder="Sesuai daftar anggota..." autocomplete="name"/>
-        <div class="field-hint">Harus sesuai dengan nama di database anggota.</div>
       </div>
 
       <!-- Email -->
@@ -146,15 +159,6 @@
         <label class="field-label" for="regEmail">Email</label>
         <input class="field-input" type="email" id="regEmail"
                placeholder="nama@email.com" autocomplete="email"/>
-        <div class="field-hint">Link verifikasi akan dikirim ke email ini.</div>
-      </div>
-
-      <!-- Username -->
-      <div class="field-group">
-        <label class="field-label" for="regUsername">Username</label>
-        <input class="field-input" type="text" id="regUsername"
-               placeholder="Bebas, tanpa spasi..." autocomplete="username"/>
-        <div class="field-hint">Ditampilkan di profil dan aktivitas kamu.</div>
       </div>
 
       <!-- Password -->
@@ -162,10 +166,9 @@
         <label class="field-label" for="regPass">Password</label>
         <div class="field-input-wrap">
           <input class="field-input has-toggle" type="password" id="regPass"
-                 placeholder="Min. 8 karakter..." autocomplete="new-password"/>
+                 placeholder="Min. 6 karakter" autocomplete="new-password"/>
           <button class="btn-toggle-pass" id="togglePass" tabindex="-1" type="button">👁</button>
         </div>
-        <div class="field-hint">Min. 8 karakter, harus ada huruf besar dan angka.</div>
       </div>
 
       <!-- Konfirmasi Password -->
@@ -184,6 +187,7 @@
       <!-- Tombol -->
       <button class="btn-login" id="btnDaftar">Daftar →</button>
 
+      <!-- Footer -->
       <div class="login-footer">
         <span class="login-footer-sep">
           Sudah punya akun? <a href="login.html">Masuk di sini</a>
@@ -194,6 +198,7 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="module" src="register.js"></script>
 </body>
 </html>
