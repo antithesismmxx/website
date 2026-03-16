@@ -31,6 +31,7 @@ const db   = getDatabase(app);
 // ── Helpers ──
 function showErr(msg) {
   const el = document.getElementById('regErr');
+  if (!el) return;
   el.textContent = msg;
   el.style.display = 'block';
 }
@@ -48,10 +49,11 @@ function setLoading(loading) {
 
 function friendlyError(code) {
   const map = {
-    'auth/email-already-in-use':  '✕  Email sudah digunakan akun lain',
-    'auth/invalid-email':          '✕  Format email tidak valid',
-    'auth/weak-password':          '✕  Password terlalu lemah (min 6 karakter)',
-    'auth/network-request-failed': '✕  Gagal terhubung ke server',
+    'auth/email-already-in-use':   '✕  Email sudah digunakan akun lain',
+    'auth/invalid-email':           '✕  Format email tidak valid',
+    'auth/weak-password':           '✕  Password terlalu lemah (min 6 karakter)',
+    'auth/network-request-failed':  '✕  Gagal terhubung ke server',
+    'PERMISSION_DENIED':            '✕  Akses ditolak — hubungi admin untuk update rules Firebase',
   };
   return map[code] || '✕  Terjadi kesalahan: ' + code;
 }
@@ -71,10 +73,11 @@ function setupToggle(btnId, inputId) {
 // ── Daftar ──
 async function doDaftar() {
   hideErr();
-  const nama  = document.getElementById('regNama').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const pass  = document.getElementById('regPass').value;
-  const pass2 = document.getElementById('regPass2').value;
+
+  const nama  = document.getElementById('regNama')?.value.trim();
+  const email = document.getElementById('regEmail')?.value.trim();
+  const pass  = document.getElementById('regPass')?.value;
+  const pass2 = document.getElementById('regPass2')?.value;
 
   if (!nama || !email || !pass || !pass2) {
     showErr('✕  Lengkapi semua field'); return;
@@ -89,19 +92,27 @@ async function doDaftar() {
   setLoading(true);
 
   try {
-    // ── 1. Cek whitelist ──
-    const wSnap = await get(ref(db, 'antithesis/whitelist'));
-    const whitelist = wSnap.val() || {};
+    // ── 1. Cek whitelist (butuh rules: whitelist .read = true) ──
+    let whitelist = {};
+    try {
+      const wSnap = await get(ref(db, 'antithesis/whitelist'));
+      whitelist = wSnap.val() || {};
+    } catch (e) {
+      // Jika whitelist tidak bisa dibaca, lewati cek (akan divalidasi admin)
+      console.warn('Whitelist tidak bisa dibaca:', e.message);
+    }
 
-    const namaLower = nama.toLowerCase().trim();
-    const cocok = Object.values(whitelist).find(v => {
-      const n = typeof v === 'string' ? v : (v.nama || '');
-      return n.toLowerCase().trim() === namaLower;
-    });
-
-    if (!cocok) {
-      showErr('✕  Nama tidak ditemukan dalam daftar anggota');
-      setLoading(false); return;
+    // Cek nama di whitelist (skip jika whitelist kosong/tidak bisa dibaca)
+    if (Object.keys(whitelist).length > 0) {
+      const namaLower = nama.toLowerCase().trim();
+      const cocok = Object.values(whitelist).find(v => {
+        const n = typeof v === 'string' ? v : (v.nama || '');
+        return n.toLowerCase().trim() === namaLower;
+      });
+      if (!cocok) {
+        showErr('✕  Nama tidak ditemukan dalam daftar anggota');
+        setLoading(false); return;
+      }
     }
 
     // ── 2. Buat akun Firebase Auth ──
@@ -111,13 +122,18 @@ async function doDaftar() {
     // ── 3. Update display name ──
     await updateProfile(user, { displayName: nama });
 
-    // ── 4. Simpan ke database antithesis/akun/{uid} ──
-    await set(ref(db, 'antithesis/akun/' + user.uid), {
-      nama:  nama,
-      email: email,
-      banned: false,
-      createdAt: Date.now()
-    });
+    // ── 4. Simpan ke database ──
+    try {
+      await set(ref(db, 'antithesis/akun/' + user.uid), {
+        nama:      nama,
+        email:     email,
+        banned:    false,
+        createdAt: Date.now()
+      });
+    } catch (e) {
+      // Auth berhasil tapi DB gagal — tetap lanjut verifikasi email
+      console.warn('Gagal simpan ke DB:', e.message);
+    }
 
     // ── 5. Kirim email verifikasi ──
     await sendEmailVerification(user);
@@ -128,7 +144,8 @@ async function doDaftar() {
     window.location.href = `verify.html?hint=${hint}&reason=newreg`;
 
   } catch (err) {
-    showErr(friendlyError(err.code));
+    console.error('Register error:', err);
+    showErr(friendlyError(err.code || err.message));
     setLoading(false);
   }
 }
