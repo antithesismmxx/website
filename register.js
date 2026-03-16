@@ -7,6 +7,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  signOut,
   updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
@@ -18,7 +19,7 @@ const firebaseConfig = {
   authDomain:        "antithesis-al-muayyad.firebaseapp.com",
   databaseURL:       "https://antithesis-al-muayyad-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId:         "antithesis-al-muayyad",
-  storageBucket:     "antithesis-al-muayyad.firebasestorage.app",
+  storageBucket:     "antithesis-al-muayyad.appspot.com",
   messagingSenderId: "1014116431079",
   appId:             "1:1014116431079:web:5f490096bf6ecdf7011e42"
 };
@@ -44,18 +45,18 @@ function setLoading(loading) {
   btn.style.opacity = loading ? '0.6' : '1';
   btn.textContent = loading ? 'Memproses...' : 'Daftar →';
 }
-function friendlyError(err) {
-  if (typeof err === 'string') return '✕  ' + err;
-  const code = err?.code || '';
+
+function friendlyError(code) {
   const map = {
     'auth/email-already-in-use':  '✕  Email sudah digunakan akun lain',
     'auth/invalid-email':          '✕  Format email tidak valid',
-    'auth/weak-password':          '✕  Password terlalu lemah (min 8 karakter)',
+    'auth/weak-password':          '✕  Password terlalu lemah (min 6 karakter)',
     'auth/network-request-failed': '✕  Gagal terhubung ke server',
-    'auth/too-many-requests':      '✕  Terlalu banyak percobaan. Coba lagi nanti',
   };
-  return map[code] || ('✕  ' + (err?.message || 'Terjadi kesalahan, coba lagi'));
+  return map[code] || '✕  Terjadi kesalahan: ' + code;
 }
+
+// ── Toggle password ──
 function setupToggle(btnId, inputId) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
@@ -67,33 +68,19 @@ function setupToggle(btnId, inputId) {
   });
 }
 
-// ── Validasi password kuat ──
-function isStrongPassword(pass) {
-  return pass.length >= 8 &&
-    /[A-Z]/.test(pass) &&
-    /[0-9]/.test(pass);
-}
-
 // ── Daftar ──
 async function doDaftar() {
   hideErr();
-  const nama     = document.getElementById('regNama').value.trim();
-  const email    = document.getElementById('regEmail').value.trim();
-  const username = document.getElementById('regUsername').value.trim();
-  const pass     = document.getElementById('regPass').value;
-  const pass2    = document.getElementById('regPass2').value;
+  const nama  = document.getElementById('regNama').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
 
-  // Validasi kosong
-  if (!nama || !email || !username || !pass || !pass2) {
+  if (!nama || !email || !pass || !pass2) {
     showErr('✕  Lengkapi semua field'); return;
   }
-  // Validasi username (no spasi)
-  if (/\s/.test(username)) {
-    showErr('✕  Username tidak boleh mengandung spasi'); return;
-  }
-  // Validasi password kuat
-  if (!isStrongPassword(pass)) {
-    showErr('✕  Password min. 8 karakter, harus ada huruf besar dan angka'); return;
+  if (pass.length < 6) {
+    showErr('✕  Password minimal 6 karakter'); return;
   }
   if (pass !== pass2) {
     showErr('✕  Password tidak cocok'); return;
@@ -102,7 +89,7 @@ async function doDaftar() {
   setLoading(true);
 
   try {
-    // ── 1. Cek whitelist nama ──
+    // ── 1. Cek whitelist ──
     const wSnap = await get(ref(db, 'antithesis/whitelist'));
     const whitelist = wSnap.val() || {};
 
@@ -117,48 +104,31 @@ async function doDaftar() {
       setLoading(false); return;
     }
 
-    // ── 2. Cek username sudah dipakai ──
-    const uSnap = await get(ref(db, 'antithesis/usernames/' + username.toLowerCase()));
-    if (uSnap.exists()) {
-      showErr('✕  Username sudah digunakan, pilih yang lain');
-      setLoading(false); return;
-    }
-
-    // ── 3. Buat akun Firebase Auth ──
+    // ── 2. Buat akun Firebase Auth ──
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     const user = cred.user;
 
-    // ── 4. Update display name = username ──
-    await updateProfile(user, { displayName: username });
+    // ── 3. Update display name ──
+    await updateProfile(user, { displayName: nama });
 
-    // ── 5. Simpan ke database ──
+    // ── 4. Simpan ke database antithesis/akun/{uid} ──
     await set(ref(db, 'antithesis/akun/' + user.uid), {
-      nama:      nama,
-      username:  username,
-      email:     email,
-      banned:    false,
+      nama:  nama,
+      email: email,
+      banned: false,
       createdAt: Date.now()
     });
 
-    // ── 6. Simpan username agar tidak dobel ──
-    await set(ref(db, 'antithesis/usernames/' + username.toLowerCase()), user.uid);
+    // ── 5. Kirim email verifikasi ──
+    await sendEmailVerification(user);
+    await signOut(auth);
 
-    // ── 7. Simpan session sementara (untuk redirect setelah verifikasi) ──
-    sessionStorage.setItem('antithesis_pending_nama',     nama);
-    sessionStorage.setItem('antithesis_pending_username', username);
-    sessionStorage.setItem('antithesis_pending_uid',      user.uid);
-
-    // ── 8. Kirim email verifikasi ──
-    await sendEmailVerification(user, {
-      url: window.location.origin + '/dashboard.html'
-    });
-
-    // ── 9. Redirect ke halaman tunggu verifikasi ──
+    // ── 6. Redirect ke verify ──
     const hint = btoa(email).replace(/=/g, '');
     window.location.href = `verify.html?hint=${hint}&reason=newreg`;
 
   } catch (err) {
-    showErr(friendlyError(err));
+    showErr(friendlyError(err.code));
     setLoading(false);
   }
 }
@@ -171,7 +141,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('btnDaftar');
   if (btn) btn.addEventListener('click', doDaftar);
 
-  ['regNama','regEmail','regUsername','regPass','regPass2'].forEach(id => {
+  ['regNama','regEmail','regPass','regPass2'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') doDaftar(); });
   });
