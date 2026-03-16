@@ -98,6 +98,13 @@ window.addEventListener('DOMContentLoaded', () => {
       const snap = await get(ref(db, 'antithesis/akun/' + user.uid));
       const nama = snap.exists() ? (snap.val().nama || user.displayName || email) : (user.displayName || email);
 
+      // Cek verified
+      if (snap.exists() && snap.val().verified === false) {
+        showErr("loginErr", "✕  Akun belum diverifikasi, cek email kamu");
+        await auth.signOut();
+        return;
+      }
+
       // Cek banned
       if (snap.exists() && snap.val().banned === true) {
         showErr('loginErr', '✕  Akun kamu telah dinonaktifkan');
