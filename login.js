@@ -28,12 +28,11 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getDatabase(app);
 
-// ── Redirect kalau sudah login ──
+// Redirect kalau sudah login
 if (sessionStorage.getItem('antithesis_member')) {
   window.location.href = 'dashboard.html';
 }
 
-// ── Helpers ──
 function showErr(id, msg) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -59,7 +58,6 @@ function friendlyError(code) {
 
 window.addEventListener('DOMContentLoaded', () => {
 
-  // ── Toggle password visibility ──
   function setupToggle(btnId, inputId) {
     const btn = document.getElementById(btnId);
     if (!btn) return;
@@ -87,20 +85,12 @@ window.addEventListener('DOMContentLoaded', () => {
       const cred = await signInWithEmailAndPassword(auth, email, pass);
       const user = cred.user;
 
-      // Cek verifikasi email
-      if (!user.emailVerified) {
-        showErr('loginErr', '✕  Email belum diverifikasi, cek inbox kamu');
-        await auth.signOut();
-        return;
-      }
-
       // Ambil data dari database
       const snap = await get(ref(db, 'antithesis/akun/' + user.uid));
-      const nama = snap.exists() ? (snap.val().nama || user.displayName || email) : (user.displayName || email);
 
-      // Cek verified
-      if (snap.exists() && snap.val().verified === false) {
-        showErr("loginErr", "✕  Akun belum diverifikasi, cek email kamu");
+      // Cek verified dari database kita (bukan Firebase emailVerified)
+      if (snap.exists() && snap.val().verified !== true) {
+        showErr('loginErr', '✕  Akun belum diverifikasi, selesaikan verifikasi OTP dulu');
         await auth.signOut();
         return;
       }
@@ -111,6 +101,8 @@ window.addEventListener('DOMContentLoaded', () => {
         await auth.signOut();
         return;
       }
+
+      const nama = snap.exists() ? (snap.val().nama || user.displayName || email) : (user.displayName || email);
 
       // Simpan session
       const remember = document.getElementById('rememberMe')?.checked;
@@ -164,7 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const cred2     = await signInWithEmailAndPassword(auth, email, oldPass);
+      const cred2      = await signInWithEmailAndPassword(auth, email, oldPass);
       const credential = EmailAuthProvider.credential(email, oldPass);
       await reauthenticateWithCredential(cred2.user, credential);
       await updatePassword(cred2.user, newPass);
