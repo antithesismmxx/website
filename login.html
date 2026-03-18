@@ -5,581 +5,318 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Masuk — ANTITHESIS</title>
 <style>
-/* ── THEME TOKENS ── */
-:root {
-  --ease: cubic-bezier(.25,.46,.45,.94);
-  --ease-spring: cubic-bezier(.34,1.56,.64,1);
-  --dur: .32s;
+:root{--ease:cubic-bezier(.25,.46,.45,.94);--ease-spring:cubic-bezier(.34,1.56,.64,1);--dur:.28s;}
+[data-theme="dark"]{
+  --bg:#000;--bg2:#0a0a0a;--surface:rgba(255,255,255,.03);
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.04);
+  --text:#f5f5f7;--text2:#86868b;--text3:#424245;
+  --accent:#0071e3;--accent2:#0077ed;
+  --err:#ff453a;--ok:#30d158;
+  --input-bg:rgba(255,255,255,.05);--input-border:rgba(255,255,255,.08);
+  --input-focus:rgba(0,113,227,.35);
+  --toggle-bg:rgba(255,255,255,.08);
 }
-[data-theme="dark"] {
-  --bg:       #000000;
-  --bg2:      #0a0a0a;
-  --bg3:      #141414;
-  --surface:  #1c1c1e;
-  --border:   rgba(255,255,255,.08);
-  --border2:  rgba(255,255,255,.05);
-  --text:     #f5f5f7;
-  --text2:    #a1a1a6;
-  --text3:    #636366;
-  --accent:   #0a84ff;
-  --accent2:  #0071e3;
-  --err:      #ff453a;
-  --ok:       #30d158;
-  --input-bg: rgba(255,255,255,.06);
-  --input-border: rgba(255,255,255,.1);
-  --input-focus:  rgba(10,132,255,.4);
-  --shadow:   0 20px 60px rgba(0,0,0,.8);
-  --toggle-bg: rgba(255,255,255,.1);
+[data-theme="light"]{
+  --bg:#fff;--bg2:#f5f5f7;--surface:rgba(0,0,0,.02);
+  --border:rgba(0,0,0,.06);--border2:rgba(0,0,0,.04);
+  --text:#1d1d1f;--text2:#6e6e73;--text3:#aeaeb2;
+  --accent:#0071e3;--accent2:#0077ed;
+  --err:#ff3b30;--ok:#34c759;
+  --input-bg:rgba(0,0,0,.03);--input-border:rgba(0,0,0,.08);
+  --input-focus:rgba(0,113,227,.25);
+  --toggle-bg:rgba(0,0,0,.06);
 }
-[data-theme="light"] {
-  --bg:       #ffffff;
-  --bg2:      #f5f5f7;
-  --bg3:      #e8e8ed;
-  --surface:  #ffffff;
-  --border:   rgba(0,0,0,.08);
-  --border2:  rgba(0,0,0,.05);
-  --text:     #1d1d1f;
-  --text2:    #6e6e73;
-  --text3:    #aeaeb2;
-  --accent:   #0a84ff;
-  --accent2:  #0077ed;
-  --err:      #ff3b30;
-  --ok:       #34c759;
-  --input-bg: rgba(0,0,0,.04);
-  --input-border: rgba(0,0,0,.1);
-  --input-focus:  rgba(160,160,170,.3);
-  --shadow:   0 20px 60px rgba(0,0,0,.12);
-  --toggle-bg: rgba(0,0,0,.08);
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.6;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
-  overflow-x: hidden;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Helvetica Neue',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  transition:background var(--dur),color var(--dur);
+  overflow-x:hidden;
 }
 
 /* ── LAYOUT ── */
-.auth-page {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
+@media(max-width:768px){.page{grid-template-columns:1fr;}}
+
+/* ── LEFT ── */
+.left{
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:44px 56px;
+  background:var(--bg);
+  border-right:.5px solid var(--border);
 }
-@media (max-width: 768px) {
-  .auth-page { grid-template-columns: 1fr; }
+.left-brand{
+  font-size:.72rem;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text3);
+  text-decoration:none;transition:color var(--dur);
+}
+.left-brand:hover{color:var(--text2);}
+.left-content{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 0;}
+.left-eyebrow{
+  font-size:.62rem;font-weight:400;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text3);
+  margin-bottom:28px;display:block;
+}
+.left-headline{
+  font-size:clamp(2.4rem,3.8vw,3.8rem);
+  font-weight:600;line-height:1.06;
+  color:var(--text);letter-spacing:-.035em;
+  margin-bottom:24px;
+}
+.left-headline em{font-style:italic;font-weight:300;color:var(--text2);}
+.left-sub{font-size:.9rem;color:var(--text3);line-height:1.7;max-width:340px;}
+.left-footer{font-size:.6rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;}
+@media(max-width:768px){.left{display:none;}}
+
+/* ── RIGHT ── */
+.right{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 40px;background:var(--bg);position:relative;
+}
+.topbar{position:absolute;top:28px;right:32px;display:flex;align-items:center;gap:10px;}
+.theme-toggle{
+  width:40px;height:22px;background:var(--toggle-bg);
+  border:.5px solid var(--border);border-radius:100px;
+  cursor:pointer;position:relative;transition:background var(--dur);
+  flex-shrink:0;
+}
+.theme-toggle::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--text2);
+  transition:transform var(--dur) var(--ease-spring);
+}
+[data-theme="light"] .theme-toggle::after{transform:translateX(18px);background:var(--accent);}
+.ti{font-size:.78rem;color:var(--text3);}
+
+/* ── FORM ── */
+.box{width:100%;max-width:360px;animation:up .55s var(--ease) both;}
+@keyframes up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+.box-eyebrow{
+  font-size:.6rem;font-weight:400;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--text3);
+  margin-bottom:12px;display:block;
+  animation:up .55s var(--ease) .06s both;
+}
+.box-title{
+  font-size:2.6rem;font-weight:600;color:var(--text);
+  line-height:1.05;letter-spacing:-.04em;
+  margin-bottom:8px;
+  animation:up .55s var(--ease) .1s both;
+}
+.box-sub{
+  font-size:.88rem;color:var(--text2);
+  margin-bottom:36px;line-height:1.6;
+  animation:up .55s var(--ease) .14s both;
 }
 
-/* ── LEFT PANEL ── */
-.auth-left {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 40px 52px 52px;
-  background: var(--bg2);
-  border-right: .5px solid var(--border);
+/* Fields */
+.field{margin-bottom:12px;animation:up .55s var(--ease) .18s both;}
+.field+.field{animation-delay:.22s;}
+.label{
+  display:block;font-size:.7rem;font-weight:400;
+  color:var(--text2);margin-bottom:7px;letter-spacing:.01em;
 }
-[data-theme="dark"] .auth-left {
-  background: #050505;
+.wrap{position:relative;}
+.input{
+  width:100%;background:var(--input-bg);
+  border:.5px solid var(--input-border);
+  border-radius:8px;color:var(--text);
+  font-family:inherit;font-size:.95rem;
+  padding:12px 15px;outline:none;
+  transition:border-color var(--dur),box-shadow var(--dur);
+  -webkit-appearance:none;
+  letter-spacing:-.01em;
 }
-.auth-left-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+.input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--input-focus);
 }
-[data-theme="light"] .auth-left-grid {
-  background-image:
-    linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
+.input::placeholder{color:var(--text3);font-size:.9rem;}
+.input.pad-r{padding-right:44px;}
+.eye{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text3);
+  font-size:.82rem;cursor:pointer;padding:4px;
+  transition:color var(--dur);line-height:1;
 }
-.auth-left-glow {
-  position: absolute;
-  width: 320px; height: 320px;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  background: rgba(160,160,170,.12);
-  top: 20%; left: 20%;
-  animation: glowPulse 6s ease-in-out infinite;
-}
-[data-theme="light"] .auth-left-glow {
-  background: rgba(160,160,170,.07);
-}
-@keyframes glowPulse {
-  0%, 100% { transform: scale(1); opacity: .6; }
-  50%       { transform: scale(1.15); opacity: 1; }
-}
-.auth-brand {
-  position: relative;
-  font-size: .72rem;
-  font-weight: 600;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--text3);
-  text-decoration: none;
-  transition: color var(--dur);
-}
-.auth-brand:hover { color: var(--text2); }
-.auth-left-content { position: relative; }
-.auth-left-tag {
-  font-size: .62rem;
-  font-weight: 500;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--accent);
-  opacity: .8;
-  margin-bottom: 20px;
-  display: block;
-}
-.auth-left-headline {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  font-size: clamp(2.2rem, 3.5vw, 3.4rem);
-  font-weight: 400;
-  line-height: 1.12;
-  color: var(--text);
-  letter-spacing: -.02em;
-  margin-bottom: 20px;
-}
-.auth-left-headline em {
-  font-style: italic;
-  color: var(--text2);
-}
-.auth-left-sub {
-  font-size: .9rem;
-  color: var(--text3);
-  line-height: 1.75;
-  max-width: 340px;
-}
-.auth-left-footer {
-  position: relative;
-  font-size: .65rem;
-  color: var(--text3);
-  letter-spacing: .06em;
-}
-@media (max-width: 768px) { .auth-left { display: none; } }
+.eye:hover{color:var(--text2);}
 
-/* ── RIGHT PANEL ── */
-.auth-right {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 52px 40px;
-  background: var(--bg);
-  position: relative;
+/* Extras */
+.extras{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;animation:up .55s var(--ease) .28s both;
 }
-.auth-topbar {
-  position: absolute;
-  top: 28px; right: 32px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.rem{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.8rem;color:var(--text2);}
+.rem input{accent-color:var(--accent);width:13px;height:13px;}
+.forgot{font-size:.8rem;color:var(--accent);text-decoration:none;transition:opacity var(--dur);}
+.forgot:hover{opacity:.7;}
+
+/* Error */
+.err{
+  font-size:.78rem;color:var(--err);
+  background:rgba(255,69,58,.06);
+  border:.5px solid rgba(255,69,58,.15);
+  border-radius:7px;padding:9px 13px;
+  margin-bottom:12px;display:none;
 }
-/* ── THEME TOGGLE ── */
-.theme-toggle {
-  width: 44px; height: 24px;
-  background: var(--toggle-bg);
-  border: .5px solid var(--border);
-  border-radius: 100px;
-  cursor: pointer;
-  position: relative;
-  transition: background var(--dur);
-  flex-shrink: 0;
-}
-.theme-toggle::after {
-  content: '';
-  position: absolute;
-  top: 3px; left: 3px;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: var(--text2);
-  transition: transform var(--dur) var(--ease-spring), background var(--dur);
-}
-[data-theme="light"] .theme-toggle::after {
-  transform: translateX(20px);
-  background: var(--accent);
-}
-.theme-icon {
-  font-size: .85rem;
-  color: var(--text3);
-  transition: opacity var(--dur);
+.ok-msg{
+  font-size:.78rem;color:var(--ok);
+  background:rgba(48,209,88,.06);
+  border:.5px solid rgba(48,209,88,.15);
+  border-radius:7px;padding:9px 13px;
+  margin-bottom:12px;display:none;
 }
 
-/* ── FORM BOX ── */
-.auth-box {
-  width: 100%;
-  max-width: 380px;
-  animation: boxReveal .6s var(--ease) both;
+/* Submit */
+.submit{
+  width:100%;background:var(--accent2);color:#fff;
+  font-family:inherit;font-size:.95rem;font-weight:500;
+  padding:13px;border:none;border-radius:8px;
+  cursor:pointer;letter-spacing:-.01em;
+  transition:opacity var(--dur),transform var(--dur) var(--ease);
+  animation:up .55s var(--ease) .32s both;
 }
-@keyframes boxReveal {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: none; }
-}
-.auth-eyebrow {
-  font-size: .62rem;
-  font-weight: 500;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 10px;
-  display: block;
-  animation: boxReveal .6s var(--ease) .05s both;
-}
-.auth-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  font-size: 2.4rem;
-  font-weight: 400;
-  color: var(--text);
-  line-height: 1.1;
-  letter-spacing: -.025em;
-  margin-bottom: 8px;
-  animation: boxReveal .6s var(--ease) .1s both;
-}
-.auth-sub {
-  font-size: .88rem;
-  color: var(--text2);
-  margin-bottom: 36px;
-  line-height: 1.6;
-  animation: boxReveal .6s var(--ease) .15s both;
-}
+.submit:hover:not(:disabled){opacity:.88;transform:scale(1.005);}
+.submit:active:not(:disabled){transform:scale(.98);}
+.submit:disabled{opacity:.4;cursor:not-allowed;}
 
-/* ── FIELDS ── */
-.field {
-  margin-bottom: 14px;
-  animation: boxReveal .6s var(--ease) .2s both;
+.foot{
+  margin-top:20px;text-align:center;
+  font-size:.82rem;color:var(--text2);
+  animation:up .55s var(--ease) .36s both;
 }
-.field + .field { animation-delay: .25s; }
-.field-label {
-  display: block;
-  font-size: .72rem;
-  font-weight: 500;
-  color: var(--text2);
-  margin-bottom: 7px;
-  letter-spacing: .01em;
-}
-.field-wrap { position: relative; }
-.field-input {
-  width: 100%;
-  background: var(--input-bg);
-  border: .5px solid var(--input-border);
-  border-radius: 10px;
-  color: var(--text);
-  font-family: inherit;
-  font-size: .95rem;
-  padding: 13px 16px;
-  outline: none;
-  transition: border-color var(--dur), background var(--dur), box-shadow var(--dur);
-  -webkit-appearance: none;
-}
-.field-input:focus {
-  border-color: var(--accent);
-  background: var(--input-bg);
-  box-shadow: 0 0 0 3px var(--input-focus);
-}
-.field-input::placeholder { color: var(--text3); font-size: .9rem; }
-.field-input.has-toggle { padding-right: 46px; }
-.toggle-pass {
-  position: absolute;
-  right: 13px; top: 50%;
-  transform: translateY(-50%);
-  background: none; border: none;
-  color: var(--text3);
-  font-size: .85rem;
-  cursor: pointer;
-  padding: 4px;
-  transition: color var(--dur);
-  line-height: 1;
-}
-.toggle-pass:hover { color: var(--text2); }
+.foot a{color:var(--accent);text-decoration:none;transition:opacity var(--dur);}
+.foot a:hover{opacity:.7;}
 
-/* ── EXTRAS ── */
-.auth-extras {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 22px;
-  animation: boxReveal .6s var(--ease) .3s both;
+/* Modal */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;z-index:200;
+  opacity:0;pointer-events:none;
+  transition:opacity var(--dur);
 }
-.remember {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: .82rem;
-  color: var(--text2);
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal{
+  width:100%;max-width:380px;
+  background:var(--bg2);
+  border:.5px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 24px 72px rgba(0,0,0,.8);
+  transform:translateY(12px) scale(.97);
+  transition:transform var(--dur) var(--ease-spring);
 }
-.remember input {
-  accent-color: var(--accent);
-  width: 14px; height: 14px;
+.modal-overlay.show .modal{transform:none;}
+.modal-head{
+  padding:24px 24px 16px;
+  border-bottom:.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
 }
-.link-forgot {
-  font-size: .82rem;
-  color: var(--accent);
-  text-decoration: none;
-  transition: opacity var(--dur);
+.modal-title{font-size:1.1rem;font-weight:600;color:var(--text);letter-spacing:-.02em;}
+.modal-close{
+  background:rgba(255,255,255,.06);border:none;
+  width:26px;height:26px;border-radius:50%;
+  color:var(--text2);font-size:.75rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--dur);
 }
-.link-forgot:hover { opacity: .7; }
-
-/* ── MESSAGES ── */
-.msg-err {
-  font-size: .8rem;
-  color: var(--err);
-  background: rgba(255,69,58,.07);
-  border: .5px solid rgba(255,69,58,.18);
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-bottom: 14px;
-  display: none;
-  animation: shake .4s var(--ease);
-}
-@keyframes shake {
-  0%,100%{transform:translateX(0)}
-  20%{transform:translateX(-4px)}
-  40%{transform:translateX(4px)}
-  60%{transform:translateX(-3px)}
-  80%{transform:translateX(3px)}
-}
-.msg-ok {
-  font-size: .8rem;
-  color: var(--ok);
-  background: rgba(48,209,88,.07);
-  border: .5px solid rgba(48,209,88,.18);
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-bottom: 14px;
-  display: none;
-}
-
-/* ── SUBMIT BUTTON ── */
-.btn-submit {
-  width: 100%;
-  background: var(--accent2);
-  color: #fff;
-  font-family: inherit;
-  font-size: .95rem;
-  font-weight: 500;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform var(--dur) var(--ease), opacity var(--dur), box-shadow var(--dur);
-  letter-spacing: -.01em;
-  animation: boxReveal .6s var(--ease) .35s both;
-}
-.btn-submit:hover:not(:disabled) {
-  transform: scale(1.01);
-  box-shadow: 0 4px 20px rgba(160,160,170,.35);
-}
-.btn-submit:active:not(:disabled) { transform: scale(.98); }
-.btn-submit:disabled { opacity: .45; cursor: not-allowed; }
-
-/* ── FOOTER LINK ── */
-.auth-footer {
-  margin-top: 24px;
-  text-align: center;
-  font-size: .84rem;
-  color: var(--text2);
-  animation: boxReveal .6s var(--ease) .4s both;
-}
-.auth-footer a {
-  color: var(--accent);
-  text-decoration: none;
-  transition: opacity var(--dur);
-}
-.auth-footer a:hover { opacity: .7; }
-
-/* ── DIVIDER ── */
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 22px 0;
-  font-size: .72rem;
-  color: var(--text3);
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.auth-divider::before, .auth-divider::after {
-  content: '';
-  flex: 1;
-  height: .5px;
-  background: var(--border);
-}
-
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  z-index: 200;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--dur);
-}
-.modal-overlay.show { opacity: 1; pointer-events: all; }
-.modal-box {
-  width: 100%;
-  max-width: 400px;
-  background: var(--surface);
-  border: .5px solid var(--border);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  transform: translateY(16px) scale(.97);
-  transition: transform var(--dur) var(--ease-spring);
-}
-.modal-overlay.show .modal-box { transform: none; }
-.modal-head {
-  padding: 28px 28px 18px;
-  border-bottom: .5px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.modal-head-title {
-  font-size: 1.3rem;
-  font-weight: 400;
-  color: var(--text);
-}
-.modal-close {
-  background: var(--toggle-bg);
-  border: none;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  color: var(--text2);
-  font-size: .8rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--dur);
-}
-.modal-close:hover { background: var(--border); }
-.modal-body { padding: 22px 28px 28px; }
-
-@media (max-width: 480px) {
-  .auth-right { padding: 52px 24px 32px; }
-}
+.modal-close:hover{background:rgba(255,255,255,.1);}
+.modal-body{padding:20px 24px 24px;}
+@media(max-width:480px){.right{padding:60px 24px 32px;}}
 </style>
 </head>
 <body>
-
-<div class="auth-page">
+<div class="page">
   <!-- Kiri -->
-  <div class="auth-left">
-    <div class="auth-left-grid"></div>
-    <div class="auth-left-glow"></div>
-    <a href="index.html" class="auth-brand">Antithesis</a>
-    <div class="auth-left-content">
-      <span class="auth-left-tag">Portal Anggota</span>
-      <h1 class="auth-left-headline">Masuk dan sapa kembali mereka yang pernah <em>mengisi hari-harimu.</em></h1>
-      <p class="auth-left-sub">Ruang khusus untuk angkatan ANTITHESIS — Al Muayyad Surakarta 2018–2020.</p>
+  <div class="left">
+    <a href="index.html" class="left-brand">Antithesis</a>
+    <div class="left-content">
+      <span class="left-eyebrow">Portal anggota</span>
+      <h1 class="left-headline">Masuk dan sapa kembali mereka yang pernah <em>mengisi hari-harimu.</em></h1>
+      <p class="left-sub">Ruang khusus untuk angkatan ANTITHESIS — Al Muayyad Surakarta 2018–2020.</p>
     </div>
-    <div class="auth-left-footer">ANTITHESIS · Al Muayyad Surakarta · 2018–2020</div>
+    <div class="left-footer">ANTITHESIS · Al Muayyad Surakarta · 2018–2020</div>
   </div>
 
   <!-- Kanan -->
-  <div class="auth-right">
-    <div class="auth-topbar">
-      <span class="theme-icon">☀</span>
+  <div class="right">
+    <div class="topbar">
+      <span class="ti">☀</span>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
-      <span class="theme-icon">☽</span>
+      <span class="ti">☽</span>
     </div>
-
-    <div class="auth-box">
-      <span class="auth-eyebrow">Selamat datang kembali</span>
-      <h2 class="auth-title">Masuk</h2>
-      <p class="auth-sub">Masuk dengan email dan password kamu.</p>
+    <div class="box">
+      <span class="box-eyebrow">Selamat datang kembali</span>
+      <h2 class="box-title">Masuk</h2>
+      <p class="box-sub">Masuk dengan email dan password kamu.</p>
 
       <div class="field">
-        <label class="field-label" for="loginEmail">Email</label>
-        <input class="field-input" type="email" id="loginEmail"
-               placeholder="nama@email.com" autocomplete="email"/>
+        <label class="label" for="loginEmail">Email</label>
+        <input class="input" type="email" id="loginEmail" placeholder="nama@email.com" autocomplete="email"/>
       </div>
-
       <div class="field">
-        <label class="field-label" for="loginPass">Password</label>
-        <div class="field-wrap">
-          <input class="field-input has-toggle" type="password" id="loginPass"
-                 placeholder="Password kamu" autocomplete="current-password"/>
-          <button class="toggle-pass" id="toggleLoginPass" type="button" tabindex="-1">👁</button>
+        <label class="label" for="loginPass">Password</label>
+        <div class="wrap">
+          <input class="input pad-r" type="password" id="loginPass" placeholder="Password kamu" autocomplete="current-password"/>
+          <button class="eye" id="toggleLoginPass" type="button" tabindex="-1">👁</button>
         </div>
       </div>
 
-      <div class="auth-extras">
-        <label class="remember">
-          <input type="checkbox" id="rememberMe"/>
-          Ingat saya
-        </label>
-        <a href="#" class="link-forgot" id="btnOpenPass">Lupa password?</a>
+      <div class="extras">
+        <label class="rem"><input type="checkbox" id="rememberMe"/> Ingat saya</label>
+        <a href="#" class="forgot" id="btnOpenPass">Lupa password?</a>
       </div>
 
-      <div class="msg-err" id="loginErr"></div>
-      <button class="btn-submit" id="btnLogin">Masuk →</button>
-
-      <div class="auth-footer">
-        Belum punya akun? <a href="register.html">Daftar di sini</a>
-      </div>
+      <div class="err" id="loginErr"></div>
+      <button class="submit" id="btnLogin">Masuk →</button>
+      <div class="foot">Belum punya akun? <a href="register.html">Daftar di sini</a></div>
     </div>
   </div>
 </div>
 
 <!-- Modal Ganti Password -->
 <div class="modal-overlay" id="passModal">
-  <div class="modal-box">
+  <div class="modal">
     <div class="modal-head">
-      <div class="modal-head-title">Ganti Password</div>
+      <div class="modal-title">Ganti Password</div>
       <button class="modal-close" id="btnCloseModal">✕</button>
     </div>
     <div class="modal-body">
-      <div class="field">
-        <label class="field-label" for="gpEmail">Email</label>
-        <input class="field-input" type="email" id="gpEmail" placeholder="nama@email.com"/>
+      <div class="field" style="animation:none;">
+        <label class="label" for="gpEmail">Email</label>
+        <input class="input" type="email" id="gpEmail" placeholder="nama@email.com"/>
       </div>
-      <div class="field">
-        <label class="field-label" for="gpOld">Password Lama</label>
-        <div class="field-wrap">
-          <input class="field-input has-toggle" type="password" id="gpOld" placeholder="••••••••"/>
-          <button class="toggle-pass" id="toggleGpOld" type="button" tabindex="-1">👁</button>
+      <div class="field" style="animation:none;">
+        <label class="label" for="gpOld">Password Lama</label>
+        <div class="wrap">
+          <input class="input pad-r" type="password" id="gpOld" placeholder="••••••••"/>
+          <button class="eye" id="toggleGpOld" type="button" tabindex="-1">👁</button>
         </div>
       </div>
-      <div class="field">
-        <label class="field-label" for="gpNew">Password Baru</label>
-        <div class="field-wrap">
-          <input class="field-input has-toggle" type="password" id="gpNew" placeholder="Min. 6 karakter"/>
-          <button class="toggle-pass" id="toggleGpNew" type="button" tabindex="-1">👁</button>
+      <div class="field" style="animation:none;margin-bottom:20px;">
+        <label class="label" for="gpNew">Password Baru</label>
+        <div class="wrap">
+          <input class="input pad-r" type="password" id="gpNew" placeholder="Min. 6 karakter"/>
+          <button class="eye" id="toggleGpNew" type="button" tabindex="-1">👁</button>
         </div>
       </div>
-      <div class="msg-err" id="gpErr"></div>
-      <div class="msg-ok" id="gpOk"></div>
-      <button class="btn-submit" id="btnGantiPass">Simpan Password Baru</button>
+      <div class="err" id="gpErr"></div>
+      <div class="ok-msg" id="gpOk"></div>
+      <button class="submit" style="animation:none;">Simpan Password Baru</button>
     </div>
   </div>
 </div>
 
 <script>
-// Theme toggle
 const html = document.documentElement;
-const saved = localStorage.getItem('antithesis_theme') || 'dark';
-html.setAttribute('data-theme', saved);
+html.setAttribute('data-theme', localStorage.getItem('antithesis_theme') || 'dark');
 document.getElementById('themeToggle').addEventListener('click', () => {
   const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', next);
