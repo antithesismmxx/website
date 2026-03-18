@@ -1,6 +1,5 @@
 // ══════════════════════════════════════════════
 //  register.js — Pendaftaran Akun ANTITHESIS
-//  OTP via EmailJS + rollback jika DB gagal
 // ══════════════════════════════════════════════
 
 import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -22,7 +21,6 @@ const firebaseConfig = {
 const EJS_SERVICE  = "service_0ol6msu";
 const EJS_TEMPLATE = "ruyjgfi";
 const EJS_KEY      = "1fX9LqfKW5TjfdabInwWJ";
-emailjs.init(EJS_KEY);
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -61,12 +59,19 @@ function generateOTP() {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
+// Kirim OTP — gunakan window.emailjs agar kompatibel dengan module scope
 async function kirimOTP(toEmail, nama, otp) {
-  await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
-    to_email: toEmail,
-    nama:     nama,
-    otp_code: otp
-  }, EJS_KEY);
+  const ejs = window.emailjs;
+  if (!ejs) throw new Error('EmailJS belum dimuat');
+  
+  const result = await ejs.send(
+    EJS_SERVICE,
+    EJS_TEMPLATE,
+    { to_email: toEmail, nama: nama, otp_code: otp },
+    { publicKey: EJS_KEY }
+  );
+  console.log('EmailJS result:', result);
+  return result;
 }
 
 function setupToggle(btnId, inputId) {
@@ -93,9 +98,13 @@ async function doDaftar() {
   if (pass.length < 6)  { showErr('✕  Password minimal 6 karakter'); return; }
   if (pass !== pass2)   { showErr('✕  Password tidak cocok'); return; }
 
-  setLoading(true);
+  // Pastikan EmailJS sudah siap
+  if (!window.emailjs) {
+    showErr('✕  Halaman belum siap, refresh dan coba lagi'); return;
+  }
 
-  let userCreated = null; // simpan referensi user untuk rollback
+  setLoading(true);
+  let userCreated = null;
 
   try {
     // ── 1. Cek whitelist ──
@@ -121,7 +130,6 @@ async function doDaftar() {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     userCreated = cred.user;
     await updateProfile(userCreated, { displayName: nama });
-    // Belum signOut — masih perlu user aktif untuk rollback jika gagal
 
     // ── 3. Simpan data akun ke DB ──
     await set(ref(db, 'antithesis/akun/' + userCreated.uid), {
@@ -134,7 +142,7 @@ async function doDaftar() {
 
     // ── 4. Generate & simpan OTP ──
     const otp     = generateOTP();
-    const expired = Date.now() + (10 * 60 * 1000); // 10 menit
+    const expired = Date.now() + (10 * 60 * 1000);
     await set(ref(db, 'antithesis/otp/' + userCreated.uid), {
       kode:    otp,
       email:   email,
@@ -151,17 +159,18 @@ async function doDaftar() {
     window.location.href = `verify.html?uid=${uidEnc}&hint=${hint}&reason=newreg`;
 
   } catch(err) {
-    console.error('Register error:', err);
+    console.error('Register error detail:', err.status, err.text, err.message, err);
 
-    // ── Rollback: hapus akun Auth supaya email bisa didaftarkan ulang ──
+    // Rollback akun Auth jika sudah terbuat
     if (userCreated) {
       try { await userCreated.delete(); console.log('Rollback Auth berhasil'); }
       catch(re) { console.warn('Rollback gagal:', re.message); }
     }
 
-    // Pesan error yang ramah
     if (err.message && err.message.includes('PERMISSION_DENIED')) {
       showErr('✕  Akses ditolak — minta admin update Firebase Rules');
+    } else if (err.status === 400) {
+      showErr('✕  Gagal kirim email OTP — cek konfigurasi EmailJS');
     } else {
       showErr(friendlyError(err.code || err.message));
     }
@@ -171,6 +180,11 @@ async function doDaftar() {
 
 // ── DOM Ready ──
 window.addEventListener('DOMContentLoaded', () => {
+  // Init EmailJS
+  if (window.emailjs) {
+    window.emailjs.init({ publicKey: EJS_KEY });
+  }
+
   setupToggle('togglePass',  'regPass');
   setupToggle('togglePass2', 'regPass2');
 
