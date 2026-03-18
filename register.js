@@ -20,7 +20,7 @@ const firebaseConfig = {
 
 const EJS_SERVICE  = "service_0ol6msu";
 const EJS_TEMPLATE = "ruyjgfi";
-const EJS_KEY      = "1fX9LqfKW5TjfdabInwWJ";
+const EJS_KEY      = "JTW0LCDn6Cl5MP5IR";
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
