@@ -5,172 +5,173 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Daftar — ANTITHESIS</title>
 <style>
-:root { --ease: cubic-bezier(.25,.46,.45,.94); --ease-spring: cubic-bezier(.34,1.56,.64,1); --dur: .32s; }
-[data-theme="dark"] {
-  --bg:#000;--bg2:#0a0a0a;--bg3:#141414;--surface:#1c1c1e;
-  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.05);
-  --text:#f5f5f7;--text2:#a1a1a6;--text3:#636366;
-  --accent:#0a84ff;--accent2:#0071e3;
+:root{--ease:cubic-bezier(.25,.46,.45,.94);--ease-spring:cubic-bezier(.34,1.56,.64,1);--dur:.28s;}
+[data-theme="dark"]{
+  --bg:#000;--bg2:#0a0a0a;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.04);
+  --text:#f5f5f7;--text2:#86868b;--text3:#424245;
+  --accent:#0071e3;--accent2:#0077ed;
   --err:#ff453a;--ok:#30d158;
-  --input-bg:rgba(255,255,255,.06);--input-border:rgba(255,255,255,.1);--input-focus:rgba(10,132,255,.4);
-  --shadow:0 20px 60px rgba(0,0,0,.8);--toggle-bg:rgba(255,255,255,.1);
+  --input-bg:rgba(255,255,255,.05);--input-border:rgba(255,255,255,.08);
+  --input-focus:rgba(0,113,227,.35);
+  --toggle-bg:rgba(255,255,255,.08);
+  --info-bg:rgba(255,255,255,.04);--info-border:rgba(255,255,255,.08);
 }
-[data-theme="light"] {
-  --bg:#fff;--bg2:#f5f5f7;--bg3:#e8e8ed;--surface:#fff;
-  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.05);
+[data-theme="light"]{
+  --bg:#fff;--bg2:#f5f5f7;
+  --border:rgba(0,0,0,.06);--border2:rgba(0,0,0,.04);
   --text:#1d1d1f;--text2:#6e6e73;--text3:#aeaeb2;
   --accent:#0071e3;--accent2:#0077ed;
   --err:#ff3b30;--ok:#34c759;
-  --input-bg:rgba(0,0,0,.04);--input-border:rgba(0,0,0,.1);--input-focus:rgba(0,113,227,.3);
-  --shadow:0 20px 60px rgba(0,0,0,.12);--toggle-bg:rgba(0,0,0,.08);
+  --input-bg:rgba(0,0,0,.03);--input-border:rgba(0,0,0,.08);
+  --input-focus:rgba(0,113,227,.25);
+  --toggle-bg:rgba(0,0,0,.06);
+  --info-bg:rgba(0,0,0,.03);--info-border:rgba(0,0,0,.08);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background var(--dur) var(--ease),color var(--dur) var(--ease);}
-.auth-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
-@media(max-width:768px){.auth-page{grid-template-columns:1fr;}}
+html,body{height:100%;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Helvetica Neue',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  transition:background var(--dur),color var(--dur);
+  overflow-x:hidden;
+}
+.page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
+@media(max-width:768px){.page{grid-template-columns:1fr;}}
 
-.auth-left{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:40px 52px 52px;background:var(--bg2);border-right:.5px solid var(--border);}
-[data-theme="dark"] .auth-left{background:#050505;}
-.auth-left-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);}
-[data-theme="light"] .auth-left-grid{background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);}
-.auth-left-glow{position:absolute;width:280px;height:280px;border-radius:50%;filter:blur(70px);pointer-events:none;background:rgba(48,209,88,.1);top:25%;left:15%;animation:glowPulse 7s ease-in-out infinite;}
-[data-theme="light"] .auth-left-glow{background:rgba(0,150,80,.06);}
-@keyframes glowPulse{0%,100%{transform:scale(1);opacity:.6;}50%{transform:scale(1.15);opacity:1;}}
-.auth-brand{position:relative;font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);text-decoration:none;transition:color var(--dur);}
-.auth-brand:hover{color:var(--text2);}
-.auth-left-content{position:relative;}
-.auth-left-tag{font-size:.62rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--ok);opacity:.8;margin-bottom:20px;display:block;}
-.auth-left-headline{font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;font-size:clamp(2rem,3.2vw,3.2rem);font-weight:400;line-height:1.12;color:var(--text);letter-spacing:-.02em;margin-bottom:20px;}
-.auth-left-headline em{font-style:italic;color:var(--text2);}
-.auth-left-sub{font-size:.88rem;color:var(--text3);line-height:1.75;max-width:340px;}
+.left{
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:44px 56px;
+  background:var(--bg);
+  border-right:.5px solid var(--border);
+}
+.left-brand{font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);text-decoration:none;transition:color var(--dur);}
+.left-brand:hover{color:var(--text2);}
+.left-content{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 0;}
+.left-eyebrow{font-size:.62rem;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:28px;display:block;}
+.left-headline{font-size:clamp(2.4rem,3.8vw,3.8rem);font-weight:600;line-height:1.06;color:var(--text);letter-spacing:-.035em;margin-bottom:36px;}
+.left-headline em{font-style:italic;font-weight:300;color:var(--text2);}
 
-/* Steps indicator */
-.auth-steps{display:flex;flex-direction:column;gap:14px;margin-top:32px;}
-.auth-step{display:flex;align-items:flex-start;gap:14px;}
-.auth-step-num{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);background:var(--toggle-bg);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:600;color:var(--text3);flex-shrink:0;margin-top:1px;}
-.auth-step-text{font-size:.82rem;color:var(--text3);line-height:1.6;}
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:18px;}
+.step{display:flex;align-items:flex-start;gap:14px;}
+.step-n{
+  width:20px;height:20px;border-radius:50%;
+  border:.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;font-weight:500;color:var(--text3);
+  flex-shrink:0;margin-top:2px;
+}
+.step-t{font-size:.85rem;color:var(--text3);line-height:1.6;}
 
-.auth-left-footer{position:relative;font-size:.62rem;color:var(--text3);letter-spacing:.06em;}
-@media(max-width:768px){.auth-left{display:none;}}
+.left-footer{font-size:.6rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;}
+@media(max-width:768px){.left{display:none;}}
 
-.auth-right{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 40px;background:var(--bg);position:relative;}
-.auth-topbar{position:absolute;top:28px;right:32px;display:flex;align-items:center;gap:12px;}
-.theme-toggle{width:44px;height:24px;background:var(--toggle-bg);border:.5px solid var(--border);border-radius:100px;cursor:pointer;position:relative;transition:background var(--dur);flex-shrink:0;}
-.theme-toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--text2);transition:transform var(--dur) var(--ease-spring),background var(--dur);}
-[data-theme="light"] .theme-toggle::after{transform:translateX(20px);background:var(--accent);}
-.theme-icon{font-size:.85rem;color:var(--text3);}
+.right{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px;background:var(--bg);position:relative;}
+.topbar{position:absolute;top:28px;right:32px;display:flex;align-items:center;gap:10px;}
+.theme-toggle{width:40px;height:22px;background:var(--toggle-bg);border:.5px solid var(--border);border-radius:100px;cursor:pointer;position:relative;transition:background var(--dur);flex-shrink:0;}
+.theme-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--text2);transition:transform var(--dur) var(--ease-spring);}
+[data-theme="light"] .theme-toggle::after{transform:translateX(18px);background:var(--accent);}
+.ti{font-size:.78rem;color:var(--text3);}
 
-.auth-box{width:100%;max-width:380px;animation:boxReveal .6s var(--ease) both;}
-@keyframes boxReveal{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
-.auth-eyebrow{font-size:.62rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:block;animation:boxReveal .6s var(--ease) .05s both;}
-.auth-title{font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;font-size:2.4rem;font-weight:400;color:var(--text);line-height:1.1;letter-spacing:-.025em;margin-bottom:8px;animation:boxReveal .6s var(--ease) .1s both;}
-.auth-sub{font-size:.88rem;color:var(--text2);margin-bottom:32px;line-height:1.6;animation:boxReveal .6s var(--ease) .15s both;}
+.box{width:100%;max-width:360px;animation:up .55s var(--ease) both;}
+@keyframes up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+.box-eyebrow{font-size:.6rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:block;}
+.box-title{font-size:2.6rem;font-weight:600;color:var(--text);line-height:1.05;letter-spacing:-.04em;margin-bottom:8px;}
+.box-sub{font-size:.88rem;color:var(--text2);margin-bottom:24px;line-height:1.6;}
 
-/* Info box */
-.info-banner{background:rgba(48,209,88,.06);border:.5px solid rgba(48,209,88,.15);border-radius:10px;padding:11px 14px;font-size:.78rem;color:var(--ok);margin-bottom:24px;line-height:1.6;opacity:.9;animation:boxReveal .6s var(--ease) .18s both;}
+.info{
+  background:var(--info-bg);border:.5px solid var(--info-border);
+  border-radius:7px;padding:10px 13px;
+  font-size:.78rem;color:var(--text2);
+  margin-bottom:20px;line-height:1.6;
+}
 
-.field{margin-bottom:14px;}
-.field-label{display:block;font-size:.72rem;font-weight:500;color:var(--text2);margin-bottom:7px;letter-spacing:.01em;}
-.field-wrap{position:relative;}
-.field-input{width:100%;background:var(--input-bg);border:.5px solid var(--input-border);border-radius:10px;color:var(--text);font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;font-size:.95rem;padding:13px 16px;outline:none;transition:border-color var(--dur),background var(--dur),box-shadow var(--dur);-webkit-appearance:none;}
-.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--input-focus);}
-.field-input::placeholder{color:var(--text3);font-size:.9rem;}
-.field-input.has-toggle{padding-right:46px;}
-.toggle-pass{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);font-size:.85rem;cursor:pointer;padding:4px;transition:color var(--dur);line-height:1;}
-.toggle-pass:hover{color:var(--text2);}
+.field{margin-bottom:12px;}
+.label{display:block;font-size:.7rem;font-weight:400;color:var(--text2);margin-bottom:7px;letter-spacing:.01em;}
+.wrap{position:relative;}
+.input{width:100%;background:var(--input-bg);border:.5px solid var(--input-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.95rem;padding:12px 15px;outline:none;transition:border-color var(--dur),box-shadow var(--dur);-webkit-appearance:none;letter-spacing:-.01em;}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--input-focus);}
+.input::placeholder{color:var(--text3);font-size:.9rem;}
+.input.pad-r{padding-right:44px;}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;padding:4px;transition:color var(--dur);line-height:1;}
+.eye:hover{color:var(--text2);}
 
-.msg-err{font-size:.8rem;color:var(--err);background:rgba(255,69,58,.07);border:.5px solid rgba(255,69,58,.18);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:none;animation:shake .4s var(--ease);}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
-
-.btn-submit{width:100%;background:var(--accent2);color:#fff;font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;font-size:.95rem;font-weight:500;padding:14px;border:none;border-radius:10px;cursor:pointer;transition:transform var(--dur) var(--ease),opacity var(--dur),box-shadow var(--dur);letter-spacing:-.01em;}
-.btn-submit:hover:not(:disabled){transform:scale(1.01);box-shadow:0 4px 20px rgba(160,160,170,.35);}
-.btn-submit:active:not(:disabled){transform:scale(.98);}
-.btn-submit:disabled{opacity:.45;cursor:not-allowed;}
-
-.auth-footer{margin-top:22px;text-align:center;font-size:.84rem;color:var(--text2);}
-.auth-footer a{color:var(--accent);text-decoration:none;transition:opacity var(--dur);}
-.auth-footer a:hover{opacity:.7;}
-
-@media(max-width:480px){.auth-right{padding:52px 20px 32px;}}
+.err{font-size:.78rem;color:var(--err);background:rgba(255,69,58,.06);border:.5px solid rgba(255,69,58,.15);border-radius:7px;padding:9px 13px;margin-bottom:12px;display:none;}
+.submit{width:100%;background:var(--accent2);color:#fff;font-family:inherit;font-size:.95rem;font-weight:500;padding:13px;border:none;border-radius:8px;cursor:pointer;letter-spacing:-.01em;transition:opacity var(--dur),transform var(--dur) var(--ease);margin-top:4px;}
+.submit:hover:not(:disabled){opacity:.88;transform:scale(1.005);}
+.submit:active:not(:disabled){transform:scale(.98);}
+.submit:disabled{opacity:.4;cursor:not-allowed;}
+.foot{margin-top:18px;text-align:center;font-size:.82rem;color:var(--text2);}
+.foot a{color:var(--accent);text-decoration:none;transition:opacity var(--dur);}
+.foot a:hover{opacity:.7;}
+@media(max-width:480px){.right{padding:60px 24px 32px;}}
 </style>
 </head>
 <body>
-<div class="auth-page">
-  <div class="auth-left">
-    <div class="auth-left-grid"></div>
-    <div class="auth-left-glow"></div>
-    <a href="index.html" class="auth-brand">Antithesis</a>
-    <div class="auth-left-content">
-      <span class="auth-left-tag">Bergabung sekarang</span>
-      <h1 class="auth-left-headline">Jadilah bagian dari kenangan yang <em>tidak terlupakan.</em></h1>
-      <div class="auth-steps">
-        <div class="auth-step">
-          <div class="auth-step-num">1</div>
-          <div class="auth-step-text">Isi nama lengkap sesuai daftar anggota</div>
-        </div>
-        <div class="auth-step">
-          <div class="auth-step-num">2</div>
-          <div class="auth-step-text">Daftar dengan email & password</div>
-        </div>
-        <div class="auth-step">
-          <div class="auth-step-num">3</div>
-          <div class="auth-step-text">Verifikasi kode OTP yang dikirim ke email</div>
-        </div>
+<div class="page">
+  <div class="left">
+    <a href="index.html" class="left-brand">Antithesis</a>
+    <div class="left-content">
+      <span class="left-eyebrow">Bergabung sekarang</span>
+      <h1 class="left-headline">Jadilah bagian dari kenangan yang <em>tidak terlupakan.</em></h1>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-t">Isi nama lengkap sesuai daftar anggota</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-t">Daftar dengan email & password</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-t">Verifikasi kode OTP yang dikirim ke email</div></div>
       </div>
     </div>
-    <div class="auth-left-footer">ANTITHESIS · Al Muayyad Surakarta · 2018–2020</div>
+    <div class="left-footer">ANTITHESIS · Al Muayyad Surakarta · 2018–2020</div>
   </div>
 
-  <div class="auth-right">
-    <div class="auth-topbar">
-      <span class="theme-icon">☀</span>
+  <div class="right">
+    <div class="topbar">
+      <span class="ti">☀</span>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
-      <span class="theme-icon">☽</span>
+      <span class="ti">☽</span>
     </div>
-    <div class="auth-box">
-      <span class="auth-eyebrow">Buat akun baru</span>
-      <h2 class="auth-title">Daftar</h2>
-      <p class="auth-sub">Hanya anggota terdaftar yang dapat membuat akun.</p>
+    <div class="box">
+      <span class="box-eyebrow">Buat akun baru</span>
+      <h2 class="box-title">Daftar</h2>
+      <p class="box-sub">Hanya anggota terdaftar yang dapat membuat akun.</p>
 
-      <div class="info-banner">✦ Nama harus sesuai dengan daftar anggota ANTITHESIS.</div>
+      <div class="info">✦ Nama harus sesuai dengan daftar anggota ANTITHESIS.</div>
 
       <div class="field">
-        <label class="field-label" for="regNama">Nama Lengkap</label>
-        <input class="field-input" type="text" id="regNama" placeholder="Sesuai daftar anggota" autocomplete="name"/>
+        <label class="label" for="regNama">Nama Lengkap</label>
+        <input class="input" type="text" id="regNama" placeholder="Sesuai daftar anggota" autocomplete="name"/>
       </div>
       <div class="field">
-        <label class="field-label" for="regEmail">Email</label>
-        <input class="field-input" type="email" id="regEmail" placeholder="nama@email.com" autocomplete="email"/>
+        <label class="label" for="regEmail">Email</label>
+        <input class="input" type="email" id="regEmail" placeholder="nama@email.com" autocomplete="email"/>
       </div>
       <div class="field">
-        <label class="field-label" for="regPass">Password</label>
-        <div class="field-wrap">
-          <input class="field-input has-toggle" type="password" id="regPass" placeholder="Min. 6 karakter" autocomplete="new-password"/>
-          <button class="toggle-pass" id="togglePass" type="button" tabindex="-1">👁</button>
+        <label class="label" for="regPass">Password</label>
+        <div class="wrap">
+          <input class="input pad-r" type="password" id="regPass" placeholder="Min. 6 karakter" autocomplete="new-password"/>
+          <button class="eye" id="togglePass" type="button" tabindex="-1">👁</button>
         </div>
       </div>
-      <div class="field" style="margin-bottom:22px;">
-        <label class="field-label" for="regPass2">Konfirmasi Password</label>
-        <div class="field-wrap">
-          <input class="field-input has-toggle" type="password" id="regPass2" placeholder="Ulangi password" autocomplete="new-password"/>
-          <button class="toggle-pass" id="togglePass2" type="button" tabindex="-1">👁</button>
+      <div class="field" style="margin-bottom:20px;">
+        <label class="label" for="regPass2">Konfirmasi Password</label>
+        <div class="wrap">
+          <input class="input pad-r" type="password" id="regPass2" placeholder="Ulangi password" autocomplete="new-password"/>
+          <button class="eye" id="togglePass2" type="button" tabindex="-1">👁</button>
         </div>
       </div>
 
-      <div class="msg-err" id="regErr"></div>
-      <button class="btn-submit" id="btnDaftar">Buat Akun →</button>
-
-      <div class="auth-footer">
-        Sudah punya akun? <a href="login.html">Masuk di sini</a>
-      </div>
+      <div class="err" id="regErr"></div>
+      <button class="submit" id="btnDaftar">Buat Akun →</button>
+      <div class="foot">Sudah punya akun? <a href="login.html">Masuk di sini</a></div>
     </div>
   </div>
 </div>
 
 <script>
 const html = document.documentElement;
-const saved = localStorage.getItem('antithesis_theme') || 'dark';
-html.setAttribute('data-theme', saved);
+html.setAttribute('data-theme', localStorage.getItem('antithesis_theme') || 'dark');
 document.getElementById('themeToggle').addEventListener('click', () => {
   const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', next);
