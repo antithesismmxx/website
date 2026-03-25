@@ -6,131 +6,457 @@
 <title>Dashboard — ANTITHESIS</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
+/* ========================================
+   SIDEBAR NAVIGATION SYSTEM
+======================================== */
+.sidebar{
+  position:fixed;
+  top:0;left:0;
+  height:100vh;width:280px;
+  background:var(--bg2);
+  border-right:.5px solid var(--border2);
+  z-index:1000;
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  transform:translateX(-100%);
+  backdrop-filter:blur(20px);
+}
+.sidebar.visible{transform:translateX(0);}
+
+.sidebar-brand{
+  padding:32px 24px 24px;
+  border-bottom:.5px solid var(--border2);
+}
+.sidebar-brand a{
+  font-size:1.1rem;font-weight:600;
+  color:var(--white);text-decoration:none;
+  font-family:var(--font-serif);
+}
+.sidebar-brand span{
+  display:block;font-size:.7rem;
+  color:var(--muted);margin-top:4px;
+  font-weight:500;letter-spacing:.05em;
+}
+
+.sidebar-links{padding:8px 0;flex:1;}
+.sidebar-links li{
+  padding:0;border-bottom:.5px solid var(--border2);
+  transition:background .2s;
+}
+.sidebar-links li:hover{background:var(--bg3);}
+.sidebar-links a{
+  display:block;padding:16px 24px;
+  font-size:.95rem;font-weight:500;
+  color:var(--white);text-decoration:none;
+  transition:all .2s;
+}
+.sidebar-links a.active,
+.sidebar-links a:hover{
+  color:var(--text3);background:var(--bg3);
+  padding-left:32px;
+}
+
+.sidebar-user{
+  padding:24px;border-top:.5px solid var(--border2);
+}
+.sidebar-user-name{
+  font-size:.85rem;color:var(--muted2);
+  margin-bottom:12px;font-weight:500;
+}
+.btn-logout-sidebar{
+  width:100%;padding:12px;
+  border:.5px solid var(--border2);
+  border-radius:var(--r);background:var(--bg2);
+  color:var(--muted);font-size:.9rem;
+  font-weight:500;transition:all .2s;
+  cursor:pointer;
+}
+.btn-logout-sidebar:hover{
+  background:var(--bg3);color:var(--white);
+  border-color:var(--border);
+}
+
+/* SIDEBAR TOGGLE BUTTON */
+.sidebar-toggle{
+  position:fixed;top:24px;left:24px;
+  z-index:1001;background:var(--bg2);
+  border:.5px solid var(--border2);border-radius:var(--r);
+  width:48px;height:48px;display:flex;
+  align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+  backdrop-filter:blur(20px);
+}
+.sidebar-toggle:hover{box-shadow:0 8px 32px rgba(0,0,0,.12);}
+.sidebar-toggle span{
+  display:block;width:20px;height:2px;
+  background:var(--white);margin:2px 0;
+  border-radius:2px;transition:transform .3s,color .2s;
+}
+.sidebar.visible + .sidebar-toggle span:nth-child(1){
+  transform:rotate(45deg) translate(5px,5px);
+}
+.sidebar.visible + .sidebar-toggle span:nth-child(2){
+  opacity:0;
+}
+.sidebar.visible + .sidebar-toggle span:nth-child(3){
+  transform:rotate(-45deg) translate(7px,-6px);
+}
+
+/* MAIN CONTENT LAYOUT */
+.page-sidebar{padding-left:280px;}
+.container{
+  padding-left:36px;padding-right:36px;
+  max-width:1400px;margin:0 auto;
+}
+
 /* DASH HERO */
-.dash-hero{padding:64px 0 56px;background:var(--bg);border-bottom:.5px solid var(--border2);position:relative;overflow:hidden;}
-.dash-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 100% at 90% 50%,rgba(0,113,227,.04),transparent);pointer-events:none;}
-.dash-greeting{font-size:.6rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;}
-.dash-name{font-family:var(--font-serif);font-size:clamp(2.2rem,5vw,4rem);font-weight:400;color:var(--white);line-height:1.05;letter-spacing:-.03em;}
+.dash-hero{
+  padding:64px 0 56px;background:var(--bg);
+  border-bottom:.5px solid var(--border2);
+  position:relative;overflow:hidden;
+}
+.dash-hero::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 100% at 90% 50%,rgba(0,113,227,.04),transparent);
+  pointer-events:none;
+}
+.dash-greeting{
+  font-size:.6rem;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted2);margin-bottom:10px;
+}
+.dash-name{
+  font-family:var(--font-serif);
+  font-size:clamp(2.2rem,5vw,4rem);font-weight:400;
+  color:var(--white);line-height:1.05;
+  letter-spacing:-.03em;
+}
 .dash-name em{font-style:italic;color:var(--text3);}
-.dash-date{font-size:.88rem;color:var(--muted);margin-top:12px;}
+.dash-date{
+  font-size:.88rem;color:var(--muted);
+  margin-top:12px;
+}
 
 /* COUNTDOWN */
 .countdown-wrap{
   background:var(--bg2);border:.5px solid var(--border2);
-  padding:32px 36px;margin:40px 0 0;position:relative;overflow:hidden;
-  display:none;
+  padding:32px 36px;margin:40px 0 0;
+  position:relative;overflow:hidden;display:none;
 }
 .countdown-wrap.visible{display:block;}
-.countdown-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:.5px;background:linear-gradient(to right,transparent,rgba(201,168,76,.4),transparent);}
-.countdown-label{font-size:.6rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);margin-bottom:6px;}
-.countdown-event{font-family:var(--font-serif);font-size:1.4rem;font-weight:400;color:var(--white);margin-bottom:24px;letter-spacing:-.02em;}
+.countdown-wrap::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:.5px;background:linear-gradient(to right,transparent,rgba(201,168,76,.4),transparent);
+}
+.countdown-label{
+  font-size:.6rem;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted2);margin-bottom:6px;
+}
+.countdown-event{
+  font-family:var(--font-serif);font-size:1.4rem;
+  font-weight:400;color:var(--white);
+  margin-bottom:24px;letter-spacing:-.02em;
+}
 .countdown-units{display:flex;gap:24px;flex-wrap:wrap;align-items:center;}
 .cu{text-align:center;}
-.cu-num{font-family:var(--font-serif);font-size:2.8rem;font-weight:400;line-height:1;color:var(--white);letter-spacing:-.03em;}
-.cu-lbl{font-size:.55rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--muted2);margin-top:4px;}
-.cu-sep{font-family:var(--font-serif);font-size:2rem;color:var(--border);align-self:center;padding-bottom:4px;}
-.countdown-loc{font-size:.84rem;color:var(--muted);margin-top:18px;}
+.cu-num{
+  font-family:var(--font-serif);font-size:2.8rem;
+  font-weight:400;line-height:1;color:var(--white);
+  letter-spacing:-.03em;
+}
+.cu-lbl{
+  font-size:.55rem;font-weight:500;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted2);margin-top:4px;
+}
+.cu-sep{
+  font-family:var(--font-serif);font-size:2rem;
+  color:var(--border);align-self:center;
+  padding-bottom:4px;
+}
+.countdown-loc{
+  font-size:.84rem;color:var(--muted);
+  margin-top:18px;
+}
 .countdown-loc span{color:var(--text3);}
 
 /* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.5px;background:var(--border2);border:.5px solid var(--border2);margin:40px 0 0;}
-.stat-card{background:var(--bg2);padding:24px 28px;transition:background .2s;}
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:.5px;background:var(--border2);
+  border:.5px solid var(--border2);margin:40px 0 0;
+}
+.stat-card{
+  background:var(--bg2);padding:24px 28px;
+  transition:background .2s;
+}
 .stat-card:hover{background:var(--bg3);}
-.stat-card-num{font-family:var(--font-serif);font-size:2.2rem;font-weight:400;color:var(--white);letter-spacing:-.03em;line-height:1;}
-.stat-card-lbl{font-size:.6rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-top:6px;}
+.stat-card-num{
+  font-family:var(--font-serif);font-size:2.2rem;
+  font-weight:400;color:var(--white);
+  letter-spacing:-.03em;line-height:1;
+}
+.stat-card-lbl{
+  font-size:.6rem;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted2);margin-top:6px;
+}
 
 /* QUICK LINKS */
-.quick-links{display:grid;grid-template-columns:repeat(2,1fr);gap:.5px;background:var(--border2);border:.5px solid var(--border2);margin-top:16px;}
-.ql{background:var(--bg2);padding:24px;display:flex;align-items:center;gap:16px;transition:background .2s;cursor:pointer;text-decoration:none;}
+.quick-links{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:.5px;background:var(--border2);
+  border:.5px solid var(--border2);margin-top:16px;
+}
+.ql{
+  background:var(--bg2);padding:24px;
+  display:flex;align-items:center;gap:16px;
+  transition:background .2s;cursor:pointer;
+  text-decoration:none;
+}
 .ql:hover{background:var(--bg3);}
 .ql-icon{font-size:1.3rem;flex-shrink:0;opacity:.6;}
-.ql-name{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
+.ql-name{
+  font-size:.7rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--white);margin-bottom:3px;
+}
 .ql-desc{font-size:.82rem;color:var(--muted);}
-.ql-arrow{margin-left:auto;color:var(--muted2);font-size:.9rem;transition:transform .2s;}
-.ql:hover .ql-arrow{transform:translateX(3px);color:var(--muted);}
+.ql-arrow{
+  margin-left:auto;color:var(--muted2);
+  font-size:.9rem;transition:transform .2s;
+}
+.ql:hover .ql-arrow{
+  transform:translateX(3px);color:var(--muted);
+}
+
+/* RESPONSIVE */
+@media(max-width:1200px){
+  .page-sidebar{padding-left:0;}
+  .sidebar-toggle{display:flex;}
+  .container{padding-left:24px;padding-right:24px;}
+}
 
 @media(max-width:960px){
-  .dash-hero{padding:44px 0 36px;}
+  .sidebar{width:260px;}
   .stats-row{grid-template-columns:repeat(2,1fr);}
   .quick-links{grid-template-columns:1fr;}
-  .countdown-wrap{padding:20px;}
-  .cu-num{font-size:2rem;}
+  .countdown-wrap{padding:24px 20px;}
+  .cu-num{font-size:2.2rem;}
+  .dash-hero{padding:48px 0 40px;}
 }
-.nav-mobile-logout{display:none;}
-@media(max-width:960px){.nav-mobile-logout{display:block;padding:4px 0 10px;border-top:.5px solid var(--border2);margin-top:4px;}.nav-mobile-logout .btn-logout{width:100%;text-align:center;padding:10px 12px;border:.5px solid var(--border2);border-radius:var(--r);color:var(--muted);display:block;}}
+
+@media(max-width:640px){
+  .sidebar{width:240px;}
+  .countdown-wrap{padding:20px 16px;}
+  .cu-num{font-size:1.8rem;}
+  .stats-row{grid-template-columns:1fr;}
+  .quick-links{grid-template-columns:1fr;}
+  .container{padding-left:16px;padding-right:16px;}
+}
 </style>
 </head>
 <body>
-<nav class="nav" id="mainNav">
-  <a href="index.html" class="nav-brand">ANTITHESIS<span>Al Muayyad Surakarta · 2018–2020</span></a>
-  <ul class="nav-links" id="navLinks">
+<!-- ========================================
+     SIDEBAR NAVIGATION
+======================================== -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <a href="index.html">ANTITHESIS</a>
+    <span>Al Muayyad Surakarta · 2018–2020</span>
+  </div>
+  
+  <ul class="sidebar-links" id="sidebarLinks">
     <li><a href="dashboard.html" class="active">Dashboard</a></li>
     <li><a href="anggota.html">Direktori</a></li>
     <li><a href="polling.html">Polling</a></li>
     <li><a href="galeri.html">Kenangan</a></li>
     <li><a href="acara.html">Acara</a></li>
     <li><a href="profil.html">Profil</a></li>
-    <li class="nav-mobile-logout"><button class="btn-logout" id="btnLogoutMobile">Keluar</button></li>
   </ul>
-  <div class="nav-user">
-    <span class="nav-user-name">Halo, <span id="navNama">—</span></span>
-    <button class="btn-logout" id="btnLogout">Keluar</button>
+  
+  <div class="sidebar-user">
+    <div class="sidebar-user-name">Halo, <span id="sidebarNama">—</span></div>
+    <button class="btn-logout-sidebar" id="btnLogoutSidebar">Keluar</button>
   </div>
-  <button class="nav-hamburger" id="navHam"><span></span><span></span><span></span></button>
-</nav>
+</div>
 
-<div class="page">
-  <div class="notif-bar" id="pgBar"><span class="notif-bar-icon">✦</span><span class="notif-bar-text" id="pgText"></span></div>
+<!-- SIDEBAR TOGGLE BUTTON -->
+<button class="sidebar-toggle" id="sidebarToggle">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- ========================================
+     MAIN CONTENT
+======================================== -->
+<div class="page page-sidebar">
+  <div class="notif-bar" id="pgBar">
+    <span class="notif-bar-icon">✦</span>
+    <span class="notif-bar-text" id="pgText"></span>
+  </div>
 
   <div class="dash-hero">
     <div class="container">
-      <div class="dash-greeting anim-up d1">Portal Anggota · ANTITHESIS</div>
-      <div class="dash-name anim-up d2">Selamat datang,<br><em id="heroNama">—</em></div>
+      <div class="dash-greeting anim-up d1">
+        Portal Anggota · ANTITHESIS
+      </div>
+      <div class="dash-name anim-up d2">
+        Selamat datang,<br><em id="heroNama">—</em>
+      </div>
       <div class="dash-date anim-up d3" id="heroDate"></div>
 
       <div class="countdown-wrap anim-up d3" id="countdownWrap">
         <div class="countdown-label">Menghitung hari menuju</div>
         <div class="countdown-event" id="cdEvent">—</div>
         <div class="countdown-units">
-          <div class="cu"><div class="cu-num" id="cdH">00</div><div class="cu-lbl">Hari</div></div>
+          <div class="cu">
+            <div class="cu-num" id="cdH">00</div>
+            <div class="cu-lbl">Hari</div>
+          </div>
           <div class="cu-sep">:</div>
-          <div class="cu"><div class="cu-num" id="cdJ">00</div><div class="cu-lbl">Jam</div></div>
+          <div class="cu">
+            <div class="cu-num" id="cdJ">00</div>
+            <div class="cu-lbl">Jam</div>
+          </div>
           <div class="cu-sep">:</div>
-          <div class="cu"><div class="cu-num" id="cdM">00</div><div class="cu-lbl">Menit</div></div>
+          <div class="cu">
+            <div class="cu-num" id="cdM">00</div>
+            <div class="cu-lbl">Menit</div>
+          </div>
           <div class="cu-sep">:</div>
-          <div class="cu"><div class="cu-num" id="cdS">00</div><div class="cu-lbl">Detik</div></div>
+          <div class="cu">
+            <div class="cu-num" id="cdS">00</div>
+            <div class="cu-lbl">Detik</div>
+          </div>
         </div>
         <div class="countdown-loc" id="cdLoc"></div>
       </div>
 
       <div class="stats-row">
-        <div class="stat-card rv d1"><div class="stat-card-num" id="statAnggota">—</div><div class="stat-card-lbl">Anggota Terdaftar</div></div>
-        <div class="stat-card rv d2"><div class="stat-card-num" id="statProfil">—</div><div class="stat-card-lbl">Profil Terisi</div></div>
-        <div class="stat-card rv d3"><div class="stat-card-num" id="statUsulan">—</div><div class="stat-card-lbl">Usulan Acara</div></div>
-        <div class="stat-card rv d4"><div class="stat-card-num" id="statKenangan">—</div><div class="stat-card-lbl">Kenangan Tersimpan</div></div>
+        <div class="stat-card rv d1">
+          <div class="stat-card-num" id="statAnggota">—</div>
+          <div class="stat-card-lbl">Anggota Terdaftar</div>
+        </div>
+        <div class="stat-card rv d2">
+          <div class="stat-card-num" id="statProfil">—</div>
+          <div class="stat-card-lbl">Profil Terisi</div>
+        </div>
+        <div class="stat-card rv d3">
+          <div class="stat-card-num" id="statUsulan">—</div>
+          <div class="stat-card-lbl">Usulan Acara</div>
+        </div>
+        <div class="stat-card rv d4">
+          <div class="stat-card-num" id="statKenangan">—</div>
+          <div class="stat-card-lbl">Kenangan Tersimpan</div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="container section">
     <div class="sec-label rv">Navigasi Cepat</div>
-    <div class="sec-h rv d1" style="margin-bottom:20px;">Apa yang ingin kamu <em>lakukan?</em></div>
+    <div class="sec-h rv d1" style="margin-bottom:20px;">
+      Apa yang ingin kamu <em>lakukan?</em>
+    </div>
     <div class="quick-links rv d2">
-      <a href="anggota.html" class="ql"><div class="ql-icon">◎</div><div><div class="ql-name">Direktori Anggota</div><div class="ql-desc">Lihat profil semua teman angkatan</div></div><div class="ql-arrow">→</div></a>
-      <a href="polling.html" class="ql"><div class="ql-icon">◈</div><div><div class="ql-name">Polling Acara</div><div class="ql-desc">Vote jenis acara & kirim usulan</div></div><div class="ql-arrow">→</div></a>
-      <a href="galeri.html"  class="ql"><div class="ql-icon">◇</div><div><div class="ql-name">Buku Kenangan</div><div class="ql-desc">Tulis dan baca kenangan bersama</div></div><div class="ql-arrow">→</div></a>
-      <a href="acara.html"   class="ql"><div class="ql-icon">◷</div><div><div class="ql-name">Info Acara</div><div class="ql-desc">Detail acara yang sudah ditetapkan</div></div><div class="ql-arrow">→</div></a>
+      <a href="anggota.html" class="ql">
+        <div class="ql-icon">◎</div>
+        <div>
+          <div class="ql-name">Direktori Anggota</div>
+          <div class="ql-desc">Lihat profil semua teman angkatan</div>
+        </div>
+        <div class="ql-arrow">→</div>
+      </a>
+      <a href="polling.html" class="ql">
+        <div class="ql-icon">◈</div>
+        <div>
+          <div class="ql-name">Polling Acara</div>
+          <div class="ql-desc">Vote jenis acara & kirim usulan</div>
+        </div>
+        <div class="ql-arrow">→</div>
+      </a>
+      <a href="galeri.html" class="ql">
+        <div class="ql-icon">◇</div>
+        <div>
+          <div class="ql-name">Buku Kenangan</div>
+          <div class="ql-desc">Tulis dan baca kenangan bersama</div>
+        </div>
+        <div class="ql-arrow">→</div>
+      </a>
+      <a href="acara.html" class="ql">
+        <div class="ql-icon">◷</div>
+        <div>
+          <div class="ql-name">Info Acara</div>
+          <div class="ql-desc">Detail acara yang sudah ditetapkan</div>
+        </div>
+        <div class="ql-arrow">→</div>
+      </a>
     </div>
   </div>
 </div>
 
+<!-- ========================================
+     FOOTER
+======================================== -->
 <footer>
-  <div class="foot-brand">ANTITHESIS<span>SMA & MA Al Muayyad Surakarta · 2018–2020</span></div>
+  <div class="foot-brand">
+    ANTITHESIS<span>SMA & MA Al Muayyad Surakarta · 2018–2020</span>
+  </div>
   <div class="foot-mid">Selamanya Bersama, Selamanya Bangga.</div>
-  <ul class="foot-links"><li><a href="#">Instagram</a></li><li><a href="#">WhatsApp</a></li></ul>
+  <ul class="foot-links">
+    <li><a href="#">Instagram</a></li>
+    <li><a href="#">WhatsApp</a></li>
+  </ul>
 </footer>
 
+<!-- ========================================
+     JAVASCRIPT
+======================================== -->
 <script type="module" src="dashboard.js"></script>
-<script>document.getElementById('btnLogoutMobile')?.addEventListener('click',()=>{sessionStorage.clear();window.location.href='login.html';});</script>
+<script>
+(function(){
+  // SIDEBAR TOGGLE
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const btnLogoutSidebar = document.getElementById('btnLogoutSidebar');
+  
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('visible');
+  });
+  
+  // LOGOUT SIDEBAR
+  btnLogoutSidebar?.addEventListener('click', () => {
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+  });
+  
+  // CLOSE SIDEBAR ON OUTSIDE CLICK (MOBILE)
+  document.addEventListener('click', (e) => {
+    if(window.innerWidth <= 1200){
+      const toggle = document.getElementById('sidebarToggle');
+      if(!sidebar.contains(e.target) && !toggle.contains(e.target)){
+        sidebar.classList.remove('visible');
+      }
+    }
+  });
+  
+  // PREVENT SIDEBAR CONTENT FROM CLOSING ITSELF
+  sidebar.addEventListener('click', (e) => e.stopPropagation());
+  
+  // SHOW SIDEBAR ON DESKTOP
+  function updateSidebarVisibility(){
+    if(window.innerWidth > 1200){
+      sidebar.classList.add('visible');
+    } else {
+      sidebar.classList.remove('visible');
+    }
+  }
+  
+  window.addEventListener('resize', updateSidebarVisibility);
+  updateSidebarVisibility();
+})();
+</script>
 </body>
 </html>
